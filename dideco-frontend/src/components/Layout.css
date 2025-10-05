@@ -1,0 +1,105 @@
+.layout-bg {
+  background: #f7f7fa;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* === CONTENIDO PRINCIPAL === */
+.main-content {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.topbar {
+  background-color: #1664c1;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hamburger-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 24px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hamburger-menu span {
+  width: 100%;
+  height: 2px;
+  background: white;
+  border-radius: 2px;
+  transition: 0.3s;
+}
+
+.hamburger-menu:hover span {
+  background: #ecf0f1;
+}
+
+.nav-left h1 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin: 0;
+  font-weight: bold;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logout-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.3s;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.user-icon {
+  font-size: 2rem;
+  color: #fff;
+}
+
+.page-content {
+  padding: 40px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 767px) {
+  .nav-left h1 {
+    font-size: 1.2rem;
+  }
+  
+  .page-content {
+    padding: 20px 16px;
+  }
+}
