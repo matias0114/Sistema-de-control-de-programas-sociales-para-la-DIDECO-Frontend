@@ -1,34 +1,27 @@
 body, .main-bg {
-  background: #f7f7fa;
+  background: #f3f4f8;
   min-height: 100vh;
   margin: 0;
 }
 
-/* Barra azul superior */
 .topbar {
-  background-color: #1664c1;
-  height: 60px;
+  background-color: #1671d6;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  box-shadow: 0 2px 8px #0002;
 }
-
-.nav-right {
-  margin-right: 24px;
-}
-
-.user-icon {
-  font-size: 2rem;
-  color: #fff;
-}
+.nav-right { margin-right: 32px; }
+.user-icon { font-size: 2.2rem; color: #fff; }
 
 .login-content {
-  margin: 40px auto 0 auto;
+  margin: 60px auto 0 auto;
   background: #fff;
-  padding: 32px 24px;
-  width: 350px;
-  border-radius: 22px;
-  box-shadow: 0 2px 16px #0001;
+  padding: 40px 36px;
+  width: 460px;
+  border-radius: 24px;
+  box-shadow: 0 6px 28px #0000001a;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -36,36 +29,68 @@ body, .main-bg {
 }
 
 .logo-img {
-  width: 160px;
-  margin-bottom: 18px;
+  width: 350px;
+  margin-bottom: 22px;
 }
 
 .login-content h2 {
-  font-family: sans-serif;
-  margin-bottom: 22px;
-  margin-top: 0;
-  font-size: 1.6rem;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  margin: 10px 0 24px 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #1f2937;
 }
 
-.login-form input,
-.login-form button {
-  margin: 10px 0;
+.login-label {
   width: 100%;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-size: 1rem;
+  text-align: left;
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+  color: #374151;
 }
 
-.login-form button {
-  background: #1664c1;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
+.login-form input {
+  margin: 8px 0 16px 0;
+  width: 100%;
+  padding: 14px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 1.08rem;
+  background: #fff;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.login-form input::placeholder {
+  color: #9ca3af;
 }
 
 .login-form input:focus {
-  border: 1.5px solid #1664c1;
+  border: 1.5px solid #1671d6;
   outline: none;
+  box-shadow: 0 0 0 3px #1671d620;
+}
+
+.login-btn,
+.login-form button {
+  width: 100%;
+  padding: 14px;
+  color: #fff;
+  background: #1671d6;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 6px;
+  box-shadow: 0 3px 10px #1671d650;
+  transition: filter .15s, transform .02s;
+}
+.login-btn:hover { filter: brightness(1.06); }
+.login-btn:active { transform: translateY(1px); }
+
+@media (max-width: 480px) {
+  .login-content { width: 97%; padding: 26px 10px; }
+  .logo-img { width: 170px; }
+  .login-content h2 { font-size: 1.3rem; }
+  .login-form input, .login-btn { font-size: 1rem; }
 }

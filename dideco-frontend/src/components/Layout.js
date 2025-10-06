@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // <-- importa esto
 import Sidebar from './Sidebar';
 import './Layout.css';
 
 function Layout({ children, title = "Sistema de Control" }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate(); // <-- inicializa
 
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userEmail');
-    window.location.reload();
+    localStorage.removeItem('usuario');   // limpia el usuario de tu app
+    navigate('/');                        // vuelve al login sin recargar
   };
 
   const toggleSidebar = () => {

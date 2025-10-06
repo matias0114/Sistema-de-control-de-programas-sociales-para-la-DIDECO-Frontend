@@ -1,11 +1,24 @@
 import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
+import General from './pages/General';
+
+// Si no tienes el componente, crea un placeholder:
+function PanelUsuario() {
+  return <h2>Panel para encargado/visualizador (por implementar)</h2>;
+}
 
 function App() {
   return (
-    <div>
-      <Login />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/general" element={<General />} />
+        <Route path="/panel-usuario" element={<PanelUsuario />} />
+        {/* Redirige rutas desconocidas al login */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
