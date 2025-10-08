@@ -20,17 +20,29 @@ function General() {
         <p>Panel principal de control de programas sociales</p>
       </div>
       <div className="dashboard-grid">
-        <div className="dashboard-card">
+        <div
+          className="dashboard-card"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/programas')}
+        >
           <h3>Programas Sociales</h3>
-          <p>Gestionar programas activos</p>
+          <p>Crear y asignar programas</p>
         </div>
-        <div className="dashboard-card">
-          <h3>Beneficiarios</h3>
-          <p>Administrar beneficiarios</p>
+        <div
+          className="dashboard-card"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/usuarios')}
+        >
+          <h3>Gestionar Usuarios</h3>
+          <p>Agregar o eliminar</p>
         </div>
-        <div className="dashboard-card">
-          <h3>Reportes</h3>
-          <p>Ver estadísticas y reportes</p>
+        <div
+          className="dashboard-card"
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/editar-programas')}
+        >
+          <h3>Editar Programas</h3>
+          <p>Modificar y reasignar encargados</p>
         </div>
         <div className="dashboard-card">
           <h3>Configuración</h3>
