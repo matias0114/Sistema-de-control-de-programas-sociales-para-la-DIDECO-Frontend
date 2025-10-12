@@ -19,7 +19,6 @@ function ProgramaDashboard() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const usuario = JSON.parse(localStorage.getItem("usuario"));
-  const [showEditPrograma, setShowEditPrograma] = useState(false);
   const [showPresupuesto, setShowPresupuesto] = useState(false);
   const [showCrearActividad, setShowCrearActividad] = useState(false);
   const [editingActividadId, setEditingActividadId] = useState(null);
@@ -30,9 +29,9 @@ function ProgramaDashboard() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newProg)
     });
-    setShowEditPrograma(false);
     cargarDatosDashboard();
   };
+
   const handleAddActividad = async (data) => {
     await fetch(`http://localhost:8080/actividades`, {
       method: "POST",
@@ -42,6 +41,7 @@ function ProgramaDashboard() {
     setShowCrearActividad(false);
     cargarDatosDashboard();
   };
+
   const handleAddAvance = async (data) => {
     await fetch(`http://localhost:8080/avances`, {
       method: "POST",
@@ -51,6 +51,7 @@ function ProgramaDashboard() {
     setEditingActividadId(null);
     cargarDatosDashboard();
   };
+
   const handleAddPresupuesto = async (data) => {
     await fetch(`http://localhost:8080/presupuestos`, {
       method: "POST",
@@ -124,7 +125,6 @@ function ProgramaDashboard() {
       setError("No tienes permisos para acceder a este programa.");
       setTimeout(() => navigate("/"), 2000);
     }
-    // eslint-disable-next-line
   }, [programa]);
 
   if (loading)
@@ -150,9 +150,6 @@ function ProgramaDashboard() {
             </div>
           </div>
           <div className="header-actions">
-            <button className="btn-export" onClick={() => setShowEditPrograma(!showEditPrograma)}>
-              {showEditPrograma ? "Cerrar" : "Editar programa"}
-            </button>
             <button className="btn-export" onClick={() => setShowPresupuesto(!showPresupuesto)}>
               {showPresupuesto ? "Cerrar" : "Ingresar presupuesto"}
             </button>
@@ -162,8 +159,8 @@ function ProgramaDashboard() {
           </div>
         </div>
 
-        {/* Formulario: solo visible si lo activas */}
-        {showEditPrograma && <EditarProgramaInfo programa={programa} onSave={handleUpdatePrograma} />}
+        {/* Información del programa - SIEMPRE VISIBLE */}
+        <EditarProgramaInfo programa={programa} onSave={handleUpdatePrograma} />
 
         {/* Resumen presupuestario */}
         <div className="section-container">
