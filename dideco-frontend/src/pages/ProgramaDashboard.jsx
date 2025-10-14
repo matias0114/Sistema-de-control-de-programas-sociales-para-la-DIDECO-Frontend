@@ -62,6 +62,7 @@ function ProgramaDashboard() {
     cargarDatosDashboard();
   };
 
+  // <<<--- CORRECCIÓN IMPORTANTE ABAJO --- >>>
   const cargarDatosDashboard = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -82,8 +83,9 @@ function ProgramaDashboard() {
       const avancesData = todosAvances.filter(av => idsActividades.includes(av.idActividad));
       setAvances(avancesData);
 
+      // ========== PARÉNTESIS Y await =======
       const respPresupuesto = await fetch(`http://localhost:8080/presupuestos/programa/${id}`);
-      let presupuestoData = await respPresupuesto.ok ? respPresupuesto.json() : [];
+      let presupuestoData = respPresupuesto.ok ? await respPresupuesto.json() : [];
       if (Array.isArray(presupuestoData) && presupuestoData.length > 0) {
         presupuestoData = presupuestoData.reduce((total, p) => ({
           asignado: total.asignado + (parseFloat(p.montoAsignado) || 0),
@@ -105,6 +107,7 @@ function ProgramaDashboard() {
       setLoading(false);
     }
   }, [id]);
+  // <<<--- FIN CORRECCIÓN --->>>
 
   const calcularAvanceGeneral = (acts, avs) => {
     if (!acts.length) return 0;
