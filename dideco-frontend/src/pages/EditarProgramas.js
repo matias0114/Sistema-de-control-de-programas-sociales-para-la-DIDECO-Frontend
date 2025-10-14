@@ -81,7 +81,6 @@ function EditarPrograma({ idPrograma, onClose }) {
   );
 }
 
-// --- Tabla principal de edición ---
 function EditarProgramas() {
   const [programas, setProgramas] = useState([]);
   const [editId, setEditId] = useState(null);

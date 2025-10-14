@@ -29,7 +29,7 @@ function Login() {
             setError("No tienes programa asignado. Contacta al administrador.");
           }
         } else {
-          navigate('/visualizador'); // Otro rol
+          navigate('/visualizador');
         }
       } else {
         setError('Correo o contraseña incorrectos');

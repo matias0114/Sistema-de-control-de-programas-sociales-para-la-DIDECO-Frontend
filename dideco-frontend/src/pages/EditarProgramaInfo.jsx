@@ -85,7 +85,7 @@ function EditarProgramaInfo({ programa, onSave }) {
     formGroupWide: {
       display: 'flex',
       flexDirection: 'column',
-      gridColumn: '1 / -1' // Ocupa todo el ancho disponible
+      gridColumn: '1 / -1'
     },
     label: {
       color: 'white',
@@ -116,7 +116,7 @@ function EditarProgramaInfo({ programa, onSave }) {
       fontSize: '1rem',
       minHeight: '22px',
       display: 'flex',
-      alignItems: 'flex-start', // Texto arriba a la izquierda
+      alignItems: 'flex-start',
       paddingTop: '16px'
     },
     staticTextWide: {
@@ -126,18 +126,18 @@ function EditarProgramaInfo({ programa, onSave }) {
       backdropFilter: 'blur(10px)',
       color: 'white',
       fontSize: '1rem',
-      minHeight: '100px', // Más altura para campos largos
+      minHeight: '100px', 
       display: 'flex',
-      alignItems: 'flex-start', // Texto arriba a la izquierda
+      alignItems: 'flex-start', 
       textAlign: 'left',
-      whiteSpace: 'pre-wrap', // Respeta saltos de línea
+      whiteSpace: 'pre-wrap', 
       lineHeight: '1.5'
     },
     textarea: {
-      minHeight: '120px', // Más altura para los textarea
+      minHeight: '120px', 
       resize: isEditing ? 'vertical' : 'none',
       fontFamily: 'inherit',
-      alignItems: 'flex-start', // Texto arriba a la izquierda
+      alignItems: 'flex-start',
       textAlign: 'left'
     },
     buttonGroup: {
@@ -332,7 +332,6 @@ function EditarProgramaInfo({ programa, onSave }) {
           )}
         </div>
 
-        {/* DESCRIPCIÓN - ANCHO COMPLETO */}
         <div style={styles.formGroupWide}>
           <label style={styles.label}>Descripción</label>
           {isEditing ? (
@@ -351,7 +350,6 @@ function EditarProgramaInfo({ programa, onSave }) {
           )}
         </div>
 
-        {/* REQUISITOS DE INGRESO - ANCHO COMPLETO */}
         <div style={styles.formGroupWide}>
           <label style={styles.label}>Requisitos de Ingreso</label>
           {isEditing ? (
@@ -370,7 +368,6 @@ function EditarProgramaInfo({ programa, onSave }) {
           )}
         </div>
 
-        {/* BENEFICIOS - ANCHO COMPLETO */}
         <div style={styles.formGroupWide}>
           <label style={styles.label}>Beneficios</label>
           {isEditing ? (
