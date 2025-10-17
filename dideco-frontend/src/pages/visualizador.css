@@ -1,0 +1,373 @@
+.visualizador-container {
+  max-width: 95%; 
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #666;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #1664c1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Header con estadísticas horizontales */
+.stats-header {
+  margin-bottom: 50px;
+  padding: 40px;
+  background: linear-gradient(135deg, #1664c1 0%, #1889ed 100%);
+  border-radius: 20px;
+  color: white;
+}
+
+.welcome-section-new {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.welcome-section-new h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.welcome-section-new p {
+  font-size: 18px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.stats-cards-horizontal {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.stat-card-h {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 30px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 200px;
+  transition: all 0.3s ease;
+}
+
+.stat-card-h:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.stat-card-h .stat-icon {
+  font-size: 28px;
+}
+
+.stat-card-h .stat-content h3 {
+  font-size: 32px;
+  font-weight: 900;
+  margin: 0 0 4px 0;
+  color: white;
+}
+
+.stat-card-h .stat-content p {
+  font-size: 14px;
+  margin: 0;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+/* Sección de programas */
+.programas-section {
+  margin-top: 40px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.section-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.total-count {
+  background: #f0f0f0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+}
+
+/* Grid de programas */
+.programas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas fijas */
+  gap: 30px;
+}
+
+.programa-card {
+  background: rgb(209, 223, 255);
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  position: relative;
+  border: 2px solid transparent;
+}
+
+.programa-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.programa-card.activo {
+  border-top: 6px solid #4CAF50;
+}
+
+.programa-card.activo:hover {
+  border-color: #4CAF50;
+}
+
+.programa-card.inactivo {
+  border-top: 6px solid #FF5722;
+}
+
+.programa-card.inactivo:hover {
+  border-color: #FF5722;
+}
+
+.programa-status {
+  padding: 20px 24px 0 24px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.activo {
+  background: linear-gradient(135deg, #C8E6C9 0%, #A5D6A7 100%);
+  color: #1B5E20;
+}
+
+.status-badge.inactivo {
+  background: linear-gradient(135deg, #FFCDD2 0%, #FFAB91 100%);
+  color: #B71C1C;
+}
+
+.programa-content {
+  padding: 20px 24px;
+}
+
+.programa-nombre {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 20px 0;
+  line-height: 1.3;
+  min-height: 60px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.programa-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  color: #555;
+}
+
+.meta-item.description {
+  margin-top: 8px;
+}
+
+.meta-icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.meta-text {
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.meta-text strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.programa-footer {
+  padding: 20px 24px;
+  background: transparent;
+  border-top: 1px solid #dee2e6;
+  text-align: right;
+}
+
+.ver-mas {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1664c1;
+  letter-spacing: 0.5px;
+}
+
+/* Estado vacío */
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #666;
+}
+
+.empty-icon {
+  font-size: 80px;
+  margin-bottom: 30px;
+  opacity: 0.6;
+}
+
+.empty-state h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+}
+
+.empty-state p {
+  font-size: 18px;
+  margin: 0 0 40px 0;
+}
+
+/* Detalle container */
+.detalle-container {
+  margin-top: 20px;
+}
+
+.btn-volver {
+  background: #1664c1;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.btn-volver:hover {
+  background: #1455a8;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .programas-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas en tablet */
+  }
+}
+
+@media (max-width: 768px) {
+  .visualizador-container {
+    padding: 16px;
+  }
+
+  .stats-header {
+    padding: 24px;
+  }
+
+  .welcome-section-new h1 {
+    font-size: 28px;
+  }
+
+  .welcome-section-new p {
+    font-size: 16px;
+  }
+
+  .stats-cards-horizontal {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stat-card-h {
+    min-width: 280px;
+  }
+
+  .programas-grid {
+    grid-template-columns: 1fr; /* 1 columna en móvil */
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section-header h2 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-cards-horizontal {
+    gap: 16px;
+  }
+
+  .stat-card-h {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .programa-card {
+    margin: 0 8px;
+  }
+}

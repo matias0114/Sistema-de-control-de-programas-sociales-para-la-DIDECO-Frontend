@@ -6,6 +6,8 @@ import CrearActividad from "./CrearActividad";
 import AgregarAvance from "./AgregarAvance";
 import IngresoPresupuesto from "./IngresoPresupuesto";
 import PresupuestoChart from "./PresupuestoChart";
+import GraficoProgreso from "./GraficoProgreso";
+import GraficoGastosMensuales from "./GraficoGastosMensuales"; // ✅ nuevo import
 import "./programadashboard.css";
 
 function ProgramaDashboard() {
@@ -15,6 +17,7 @@ function ProgramaDashboard() {
   const [actividades, setActividades] = useState([]);
   const [avances, setAvances] = useState([]);
   const [presupuesto, setPresupuesto] = useState({});
+  const [gastosMensuales, setGastosMensuales] = useState([]); // ✅ nuevo estado
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -62,7 +65,27 @@ function ProgramaDashboard() {
     cargarDatosDashboard();
   };
 
-  // <<<--- CORRECCIÓN IMPORTANTE ABAJO --- >>>
+  // ✅ NUEVO: carga gastos mensuales
+  const cargarGastosMensuales = useCallback(async () => {
+    try {
+      console.log("🔍 Cargando gastos mensuales para programa:", id);
+      const resp = await fetch(`http://localhost:8080/programas/${id}/gastos-mensuales`);
+      console.log("🔍 Respuesta del servidor:", resp.status, resp.statusText);
+      
+      if (resp.ok) {
+        const data = await resp.json();
+        console.log("✅ Gastos mensuales recibidos:", data);
+        setGastosMensuales(data);
+      } else {
+        console.warn("❌ No se pudieron cargar los gastos mensuales:", resp.status);
+        setGastosMensuales([]);
+      }
+    } catch (e) {
+      console.error("❌ Error al cargar gastos mensuales:", e);
+      setGastosMensuales([]);
+    }
+  }, [id]);
+
   const cargarDatosDashboard = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -83,7 +106,6 @@ function ProgramaDashboard() {
       const avancesData = todosAvances.filter(av => idsActividades.includes(av.idActividad));
       setAvances(avancesData);
 
-      // ========== PARÉNTESIS Y await =======
       const respPresupuesto = await fetch(`http://localhost:8080/presupuestos/programa/${id}`);
       let presupuestoData = respPresupuesto.ok ? await respPresupuesto.json() : [];
       if (Array.isArray(presupuestoData) && presupuestoData.length > 0) {
@@ -107,7 +129,6 @@ function ProgramaDashboard() {
       setLoading(false);
     }
   }, [id]);
-  // <<<--- FIN CORRECCIÓN --->>>
 
   const calcularAvanceGeneral = (acts, avs) => {
     if (!acts.length) return 0;
@@ -121,7 +142,10 @@ function ProgramaDashboard() {
     return Math.round((total / acts.length) * 100) / 100;
   };
 
-  useEffect(() => { cargarDatosDashboard(); }, [cargarDatosDashboard]);
+  useEffect(() => { 
+    cargarDatosDashboard(); 
+    cargarGastosMensuales(); // ✅ nueva carga
+  }, [cargarDatosDashboard, cargarGastosMensuales]);
 
   useEffect(() => {
     if (programa && usuario && programa.usuario && programa.usuario.idUsuario !== usuario.idUsuario) {
@@ -140,7 +164,7 @@ function ProgramaDashboard() {
   return (
     <Layout title={`${programa.nombrePrograma} - Dashboard`}>
       <div className="dashboard-container">
-        {/* Header visual moderno */}
+        {/* Header visual */}
         <div className="programa-header">
           <div className="header-info">
             <h1>{programa.nombrePrograma}</h1>
@@ -162,13 +186,45 @@ function ProgramaDashboard() {
           </div>
         </div>
 
-        {/* Información del programa - SIEMPRE VISIBLE */}
+        {/* Información del programa */}
         <EditarProgramaInfo programa={programa} onSave={handleUpdatePrograma} />
 
-        {/* Resumen presupuestario */}
+        {/* 🔹 Sección de gráficos */}
         <div className="section-container">
-          <h2>Presupuesto del Programa</h2>
-          <PresupuestoChart asignado={presupuesto.asignado} ejecutado={presupuesto.ejecutado} />
+          <h2>Resumen del Programa</h2>
+          <div style={{
+            display: 'flex',
+            gap: '20px',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            alignItems: 'flex-start'
+          }}>
+            <div>
+              <h3 style={{textAlign: 'center', marginBottom: '15px', color: '#4CAF50'}}>
+                Progreso Temporal
+              </h3>
+              <GraficoProgreso programa={programa} />
+            </div>
+            <div>
+              <h3 style={{textAlign: 'center', marginBottom: '15px', color: '#1664c1'}}>
+                Presupuesto
+              </h3>
+              <PresupuestoChart asignado={presupuesto.asignado} ejecutado={presupuesto.ejecutado} />
+            </div>
+          </div>
+
+          {/* 🔹 Nuevo gráfico de gastos mensuales */}
+          <div style={{ marginTop: 50 }}>
+            <h3 style={{ textAlign: 'center', marginBottom: '15px', color: '#c15316' }}>
+              Gastos Mensuales
+            </h3>
+            {gastosMensuales.length > 0 ? (
+              <GraficoGastosMensuales datos={gastosMensuales} />
+            ) : (
+              <p style={{ textAlign: 'center', color: '#888' }}>No hay datos de gastos disponibles.</p>
+            )}
+          </div>
+
           {showPresupuesto && (
             <div style={{ marginTop: 16 }}>
               <IngresoPresupuesto onAdd={handleAddPresupuesto} idPrograma={programa.idPrograma} />
@@ -176,7 +232,7 @@ function ProgramaDashboard() {
           )}
         </div>
 
-        {/* Actividades */}
+        {/* 🔹 Actividades */}
         <div className="section-container">
           <div style={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
             <h2>Actividades</h2>

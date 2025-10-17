@@ -2,62 +2,181 @@ import React, { useState, useEffect } from "react";
 import ProgramaVisualizadorDetalle from './ProgramaVisualizadorDetalle';
 import Layout from '../components/LayoutSimple'; 
 import { useNavigate } from "react-router-dom";
+import './visualizador.css'; // Nuevo archivo CSS
 
 function VisualizadorProgramas() {
   const [programas, setProgramas] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    activos: 0,
+    inactivos: 0,
+    total: 0
+  });
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:8080/programas")
       .then(res => res.json())
       .then(data => {
         setProgramas(data);
+        
+        // Calcular estadísticas
+        const activos = data.filter(p => p.estado?.toLowerCase() === 'activo').length;
+        const inactivos = data.filter(p => p.estado?.toLowerCase() === 'inactivo').length;
+        setStats({
+          activos,
+          inactivos,
+          total: data.length
+        });
+        
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="loading">Cargando programas...</div>;
+  const handleProgramaClick = (idPrograma) => {
+    setSelected(idPrograma);
+  };
+
+  if (loading) {
+    return (
+      <Layout title="Cargando...">
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p>Cargando programas...</p>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout title="Visualización de Programas">
-      <div style={{maxWidth:1000,margin:"0 auto",padding:30}}>
-        <h2 style={{color:"#1664c1",marginBottom:30}}>Programas disponibles</h2>
+      <div className="visualizador-container">
         {!selected ? (
-          <table style={{width:"100%",background:"#fff",borderRadius:9,boxShadow:"0 2px 6px #ddd"}}>
-            <thead>
-              <tr style={{background:"#f4f9ff",color:"#333"}}>
-                <th style={{padding:14}}>Nombre</th>
-                <th style={{padding:14}}>Encargado</th>
-                <th style={{padding:14}}>Estado</th>
-                <th style={{padding:14}}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {programas.map(p => (
-                <tr key={p.idPrograma}>
-                  <td style={{padding:10}}>{p.nombrePrograma}</td>
-                  <td style={{padding:10}}>{p.usuario?.nombreUsuario || "Sin asignar"}</td>
-                  <td style={{padding:10}}>{p.estado}</td>
-                  <td style={{padding:10}}>
-                    <button
-                      style={{
-                        background:"#1664c1",color:"white",
-                        border:"none",borderRadius:5,
-                        padding:"7px 15px",fontWeight:700,cursor:"pointer"
-                      }}
-                      onClick={() => setSelected(p.idPrograma)}
+          <>
+            {/* Header con estadísticas horizontales */}
+            <div className="stats-header">
+              <div className="welcome-section-new">
+                <h1>📊 Visualizador de Programas</h1>
+                <p>Explora todos los programas sociales disponibles</p>
+              </div>
+              
+              <div className="stats-cards-horizontal">
+                <div className="stat-card-h active">
+                  <div className="stat-icon">✅</div>
+                  <div className="stat-content">
+                    <h3>{stats.activos}</h3>
+                    <p>Programas Activos</p>
+                  </div>
+                </div>
+                
+                <div className="stat-card-h inactive">
+                  <div className="stat-icon">⏸️</div>
+                  <div className="stat-content">
+                    <h3>{stats.inactivos}</h3>
+                    <p>Programas Inactivos</p>
+                  </div>
+                </div>
+                
+                <div className="stat-card-h total">
+                  <div className="stat-icon">📊</div>
+                  <div className="stat-content">
+                    <h3>{stats.total}</h3>
+                    <p>Total de Programas</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sección de programas */}
+            <div className="programas-section">
+              <div className="section-header">
+                <h2>Programas Disponibles</h2>
+                <span className="total-count">{programas.length} programas</span>
+              </div>
+
+              {programas.length === 0 ? (
+                <div className="empty-state">
+                  <div className="empty-icon">📋</div>
+                  <h3>No hay programas disponibles</h3>
+                  <p>Actualmente no hay programas creados en el sistema</p>
+                </div>
+              ) : (
+                <div className="programas-grid">
+                  {programas.map(programa => (
+                    <div 
+                      key={programa.idPrograma} 
+                      className={`programa-card ${programa.estado?.toLowerCase()}`}
+                      onClick={() => handleProgramaClick(programa.idPrograma)}
                     >
-                      Ver detalles
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      <div className="programa-status">
+                        <span className={`status-badge ${programa.estado?.toLowerCase()}`}>
+                          {programa.estado === 'activo' ? '🟢' : '🔴'} {programa.estado}
+                        </span>
+                      </div>
+                      
+                      <div className="programa-content">
+                        <h3 className="programa-nombre">{programa.nombrePrograma}</h3>
+                        <div className="programa-meta">
+                          <div className="meta-item">
+                            <span className="meta-icon">👤</span>
+                            <span className="meta-text">
+                              <strong>Encargado:</strong> {programa.usuario?.nombreUsuario || 'Sin asignar'}
+                            </span>
+                          </div>
+                          <div className="meta-item">
+                            <span className="meta-icon">🏢</span>
+                            <span className="meta-text">
+                              <strong>Oficina:</strong> {programa.oficinaResponsable || 'Sin oficina'}
+                            </span>
+                          </div>
+                          {programa.fechaInicio && (
+                            <div className="meta-item">
+                              <span className="meta-icon">📅</span>
+                              <span className="meta-text">
+                                <strong>Inicio:</strong> {new Date(programa.fechaInicio).toLocaleDateString('es-CL')}
+                              </span>
+                            </div>
+                          )}
+                          {programa.fechaFin && (
+                            <div className="meta-item">
+                              <span className="meta-icon">🏁</span>
+                              <span className="meta-text">
+                                <strong>Fin:</strong> {new Date(programa.fechaFin).toLocaleDateString('es-CL')}
+                              </span>
+                            </div>
+                          )}
+                          {programa.descripcionPrograma && (
+                            <div className="meta-item description">
+                              <span className="meta-icon">📝</span>
+                              <span className="meta-text">
+                                {programa.descripcionPrograma.length > 120 
+                                  ? programa.descripcionPrograma.substring(0, 120) + "..."
+                                  : programa.descripcionPrograma
+                                }
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="programa-footer">
+                        <span className="ver-mas">Ver Detalles →</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
         ) : (
-          <ProgramaVisualizadorDetalle idPrograma={selected} onBack={() => setSelected(null)} />
+          <div className="detalle-container">
+            <ProgramaVisualizadorDetalle 
+              idPrograma={selected} 
+              onBack={() => setSelected(null)} 
+            />
+          </div>
         )}
       </div>
     </Layout>
