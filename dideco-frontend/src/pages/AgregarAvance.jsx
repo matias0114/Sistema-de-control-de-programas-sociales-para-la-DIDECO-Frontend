@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
+import "./crearactividad.css"; // Usa el mismo CSS del modal grande
+
+const estados = [
+  "Pendiente",
+  "En Proceso",
+  "Completado",
+  "Aprobado",
+];
 
 const AgregarAvance = ({ idActividad, idUsuario, onAdd, onCancel }) => {
   const [fechaAvance, setFechaAvance] = useState("");
-  const [porcentajeAvance, setPorcentajeAvance] = useState(0);
+  const [estado, setEstado] = useState("Pendiente");
   const [descripcion, setDescripcion] = useState("");
+  const [objetivos, setObjetivos] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -15,31 +24,28 @@ const AgregarAvance = ({ idActividad, idUsuario, onAdd, onCancel }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    const pct = Number(porcentajeAvance);
-    if (Number.isNaN(pct) || pct < 0 || pct > 100) {
-      setError("El porcentaje debe estar entre 0 y 100.");
-      return;
-    }
     if (!fechaAvance) {
       setError("La fecha es obligatoria.");
       return;
     }
-
+    if (!estado) {
+      setError("El estado es obligatorio.");
+      return;
+    }
     try {
       setSubmitting(true);
       const payload = {
         idActividad: Number(idActividad),
         idUsuario: Number(idUsuario),
         fechaAvance,
-        porcentajeAvance: pct,
-        descripcionAvance: descripcion,
-        descripcion
+        estado,
+        descripcion,
+        objetivosAlcanzados: objetivos
       };
       await onAdd(payload);
-      // Cerrar y limpiar tras éxito
       setDescripcion("");
-      setPorcentajeAvance(0);
+      setObjetivos("");
+      setEstado("Pendiente");
       onCancel && onCancel();
     } catch (err) {
       setError("No se pudo guardar el avance. Intenta nuevamente.");
@@ -49,83 +55,65 @@ const AgregarAvance = ({ idActividad, idUsuario, onAdd, onCancel }) => {
   };
 
   return (
-    <div className="avance-popover">
-      <div className="avance-header">
-        <div className="avance-title">
-          <span className="avance-emoji">🆕</span>
-          <h4>Nuevo Avance</h4>
+    <div className="modal-bg">
+      <div className="modal-box modal-large">
+        <div className="modal-header">
+          <h2 style={{ margin: 0, fontSize: 27 }}>Agregar Avance</h2>
+          <button type="button" className="modal-close-btn" onClick={onCancel}>×</button>
         </div>
-        {onCancel && (
-          <button type="button" className="btn-ghost" onClick={onCancel}>Cerrar</button>
-        )}
-      </div>
-
-      <form className="nuevo-avance-form" onSubmit={handleSubmit}>
-        <div className="avance-body">
-          <div className="avance-field">
-            <label>Fecha</label>
+        <form className="modal-form" onSubmit={handleSubmit}>
+          <div className="modal-field">
+            <label htmlFor="fechaAvance">Fecha</label>
             <input
+              id="fechaAvance"
               type="date"
               value={fechaAvance}
-              onChange={(e) => setFechaAvance(e.target.value)}
+              onChange={e => setFechaAvance(e.target.value)}
               required
             />
           </div>
-
-          <div className="avance-field">
-            <label>% Avance</label>
-            <div className="avance-progress">
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={porcentajeAvance}
-                onChange={(e) => setPorcentajeAvance(e.target.value)}
-              />
-              <div className="avance-preview">
-                <div className="avance-bar">
-                  <div
-                    className="avance-fill"
-                    style={{ width: `${porcentajeAvance}%` }}
-                  />
-                </div>
-                <span className="avance-number">{porcentajeAvance}%</span>
-              </div>
-            </div>
-            <input
-              type="number"
-              min="0"
-              max="100"
-              value={porcentajeAvance}
-              onChange={(e) => setPorcentajeAvance(e.target.value)}
-              className="avance-number-input"
-            />
+          <div className="modal-field">
+            <label htmlFor="estado">Estado</label>
+            <select
+              id="estado"
+              value={estado}
+              onChange={e => setEstado(e.target.value)}
+              required
+            >
+              {estados.map(est => (
+                <option key={est} value={est}>{est}</option>
+              ))}
+            </select>
           </div>
-
-          <div className="avance-field">
-            <label>Descripción</label>
+          <div className="modal-field">
+            <label htmlFor="descripcion">Descripción</label>
             <textarea
+              id="descripcion"
               rows={2}
               placeholder="Describe brevemente el avance"
               value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
+              onChange={e => setDescripcion(e.target.value)}
             />
           </div>
-
+          <div className="modal-field">
+            <label htmlFor="objetivos">Objetivos alcanzados</label>
+            <textarea
+              id="objetivos"
+              rows={2}
+              placeholder="¿Qué se logró con este avance?"
+              value={objetivos}
+              onChange={e => setObjetivos(e.target.value)}
+            />
+          </div>
           {error && <div className="avance-error">{error}</div>}
-        </div>
-
-        <div className="avance-actions">
-          {onCancel && (
-            <button type="button" className="btn-ghost" onClick={onCancel}>
-              Cancelar
+          <div className="modal-actions">
+            <button type="button" className="btn-ghost" onClick={onCancel}>Cancelar</button>
+            <button type="submit" className="btn-primary" disabled={submitting}>
+              {submitting ? "Guardando..." : "Guardar avance"}
             </button>
-          )}
-          <button type="submit" className="btn-primary" disabled={submitting}>
-            {submitting ? "Guardando..." : "Guardar avance"}
-          </button>
-        </div>
-      </form>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

@@ -7,8 +7,9 @@ import AgregarAvance from "./AgregarAvance";
 import IngresoPresupuesto from "./IngresoPresupuesto";
 import PresupuestoChart from "./PresupuestoChart";
 import GraficoProgreso from "./GraficoProgreso";
-import GraficoGastosMensuales from "./GraficoGastosMensuales"; // ✅ nuevo import
+import GraficoGastosMensuales from "./GraficoGastosMensuales";
 import "./programadashboard.css";
+import "./crearactividad.css";
 
 function ProgramaDashboard() {
   const { id } = useParams();
@@ -17,7 +18,7 @@ function ProgramaDashboard() {
   const [actividades, setActividades] = useState([]);
   const [avances, setAvances] = useState([]);
   const [presupuesto, setPresupuesto] = useState({});
-  const [gastosMensuales, setGastosMensuales] = useState([]); // ✅ nuevo estado
+  const [gastosMensuales, setGastosMensuales] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -55,13 +56,11 @@ function ProgramaDashboard() {
     cargarDatosDashboard();
   };
 
-  // Cargar avances (intenta por actividad; si no, trae todos y filtra)
   const loadAvances = useCallback(async (actsParam) => {
     const acts = actsParam?.length ? actsParam : actividades;
     if (!acts.length) return;
     try {
       const actividadIds = acts.map(a => a.idActividad);
-
       const porActividad = await Promise.all(
         actividadIds.map(async (idAct) => {
           try {
@@ -73,13 +72,11 @@ function ProgramaDashboard() {
         })
       );
       let lista = porActividad.flat();
-
       if (!lista.length) {
         const rAll = await fetch(`http://localhost:8080/avances`);
         const all = rAll.ok ? await rAll.json() : [];
         lista = all.filter(av => actividadIds.includes(av.idActividad ?? av.actividad?.idActividad));
       }
-
       lista.sort((a, b) => new Date(b.fechaAvance || b.fecha || 0) - new Date(a.fechaAvance || a.fecha || 0));
       setAvances(lista);
     } catch (e) {
@@ -87,35 +84,30 @@ function ProgramaDashboard() {
     }
   }, [actividades]);
 
-  // Llama a loadAvances cuando cambian las actividades (tras cargarlas)
   useEffect(() => {
     if (actividades.length) loadAvances(actividades);
   }, [actividades, loadAvances]);
 
-  // Guardar avance y refrescar la lista
   const handleAddAvance = useCallback(async (payload) => {
     const body = {
       ...payload,
       actividad: { idActividad: payload.idActividad },
       usuario: payload.idUsuario ? { idUsuario: payload.idUsuario } : undefined,
       fecha: payload.fechaAvance,
-      descripcion: payload.descripcionAvance ?? payload.descripcion
+      descripcion: payload.descripcion
     };
-
     const resp = await fetch(`http://localhost:8080/avances`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
-
     if (!resp.ok) {
       const msg = await resp.text().catch(() => "");
       throw new Error(msg || "No se pudo crear el avance");
     }
-
-    await loadAvances();               // refrescar
-    setEditingActividadId(null);       // cerrar formulario
-    setExpanded(prev => {              // abrir la fila de esa actividad
+    await loadAvances();
+    setEditingActividadId(null);
+    setExpanded(prev => {
       const next = new Set(prev);
       next.add(payload.idActividad);
       return next;
@@ -133,23 +125,16 @@ function ProgramaDashboard() {
     cargarDatosDashboard();
   };
 
-  // ✅ NUEVO: carga gastos mensuales
   const cargarGastosMensuales = useCallback(async () => {
     try {
-      console.log("🔍 Cargando gastos mensuales para programa:", id);
       const resp = await fetch(`http://localhost:8080/programas/${id}/gastos-mensuales`);
-      console.log("🔍 Respuesta del servidor:", resp.status, resp.statusText);
-      
       if (resp.ok) {
         const data = await resp.json();
-        console.log("✅ Gastos mensuales recibidos:", data);
         setGastosMensuales(data);
       } else {
-        console.warn("❌ No se pudieron cargar los gastos mensuales:", resp.status);
         setGastosMensuales([]);
       }
     } catch (e) {
-      console.error("❌ Error al cargar gastos mensuales:", e);
       setGastosMensuales([]);
     }
   }, [id]);
@@ -162,12 +147,10 @@ function ProgramaDashboard() {
       if (!respPrograma.ok) throw new Error("Programa no encontrado");
       const programData = await respPrograma.json();
       setPrograma(programData);
-
       const respActividades = await fetch(`http://localhost:8080/actividades`);
       const todasActividades = await respActividades.json();
       const actividadesData = todasActividades.filter(a => a.programa?.idPrograma === Number(id));
       setActividades(actividadesData);
-
       const respAvances = await fetch(`http://localhost:8080/avances`);
       const todosAvances = await respAvances.json();
       const idsActividades = actividadesData.map(a => a.idActividad);
@@ -175,22 +158,18 @@ function ProgramaDashboard() {
         idsActividades.includes(av.idActividad ?? av.actividad?.idActividad)
       );
       setAvances(avancesData);
-
       const respPresupuesto = await fetch(`http://localhost:8080/presupuestos/programa/${id}`);
       let presupuestoData = respPresupuesto.ok ? await respPresupuesto.json() : [];
       if (Array.isArray(presupuestoData) && presupuestoData.length > 0) {
         presupuestoData = presupuestoData.reduce((total, p) => ({
           asignado: total.asignado + (parseFloat(p.montoAsignado) || 0),
-          ejecutado: total.ejecutado + (parseFloat(p.montoEjecutado) || 0)
+          ejecutado: 0 // ejecutado lo calculamos más abajo
         }), { asignado: 0, ejecutado: 0 });
       } else {
         presupuestoData = { asignado: 0, ejecutado: 0 };
       }
       setPresupuesto(presupuestoData);
-
       setEstadisticas({
-        avanceGeneral: calcularAvanceGeneral(actividadesData, avancesData),
-        presupuesto: presupuestoData,
         actividades: actividadesData.length
       });
     } catch (err) {
@@ -200,21 +179,9 @@ function ProgramaDashboard() {
     }
   }, [id]);
 
-  const calcularAvanceGeneral = (acts, avs) => {
-    if (!acts.length) return 0;
-    const avancesPorActividad = acts.map(act => {
-      const avsAct = avs.filter(a => a.idActividad === act.idActividad);
-      return avsAct.length
-        ? Math.max(...avsAct.map(a => parseFloat(a.porcentajeAvance) || 0))
-        : 0;
-    });
-    const total = avancesPorActividad.reduce((sum, val) => sum + val, 0);
-    return Math.round((total / acts.length) * 100) / 100;
-  };
-
   useEffect(() => { 
-    cargarDatosDashboard(); 
-    cargarGastosMensuales(); // ✅ nueva carga
+    cargarDatosDashboard();
+    cargarGastosMensuales();
   }, [cargarDatosDashboard, cargarGastosMensuales]);
 
   useEffect(() => {
@@ -223,6 +190,12 @@ function ProgramaDashboard() {
       setTimeout(() => navigate("/"), 2000);
     }
   }, [programa]);
+
+  // Calcula ejecutado como suma de todos los montos asignados de las actividades
+  const sumaMontosActividades = actividades.reduce(
+    (total, act) => total + (parseFloat(act.montoAsignado) || 0),
+    0
+  );
 
   if (loading)
     return (<Layout title="Cargando programa..."><div className="loading">Cargando...</div></Layout>);
@@ -246,22 +219,25 @@ function ProgramaDashboard() {
               <span><b>Oficina:</b> {programa.oficinaResponsable || "—"}</span>
             </div>
           </div>
-          <div className="header-actions">
-            <button className="btn-export" onClick={() => setShowPresupuesto(!showPresupuesto)}>
-              {showPresupuesto ? "Cerrar" : "Ingresar presupuesto"}
-            </button>
-            <button className="btn-export" onClick={() => setShowCrearActividad(!showCrearActividad)}>
-              {showCrearActividad ? "Cerrar" : "Agregar actividad"}
-            </button>
-          </div>
         </div>
 
-        {/* Información del programa */}
         <EditarProgramaInfo programa={programa} onSave={handleUpdatePrograma} />
 
-        {/* 🔹 Sección de gráficos */}
         <div className="section-container">
-          <h2>Resumen del Programa</h2>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 20
+          }}>
+            <h2 style={{margin: 0}}>Resumen del Programa</h2>
+            <button
+              className="btn-export"
+              onClick={() => setShowPresupuesto(!showPresupuesto)}
+            >
+              {showPresupuesto ? "Cerrar" : "Ingresar presupuesto"}
+            </button>
+          </div>
           <div style={{
             display: 'flex',
             gap: '20px',
@@ -279,11 +255,12 @@ function ProgramaDashboard() {
               <h3 style={{textAlign: 'center', marginBottom: '15px', color: '#1664c1'}}>
                 Presupuesto
               </h3>
-              <PresupuestoChart asignado={presupuesto.asignado} ejecutado={presupuesto.ejecutado} />
+              <PresupuestoChart
+                asignado={presupuesto.asignado}
+                ejecutado={sumaMontosActividades}
+              />
             </div>
           </div>
-
-          {/* 🔹 Nuevo gráfico de gastos mensuales */}
           <div style={{ marginTop: 50 }}>
             <h3 style={{ textAlign: 'center', marginBottom: '15px', color: '#c15316' }}>
               Gastos Mensuales
@@ -294,31 +271,49 @@ function ProgramaDashboard() {
               <p style={{ textAlign: 'center', color: '#888' }}>No hay datos de gastos disponibles.</p>
             )}
           </div>
-
           {showPresupuesto && (
             <div style={{ marginTop: 16 }}>
               <IngresoPresupuesto onAdd={handleAddPresupuesto} idPrograma={programa.idPrograma} />
             </div>
           )}
         </div>
+        {showPresupuesto && (
+          <IngresoPresupuesto
+            onAdd={handleAddPresupuesto}
+            idPrograma={programa.idPrograma}
+            onCancel={() => setShowPresupuesto(false)}
+          />
+        )}
 
-        {/* 🔹 Actividades */}
+        {/* Actividades */}
         <div className="section-container">
           <div style={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
             <h2>Actividades</h2>
+            <button className="btn-export" onClick={() => setShowCrearActividad(!showCrearActividad)}>
+              {showCrearActividad ? "Cancelar" : "Agregar actividad"}
+            </button>
           </div>
+          {/* Modal flotante para crear actividad */}
           {showCrearActividad && (
-            <CrearActividad onAdd={handleAddActividad} idPrograma={programa.idPrograma} />
+            <CrearActividad
+              onAdd={handleAddActividad}
+              idPrograma={programa.idPrograma}
+              onCancel={() => setShowCrearActividad(false)}
+            />
           )}
           <div className="table-container">
             <table className="actividades-table">
               <thead>
                 <tr>
-                  <th></th> {/* flechita */}
+                  <th></th>
                   <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Responsable</th>
+                  <th>Monto Asignado</th>
+                  <th>Metas</th>
                   <th>Fecha Inicio</th>
+                  <th>Fecha Término</th>
                   <th>Avances</th>
-                  <th>% Avance</th>
                   <th>Nuevo Avance</th>
                 </tr>
               </thead>
@@ -327,11 +322,7 @@ function ProgramaDashboard() {
                   const avancesDeActividad = avances.filter(a =>
                     (a.idActividad === act.idActividad) || (a.actividad?.idActividad === act.idActividad)
                   );
-                  const maxPorcentaje = avancesDeActividad.reduce(
-                    (max, a) => Math.max(max, parseFloat(a.porcentajeAvance) || 0), 0
-                  );
                   const isOpen = expanded.has(act.idActividad);
-
                   return (
                     <React.Fragment key={act.idActividad}>
                       <tr>
@@ -345,13 +336,17 @@ function ProgramaDashboard() {
                           </button>
                         </td>
                         <td>{act.nombreActividad}</td>
+                        <td>{act.descripcion}</td>
+                        <td>{act.responsable}</td>
+                        <td>${act.montoAsignado?.toLocaleString("es-CL")}</td>
+                        <td>{act.metas}</td>
                         <td>{act.fechaInicio}</td>
+                        <td>{act.fechaTermino || "—"}</td>
                         <td>
                           <span style={{ color: "#555" }}>
                             {avancesDeActividad.length} avance(s)
                           </span>
                         </td>
-                        <td>{maxPorcentaje}%</td>
                         <td>
                           <button
                             className="btn-small"
@@ -371,17 +366,16 @@ function ProgramaDashboard() {
                           )}
                         </td>
                       </tr>
-
                       {isOpen && (
                         <tr className="avances-row">
-                          <td colSpan={6}>
+                          <td colSpan={10}>
                             {avancesDeActividad.length === 0 ? (
                               <div className="avances-empty">Sin avances registrados</div>
                             ) : (
                               <div className="avances-list">
                                 {avancesDeActividad.map(av => (
                                   <div
-                                    key={av.idAvance ?? `${act.idActividad}-${av.fechaAvance || av.fecha}-${av.porcentajeAvance}`}
+                                    key={av.idAvance ?? `${act.idActividad}-${av.fechaAvance || av.fecha}`}
                                     className="avance-item"
                                   >
                                     <div className="avance-fecha">
@@ -390,12 +384,9 @@ function ProgramaDashboard() {
                                         : "—"}
                                     </div>
                                     <div className="avance-content">
-                                      <div className="avance-descripcion">
-                                        {av.descripcionAvance || av.descripcion || "Sin descripción"}
-                                      </div>
-                                      <div className="avance-porcentaje">
-                                        {Number(av.porcentajeAvance) || 0}%
-                                      </div>
+                                      <div><b>Estado:</b> {av.estado}</div>
+                                      <div><b>Descripción:</b> {av.descripcion || "Sin descripción"}</div>
+                                      <div><b>Objetivos alcanzados:</b> {av.objetivosAlcanzados || "—"}</div>
                                     </div>
                                   </div>
                                 ))}
