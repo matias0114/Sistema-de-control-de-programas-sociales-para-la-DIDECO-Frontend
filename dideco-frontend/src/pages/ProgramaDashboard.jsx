@@ -125,19 +125,41 @@ function ProgramaDashboard() {
     cargarDatosDashboard();
   };
 
-  const cargarGastosMensuales = useCallback(async () => {
-    try {
-      const resp = await fetch(`http://localhost:8080/programas/${id}/gastos-mensuales`);
-      if (resp.ok) {
-        const data = await resp.json();
-        setGastosMensuales(data);
-      } else {
-        setGastosMensuales([]);
+  const cargarGastosMensuales = useCallback(() => {
+    // Agrupar los montos por mes usando las actividades
+    const gastosPorMes = {};
+    
+    actividades.forEach(actividad => {
+      if (actividad.montoAsignado && actividad.fechaInicio) {
+        const fecha = new Date(actividad.fechaInicio);
+        const mes = fecha.getMonth() + 1;
+        const anio = fecha.getFullYear();
+        
+        const key = `${anio}-${mes}`;
+        if (!gastosPorMes[key]) {
+          gastosPorMes[key] = 0;
+        }
+        gastosPorMes[key] += parseFloat(actividad.montoAsignado) || 0;
       }
-    } catch (e) {
-      setGastosMensuales([]);
-    }
-  }, [id]);
+    });
+
+    // Convertir a formato para el gráfico
+    const datosGrafico = Object.entries(gastosPorMes)
+      .map(([key, monto]) => {
+        const [anio, mes] = key.split('-');
+        return {
+          mes: parseInt(mes),
+          anio: parseInt(anio),
+          total: monto
+        };
+      })
+      .sort((a, b) => {
+        if (a.anio !== b.anio) return a.anio - b.anio;
+        return a.mes - b.mes;
+      });
+
+    setGastosMensuales(datosGrafico);
+  }, [actividades]);
 
   const cargarDatosDashboard = useCallback(async () => {
     setLoading(true);
@@ -181,8 +203,13 @@ function ProgramaDashboard() {
 
   useEffect(() => { 
     cargarDatosDashboard();
-    cargarGastosMensuales();
-  }, [cargarDatosDashboard, cargarGastosMensuales]);
+  }, [cargarDatosDashboard]);
+
+  useEffect(() => {
+    if (actividades.length) {
+      cargarGastosMensuales();
+    }
+  }, [actividades, cargarGastosMensuales]);
 
   useEffect(() => {
     if (programa && usuario && programa.usuario && programa.usuario.idUsuario !== usuario.idUsuario) {

@@ -14,19 +14,81 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
 
-  const cargarGastosMensuales = useCallback(async () => {
-    try {
-      const resp = await fetch(`http://localhost:8080/programas/${idPrograma}/gastos-mensuales`);
-      if (resp.ok) {
-        const data = await resp.json();
-        setGastosMensuales(data);
-      } else {
-        setGastosMensuales([]);
+
+  useEffect(() => {
+    async function fetchDetalle() {
+      setLoading(true);
+      try {
+        // Cargar programa
+        const p = await fetch(`http://localhost:8080/programas/${idPrograma}`).then(res => res.json());
+        setPrograma(p);
+
+        // Cargar actividades
+        const acts = await fetch(`http://localhost:8080/actividades`).then(res => res.json());
+        const actsProg = acts.filter(a => a.programa?.idPrograma === Number(idPrograma));
+        setActividades(actsProg);
+
+        // Cargar avances
+        const avs = await fetch(`http://localhost:8080/avances`).then(res => res.json());
+        const avsProg = avs.filter(a => actsProg.map(a => a.idActividad).includes(a.idActividad));
+        setAvances(avsProg);
+
+        // Cargar presupuesto
+        const respPresupuesto = await fetch(`http://localhost:8080/presupuestos/programa/${idPrograma}`);
+        let presupuestoData = respPresupuesto.ok ? await respPresupuesto.json() : [];
+        if (Array.isArray(presupuestoData) && presupuestoData.length > 0) {
+          presupuestoData = presupuestoData.reduce((total, p) => ({
+            asignado: total.asignado + (parseFloat(p.montoAsignado) || 0)
+          }), { asignado: 0 });
+        } else {
+          presupuestoData = { asignado: 0 };
+        }
+        setPresupuesto(presupuestoData);
+
+        // Calcular estadísticas
+        setEstadisticas({
+          avanceGeneral: calcularAvanceGeneral(actsProg, avsProg),
+          actividades: actsProg.length
+        });
+
+        // Calcular gastos mensuales aquí, después de tener las actividades
+        if (actsProg.length > 0) {
+          const gastosPorMes = {};
+          actsProg.forEach(actividad => {
+            if (actividad.montoAsignado && actividad.fechaInicio) {
+              const fecha = new Date(actividad.fechaInicio);
+              const mes = fecha.getMonth() + 1;
+              const anio = fecha.getFullYear();
+              const key = `${anio}-${mes}`;
+              gastosPorMes[key] = (gastosPorMes[key] || 0) + parseFloat(actividad.montoAsignado);
+            }
+          });
+
+          const datosGrafico = Object.entries(gastosPorMes)
+            .map(([key, monto]) => {
+              const [anio, mes] = key.split('-');
+              return {
+                mes: parseInt(mes),
+                anio: parseInt(anio),
+                total: monto
+              };
+            })
+            .sort((a, b) => {
+              if (a.anio !== b.anio) return a.anio - b.anio;
+              return a.mes - b.mes;
+            });
+
+          setGastosMensuales(datosGrafico);
+        }
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+        setPrograma(null);
+      } finally {
+        setLoading(false);
       }
-    } catch (e) {
-      setGastosMensuales([]);
     }
-  }, [idPrograma]);
+    fetchDetalle();
+  }, [idPrograma]); // Solo depende del idPrograma
 
   const sumaMontosActividades = actividades.reduce(
     (total, act) => total + (parseFloat(act.montoAsignado) || 0), 0
@@ -43,43 +105,6 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
     const total = avancesPorActividad.reduce((sum, val) => sum + val, 0);
     return Math.round((total / acts.length) * 100) / 100;
   };
-
-  useEffect(() => {
-    async function fetchDetalle() {
-      setLoading(true);
-      try {
-        const p = await fetch(`http://localhost:8080/programas/${idPrograma}`).then(res => res.json());
-        setPrograma(p);
-        const acts = await fetch(`http://localhost:8080/actividades`).then(res => res.json());
-        const actsProg = acts.filter(a => a.programa?.idPrograma === Number(idPrograma));
-        setActividades(actsProg);
-        const avs = await fetch(`http://localhost:8080/avances`).then(res => res.json());
-        const avsProg = avs.filter(a => actsProg.map(a => a.idActividad).includes(a.idActividad));
-        setAvances(avsProg);
-        const respPresupuesto = await fetch(`http://localhost:8080/presupuestos/programa/${idPrograma}`);
-        let presupuestoData = respPresupuesto.ok ? await respPresupuesto.json() : [];
-        if (Array.isArray(presupuestoData) && presupuestoData.length > 0) {
-          presupuestoData = presupuestoData.reduce((total, p) => ({
-            asignado: total.asignado + (parseFloat(p.montoAsignado) || 0)
-          }), { asignado: 0 });
-        } else {
-          presupuestoData = { asignado: 0 };
-        }
-        setPresupuesto(presupuestoData);
-
-        setEstadisticas({
-          avanceGeneral: calcularAvanceGeneral(actsProg, avsProg),
-          actividades: actsProg.length
-        });
-      } catch (error) {
-        setPrograma(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchDetalle();
-    cargarGastosMensuales();
-  }, [idPrograma, cargarGastosMensuales]);
 
   if (loading) {
     return (
@@ -181,43 +206,47 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
       </div>
 
       {/* Gráficos de resumen */}
-      <div className="section-container">
-        <h2 className="section-title">
-          <span className="section-icon">📈</span>
-          Resumen del Programa
-        </h2>
-        <div style={{
-          display: 'flex',
-          gap: '20px',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          alignItems: 'flex-start'
-        }}>
-          <div>
-            <h3 style={{textAlign: 'center', marginBottom: '15px', color: '#4CAF50'}}>
-              Progreso Temporal
-            </h3>
-            <GraficoProgreso programa={programa} />
-          </div>
-          <div>
-            <h3 style={{textAlign: 'center', marginBottom: '15px', color: '#1664c1'}}>
-              Presupuesto
-            </h3>
-            <PresupuestoChart
-              asignado={presupuesto.asignado}
-              ejecutado={sumaMontosActividades}
-            />
-          </div>
-        </div>
-        {gastosMensuales.length > 0 && (
-          <div style={{ marginTop: 50 }}>
-            <h3 style={{ textAlign: 'center', marginBottom: '15px', color: '#c15316' }}>
-              Gastos Mensuales
-            </h3>
-            <GraficoGastosMensuales datos={gastosMensuales} />
-          </div>
-        )}
-      </div>
+<div className="section-container">
+  <h2 className="section-title">
+    <span className="section-icon">📈</span>
+    Análisis del Programa
+  </h2>
+  
+  <div style={{
+    display: 'flex',
+    gap: '20px',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start'
+  }}>
+    <div>
+      <h3 style={{textAlign: 'center', marginBottom: '15px', color: '#4CAF50'}}>
+        Progreso Temporal
+      </h3>
+      <GraficoProgreso programa={programa} />
+    </div>
+    <div>
+      <h3 style={{textAlign: 'center', marginBottom: '15px', color: '#1664c1'}}>
+        Presupuesto
+      </h3>
+      <PresupuestoChart
+        asignado={presupuesto.asignado}
+        ejecutado={sumaMontosActividades}
+      />
+    </div>
+  </div>
+
+  <div style={{ marginTop: 50 }}>
+    <h3 style={{ textAlign: 'center', marginBottom: '15px', color: '#c15316' }}>
+      Gastos Mensuales
+    </h3>
+    {gastosMensuales.length > 0 ? (
+      <GraficoGastosMensuales datos={gastosMensuales} />
+    ) : (
+      <p style={{ textAlign: 'center', color: '#888' }}>No hay datos de gastos disponibles.</p>
+    )}
+  </div>
+</div>
 
       {/* Estadísticas generales */}
       <div className="section-container">

@@ -46,16 +46,14 @@ function GraficoGastosMensuales({ datos }) {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,  // Importante para control de altura
     plugins: {
-      legend: { display: true, position: 'bottom' },
-      title: {
-        display: true,
-        text: 'Gastos mensuales del programa',
-        font: { size: 18, weight: 'bold' }
+      legend: {
+        display: false
       },
       tooltip: {
         callbacks: {
-          label: (context) => ` $${context.parsed.y.toLocaleString('es-CL')}`
+          label: (context) => `$ ${context.parsed.y.toLocaleString('es-CL')}`
         }
       }
     },
@@ -63,11 +61,8 @@ function GraficoGastosMensuales({ datos }) {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (value) => `$${value.toLocaleString('es-CL')}`
+          callback: (value) => `$ ${value.toLocaleString('es-CL')}`
         }
-      },
-      x: {
-        ticks: { font: { size: 12 } }
       }
     }
   };
