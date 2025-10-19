@@ -216,45 +216,38 @@
 
 /* Lista de Avances */
 .avances-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  gap: 10px;
 }
 
 .avance-item {
   display: flex;
+  gap: 12px;
   align-items: center;
-  gap: 16px;
-  padding: 16px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  border-left: 4px solid #1664c1;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
 }
 
 .avance-fecha {
-  font-weight: 600;
-  color: #1664c1;
-  min-width: 100px;
+  font-weight: 700;
+  color: #0f172a;
+  min-width: 110px;
 }
 
 .avance-content {
-  flex: 1;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  color: #334155;
 }
 
-.avance-descripcion {
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-
+.avance-descripcion { flex: 1 1 auto; }
 .avance-porcentaje {
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.avance-usuario {
-  font-size: 0.85rem;
-  color: #666;
-  font-style: italic;
+  font-weight: 800;
+  color: #1664c1;
 }
 
 /* Loading y Error */
@@ -633,6 +626,198 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Nuevo Avance (card flotante) */
+.avance-popover {
+  position: relative;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.12);
+  border: 1px solid rgba(2, 6, 23, 0.06);
+  margin-top: 12px;
+  animation: fadeInPop .18s ease-out;
+}
+
+@keyframes fadeInPop {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.avance-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.avance-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avance-title h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.avance-emoji { font-size: 18px; }
+
+.nuevo-avance-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.avance-body {
+  display: grid;
+  grid-template-columns: 1.2fr 1.8fr;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .avance-body { grid-template-columns: 1fr; }
+}
+
+.avance-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.avance-field label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+
+.avance-field input[type="date"],
+.avance-field input[type="number"],
+.avance-field textarea {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.avance-field textarea { resize: vertical; }
+
+.avance-field input:focus,
+.avance-field textarea:focus {
+  outline: none;
+  border-color: #1664c1;
+  box-shadow: 0 0 0 3px rgba(22,100,193,0.12);
+  background: #fff;
+}
+
+.avance-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.avance-progress input[type="range"] {
+  width: 100%;
+  accent-color: #1664c1;
+}
+
+.avance-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avance-bar {
+  flex: 1;
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.avance-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #22c55e);
+}
+
+.avance-number {
+  min-width: 48px;
+  text-align: right;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.avance-number-input {
+  width: 120px;
+}
+
+.avance-error {
+  margin-top: 4px;
+  color: #b91c1c;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.avance-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.btn-primary {
+  background: #1664c1;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.btn-primary:hover { background: #1455a8; transform: translateY(-1px); }
+
+.btn-ghost {
+  background: transparent;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.btn-ghost:hover { background: #f8fafc; }
+
+.caret-btn {
+  background: #eef2ff;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.avances-row td {
+  background: #fafbff;
+  padding: 12px 16px;
+}
+
+.avances-empty {
+  color: #64748b;
+  font-style: italic;
 }
 
 /* Responsive */

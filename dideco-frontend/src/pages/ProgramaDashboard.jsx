@@ -25,6 +25,16 @@ function ProgramaDashboard() {
   const [showPresupuesto, setShowPresupuesto] = useState(false);
   const [showCrearActividad, setShowCrearActividad] = useState(false);
   const [editingActividadId, setEditingActividadId] = useState(null);
+  const [expanded, setExpanded] = useState(new Set());
+
+  const toggleExpanded = (idAct) => {
+    setExpanded(prev => {
+      const next = new Set(prev);
+      if (next.has(idAct)) next.delete(idAct);
+      else next.add(idAct);
+      return next;
+    });
+  };
 
   const handleUpdatePrograma = async (newProg) => {
     await fetch(`http://localhost:8080/programas/${newProg.idPrograma}`, {
@@ -45,15 +55,73 @@ function ProgramaDashboard() {
     cargarDatosDashboard();
   };
 
-  const handleAddAvance = async (data) => {
-    await fetch(`http://localhost:8080/avances`, {
+  // Cargar avances (intenta por actividad; si no, trae todos y filtra)
+  const loadAvances = useCallback(async (actsParam) => {
+    const acts = actsParam?.length ? actsParam : actividades;
+    if (!acts.length) return;
+    try {
+      const actividadIds = acts.map(a => a.idActividad);
+
+      const porActividad = await Promise.all(
+        actividadIds.map(async (idAct) => {
+          try {
+            const r = await fetch(`http://localhost:8080/avances/actividad/${idAct}`);
+            return r.ok ? await r.json() : [];
+          } catch {
+            return [];
+          }
+        })
+      );
+      let lista = porActividad.flat();
+
+      if (!lista.length) {
+        const rAll = await fetch(`http://localhost:8080/avances`);
+        const all = rAll.ok ? await rAll.json() : [];
+        lista = all.filter(av => actividadIds.includes(av.idActividad ?? av.actividad?.idActividad));
+      }
+
+      lista.sort((a, b) => new Date(b.fechaAvance || b.fecha || 0) - new Date(a.fechaAvance || a.fecha || 0));
+      setAvances(lista);
+    } catch (e) {
+      console.error("Error al cargar avances", e);
+    }
+  }, [actividades]);
+
+  // Llama a loadAvances cuando cambian las actividades (tras cargarlas)
+  useEffect(() => {
+    if (actividades.length) loadAvances(actividades);
+  }, [actividades, loadAvances]);
+
+  // Guardar avance y refrescar la lista
+  const handleAddAvance = useCallback(async (payload) => {
+    const body = {
+      ...payload,
+      actividad: { idActividad: payload.idActividad },
+      usuario: payload.idUsuario ? { idUsuario: payload.idUsuario } : undefined,
+      fecha: payload.fechaAvance,
+      descripcion: payload.descripcionAvance ?? payload.descripcion
+    };
+
+    const resp = await fetch(`http://localhost:8080/avances`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      body: JSON.stringify(body)
     });
-    setEditingActividadId(null);
-    cargarDatosDashboard();
-  };
+
+    if (!resp.ok) {
+      const msg = await resp.text().catch(() => "");
+      throw new Error(msg || "No se pudo crear el avance");
+    }
+
+    await loadAvances();               // refrescar
+    setEditingActividadId(null);       // cerrar formulario
+    setExpanded(prev => {              // abrir la fila de esa actividad
+      const next = new Set(prev);
+      next.add(payload.idActividad);
+      return next;
+    });
+    return true;
+  }, [loadAvances]);
 
   const handleAddPresupuesto = async (data) => {
     await fetch(`http://localhost:8080/presupuestos`, {
@@ -103,7 +171,9 @@ function ProgramaDashboard() {
       const respAvances = await fetch(`http://localhost:8080/avances`);
       const todosAvances = await respAvances.json();
       const idsActividades = actividadesData.map(a => a.idActividad);
-      const avancesData = todosAvances.filter(av => idsActividades.includes(av.idActividad));
+      const avancesData = todosAvances.filter(av =>
+        idsActividades.includes(av.idActividad ?? av.actividad?.idActividad)
+      );
       setAvances(avancesData);
 
       const respPresupuesto = await fetch(`http://localhost:8080/presupuestos/programa/${id}`);
@@ -244,6 +314,7 @@ function ProgramaDashboard() {
             <table className="actividades-table">
               <thead>
                 <tr>
+                  <th></th> {/* flechita */}
                   <th>Nombre</th>
                   <th>Fecha Inicio</th>
                   <th>Avances</th>
@@ -252,39 +323,90 @@ function ProgramaDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {actividades.map(act => (
-                  <tr key={act.idActividad}>
-                    <td>{act.nombreActividad}</td>
-                    <td>{act.fechaInicio}</td>
-                    <td>
-                      {avances
-                        .filter(a => a.idActividad === act.idActividad)
-                        .map(a => (
-                          <span key={a.idAvance}>{a.porcentajeAvance}% {a.descripcion}<br /></span>
-                        ))}
-                    </td>
-                    <td>
-                      {avances
-                        .filter(a => a.idActividad === act.idActividad)
-                        .reduce((max, a) => Math.max(max, parseFloat(a.porcentajeAvance)), 0)}%
-                    </td>
-                    <td>
-                      <button
-                        className="btn-small"
-                        onClick={() => setEditingActividadId(editingActividadId === act.idActividad ? null : act.idActividad)}
-                      >
-                        {editingActividadId === act.idActividad ? "Cerrar" : "Agregar avance"}
-                      </button>
-                      {editingActividadId === act.idActividad &&
-                        <AgregarAvance
-                          idActividad={act.idActividad}
-                          idUsuario={usuario.idUsuario}
-                          onAdd={handleAddAvance}
-                        />
-                      }
-                    </td>
-                  </tr>
-                ))}
+                {actividades.map(act => {
+                  const avancesDeActividad = avances.filter(a =>
+                    (a.idActividad === act.idActividad) || (a.actividad?.idActividad === act.idActividad)
+                  );
+                  const maxPorcentaje = avancesDeActividad.reduce(
+                    (max, a) => Math.max(max, parseFloat(a.porcentajeAvance) || 0), 0
+                  );
+                  const isOpen = expanded.has(act.idActividad);
+
+                  return (
+                    <React.Fragment key={act.idActividad}>
+                      <tr>
+                        <td>
+                          <button
+                            className="caret-btn"
+                            aria-label="Mostrar avances"
+                            onClick={() => toggleExpanded(act.idActividad)}
+                          >
+                            {isOpen ? "▾" : "▸"}
+                          </button>
+                        </td>
+                        <td>{act.nombreActividad}</td>
+                        <td>{act.fechaInicio}</td>
+                        <td>
+                          <span style={{ color: "#555" }}>
+                            {avancesDeActividad.length} avance(s)
+                          </span>
+                        </td>
+                        <td>{maxPorcentaje}%</td>
+                        <td>
+                          <button
+                            className="btn-small"
+                            onClick={() => setEditingActividadId(
+                              editingActividadId === act.idActividad ? null : act.idActividad
+                            )}
+                          >
+                            {editingActividadId === act.idActividad ? "Cerrar" : "Agregar avance"}
+                          </button>
+                          {editingActividadId === act.idActividad && (
+                            <AgregarAvance
+                              idActividad={act.idActividad}
+                              idUsuario={usuario?.idUsuario}
+                              onAdd={handleAddAvance}
+                              onCancel={() => setEditingActividadId(null)}
+                            />
+                          )}
+                        </td>
+                      </tr>
+
+                      {isOpen && (
+                        <tr className="avances-row">
+                          <td colSpan={6}>
+                            {avancesDeActividad.length === 0 ? (
+                              <div className="avances-empty">Sin avances registrados</div>
+                            ) : (
+                              <div className="avances-list">
+                                {avancesDeActividad.map(av => (
+                                  <div
+                                    key={av.idAvance ?? `${act.idActividad}-${av.fechaAvance || av.fecha}-${av.porcentajeAvance}`}
+                                    className="avance-item"
+                                  >
+                                    <div className="avance-fecha">
+                                      {av.fechaAvance || av.fecha
+                                        ? new Date(av.fechaAvance || av.fecha).toLocaleDateString("es-CL")
+                                        : "—"}
+                                    </div>
+                                    <div className="avance-content">
+                                      <div className="avance-descripcion">
+                                        {av.descripcionAvance || av.descripcion || "Sin descripción"}
+                                      </div>
+                                      <div className="avance-porcentaje">
+                                        {Number(av.porcentajeAvance) || 0}%
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>
