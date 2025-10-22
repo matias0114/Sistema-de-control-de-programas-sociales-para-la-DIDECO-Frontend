@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import PresupuestoChart from "./PresupuestoChart";
 import GraficoProgreso from "./GraficoProgreso";
 import GraficoGastosMensuales from "./GraficoGastosMensuales";
@@ -14,7 +14,6 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
 
-
   useEffect(() => {
     async function fetchDetalle() {
       setLoading(true);
@@ -28,9 +27,12 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
         const actsProg = acts.filter(a => a.programa?.idPrograma === Number(idPrograma));
         setActividades(actsProg);
 
-        // Cargar avances
+        // Cargar avances (lógica corregida para que aparezcan al expandir)
         const avs = await fetch(`http://localhost:8080/avances`).then(res => res.json());
-        const avsProg = avs.filter(a => actsProg.map(a => a.idActividad).includes(a.idActividad));
+        // Guardar avances que coincidan con el idActividad de las actividades del programa
+        const avsProg = avs.filter(av =>
+          actsProg.some(act => av.idActividad === act.idActividad || av.actividad?.idActividad === act.idActividad)
+        );
         setAvances(avsProg);
 
         // Cargar presupuesto
@@ -51,7 +53,7 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
           actividades: actsProg.length
         });
 
-        // Calcular gastos mensuales aquí, después de tener las actividades
+        // Calcular gastos mensuales
         if (actsProg.length > 0) {
           const gastosPorMes = {};
           actsProg.forEach(actividad => {
@@ -67,19 +69,12 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
           const datosGrafico = Object.entries(gastosPorMes)
             .map(([key, monto]) => {
               const [anio, mes] = key.split('-');
-              return {
-                mes: parseInt(mes),
-                anio: parseInt(anio),
-                total: monto
-              };
+              return { mes: parseInt(mes), anio: parseInt(anio), total: monto };
             })
-            .sort((a, b) => {
-              if (a.anio !== b.anio) return a.anio - b.anio;
-              return a.mes - b.mes;
-            });
-
+            .sort((a, b) => a.anio !== b.anio ? a.anio - b.anio : a.mes - b.mes);
           setGastosMensuales(datosGrafico);
         }
+
       } catch (error) {
         console.error('Error al cargar datos:', error);
         setPrograma(null);
@@ -88,7 +83,7 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
       }
     }
     fetchDetalle();
-  }, [idPrograma]); // Solo depende del idPrograma
+  }, [idPrograma]);
 
   const sumaMontosActividades = actividades.reduce(
     (total, act) => total + (parseFloat(act.montoAsignado) || 0), 0
@@ -97,7 +92,7 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
   const calcularAvanceGeneral = (acts, avs) => {
     if (!acts.length) return 0;
     const avancesPorActividad = acts.map(act => {
-      const avsAct = avs.filter(a => a.idActividad === act.idActividad);
+      const avsAct = avs.filter(a => a.idActividad === act.idActividad || a.actividad?.idActividad === act.idActividad);
       return avsAct.length
         ? Math.max(...avsAct.map(a => parseFloat(a.porcentajeAvance) || 0))
         : 0;
@@ -119,19 +114,16 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
     return (
       <div className="error-container">
         <h3>No existe el programa seleccionado</h3>
-        <button onClick={onBack} className="btn-volver">
-          ← Volver a la lista
-        </button>
+        <button onClick={onBack} className="btn-volver">← Volver a la lista</button>
       </div>
     );
   }
 
   return (
     <div className="dashboard-container">
+      {/* --- Header --- */}
       <div className="programa-header-detalle">
-        <button onClick={onBack} className="btn-volver-header">
-          ← Volver a la lista
-        </button>
+        <button onClick={onBack} className="btn-volver-header">← Volver a la lista</button>
         <div className="header-content">
           <div className="header-main">
             <h1 className="programa-titulo">{programa.nombrePrograma}</h1>
@@ -139,18 +131,13 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
               {programa.estado === 'activo' ? '🟢' : '🔴'} {programa.estado}
             </span>
           </div>
-          <div className="header-descripcion">
-            {programa.descripcion && <p>{programa.descripcion}</p>}
-          </div>
+          {programa.descripcion && <div className="header-descripcion"><p>{programa.descripcion}</p></div>}
         </div>
       </div>
 
-      {/* Información del programa */}
+      {/* --- Información del Programa --- */}
       <div className="section-container">
-        <h2 className="section-title">
-          <span className="section-icon">📋</span>
-          Información del Programa
-        </h2>
+        <h2 className="section-title"><span className="section-icon">📋</span>Información del Programa</h2>
         <div className="info-cards-grid">
           <div className="info-card primary">
             <div className="info-card-icon">🏢</div>
@@ -166,33 +153,27 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
               <p>{programa.usuario?.nombreUsuario || 'Sin asignar'}</p>
             </div>
           </div>
-          {programa.fechaInicio && (
-            <div className="info-card success">
-              <div className="info-card-icon">📅</div>
-              <div className="info-card-content">
-                <h4>Fecha de Inicio</h4>
-                <p>{new Date(programa.fechaInicio).toLocaleDateString('es-CL')}</p>
-              </div>
+          {programa.fechaInicio && <div className="info-card success">
+            <div className="info-card-icon">📅</div>
+            <div className="info-card-content">
+              <h4>Fecha de Inicio</h4>
+              <p>{new Date(programa.fechaInicio).toLocaleDateString('es-CL')}</p>
             </div>
-          )}
-          {programa.fechaFin && (
-            <div className="info-card warning">
-              <div className="info-card-icon">🏁</div>
-              <div className="info-card-content">
-                <h4>Fecha de Término</h4>
-                <p>{new Date(programa.fechaFin).toLocaleDateString('es-CL')}</p>
-              </div>
+          </div>}
+          {programa.fechaFin && <div className="info-card warning">
+            <div className="info-card-icon">🏁</div>
+            <div className="info-card-content">
+              <h4>Fecha de Término</h4>
+              <p>{new Date(programa.fechaFin).toLocaleDateString('es-CL')}</p>
             </div>
-          )}
-          {programa.fechaInicio && programa.fechaFin && (
-            <div className="info-card info">
-              <div className="info-card-icon">⏱️</div>
-              <div className="info-card-content">
-                <h4>Duración del Programa</h4>
-                <p>{Math.ceil((new Date(programa.fechaFin) - new Date(programa.fechaInicio)) / (1000 * 60 * 60 * 24))} días</p>
-              </div>
+          </div>}
+          {programa.fechaInicio && programa.fechaFin && <div className="info-card info">
+            <div className="info-card-icon">⏱️</div>
+            <div className="info-card-content">
+              <h4>Duración del Programa</h4>
+              <p>{Math.ceil((new Date(programa.fechaFin) - new Date(programa.fechaInicio)) / (1000 * 60 * 60 * 24))} días</p>
             </div>
-          )}
+          </div>}
           <div className="info-card accent">
             <div className="info-card-icon">📊</div>
             <div className="info-card-content">
@@ -205,85 +186,41 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
         </div>
       </div>
 
-      {/* Gráficos de resumen */}
-<div className="section-container">
-  <h2 className="section-title">
-    <span className="section-icon">📈</span>
-    Análisis del Programa
-  </h2>
-  
-  <div style={{
-    display: 'flex',
-    gap: '20px',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    alignItems: 'flex-start'
-  }}>
-    <div>
-      <h3 style={{textAlign: 'center', marginBottom: '15px', color: '#4CAF50'}}>
-        Progreso Temporal
-      </h3>
-      <GraficoProgreso programa={programa} />
-    </div>
-    <div>
-      <h3 style={{textAlign: 'center', marginBottom: '15px', color: '#1664c1'}}>
-        Presupuesto
-      </h3>
-      <PresupuestoChart
-        asignado={presupuesto.asignado}
-        ejecutado={sumaMontosActividades}
-      />
-    </div>
-  </div>
-
-  <div style={{ marginTop: 50 }}>
-    <h3 style={{ textAlign: 'center', marginBottom: '15px', color: '#c15316' }}>
-      Gastos Mensuales
-    </h3>
-    {gastosMensuales.length > 0 ? (
-      <GraficoGastosMensuales datos={gastosMensuales} />
-    ) : (
-      <p style={{ textAlign: 'center', color: '#888' }}>No hay datos de gastos disponibles.</p>
-    )}
-  </div>
-</div>
-
-      {/* Estadísticas generales */}
+      {/* --- Gráficos de resumen --- */}
       <div className="section-container">
-        <h2 className="section-title">
-          <span className="section-icon">📊</span>
-          Estadísticas
-        </h2>
-        <div className="stats-grid">
-          <div className="stat-item">
-            <div className="stat-value">{estadisticas.actividades || 0}</div>
-            <div className="stat-label">Actividades Totales</div>
+        <h2 className="section-title"><span className="section-icon">📈</span>Análisis del Programa</h2>
+        <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+          <div>
+            <h3 style={{textAlign:'center', marginBottom:15, color:'#4CAF50'}}>Progreso Temporal</h3>
+            <GraficoProgreso programa={programa} />
           </div>
-          <div className="stat-item">
-            <div className="stat-value">{estadisticas.avanceGeneral || 0}%</div>
-            <div className="stat-label">Avance General</div>
+          <div>
+            <h3 style={{textAlign:'center', marginBottom:15, color:'#1664c1'}}>Presupuesto</h3>
+            <PresupuestoChart asignado={presupuesto.asignado} ejecutado={sumaMontosActividades} />
           </div>
-          <div className="stat-item">
-            <div className="stat-value">${(presupuesto.asignado || 0).toLocaleString('es-CL')}</div>
-            <div className="stat-label">Presupuesto Asignado</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-value">${sumaMontosActividades.toLocaleString('es-CL')}</div>
-            <div className="stat-label">Presupuesto Ejecutado</div>
-          </div>
+        </div>
+        <div style={{ marginTop: 50 }}>
+          <h3 style={{textAlign:'center', marginBottom:15, color:'#c15316'}}>Gastos Mensuales</h3>
+          {gastosMensuales.length > 0 ? <GraficoGastosMensuales datos={gastosMensuales} /> : <p style={{textAlign:'center', color:'#888'}}>No hay datos de gastos disponibles.</p>}
         </div>
       </div>
 
-      {/* Tabla de actividades - Solo lectura, con avance desplegable */}
+      {/* --- Estadísticas generales --- */}
       <div className="section-container">
-        <h2 className="section-title">
-          <span className="section-icon">📝</span>
-          Actividades del Programa
-        </h2>
+        <h2 className="section-title"><span className="section-icon">📊</span>Estadísticas</h2>
+        <div className="stats-grid">
+          <div className="stat-item"><div className="stat-value">{estadisticas.actividades || 0}</div><div className="stat-label">Actividades Totales</div></div>
+          <div className="stat-item"><div className="stat-value">{estadisticas.avanceGeneral || 0}%</div><div className="stat-label">Avance General</div></div>
+          <div className="stat-item"><div className="stat-value">${(presupuesto.asignado || 0).toLocaleString('es-CL')}</div><div className="stat-label">Presupuesto Asignado</div></div>
+          <div className="stat-item"><div className="stat-value">${sumaMontosActividades.toLocaleString('es-CL')}</div><div className="stat-label">Presupuesto Ejecutado</div></div>
+        </div>
+      </div>
+
+      {/* --- Tabla de actividades --- */}
+      <div className="section-container">
+        <h2 className="section-title"><span className="section-icon">📝</span>Actividades del Programa</h2>
         {actividades.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#666', padding: '40px' }}>
-            No hay actividades registradas para este programa.
-          </p>
+          <p style={{ textAlign: 'center', color: '#666', padding: '40px' }}>No hay actividades registradas para este programa.</p>
         ) : (
           <div className="table-container">
             <table className="actividades-table">
@@ -301,7 +238,7 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
               </thead>
               <tbody>
                 {actividades.map(act => {
-                  const avancesDeActividad = avances.filter(a => a.idActividad === act.idActividad);
+                  const avancesDeActividad = avances.filter(a => a.idActividad === act.idActividad || a.actividad?.idActividad === act.idActividad);
                   return (
                     <React.Fragment key={act.idActividad}>
                       <tr>
@@ -309,27 +246,18 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
                           <button
                             className="btn-small"
                             onClick={() => setExpandedId(expandedId === act.idActividad ? null : act.idActividad)}
-                            style={{ minWidth: 70 }}>
+                            style={{ minWidth: 70 }}
+                          >
                             {expandedId === act.idActividad ? "Cerrar" : "Ver avances"}
                           </button>
                         </td>
                         <td>{act.nombreActividad}</td>
-                        <td>
-                          <div style={{maxWidth:240, whiteSpace:"pre-wrap"}}>
-                            {act.descripcion}
-                          </div>
-                        </td>
+                        <td><div style={{maxWidth:240, whiteSpace:"pre-wrap"}}>{act.descripcion}</div></td>
                         <td>{act.fechaInicio ? new Date(act.fechaInicio).toLocaleDateString('es-CL') : '—'}</td>
                         <td>{act.fechaTermino ? new Date(act.fechaTermino).toLocaleDateString('es-CL') : '—'}</td>
-                        <td>
-                          ${parseFloat(act.montoAsignado || 0).toLocaleString("es-CL")}
-                        </td>
+                        <td>${parseFloat(act.montoAsignado || 0).toLocaleString("es-CL")}</td>
                         <td>{act.responsable}</td>
-                        <td>
-                          <div style={{maxWidth:180, whiteSpace:"pre-wrap"}}>
-                            {act.metas}
-                          </div>
-                        </td>
+                        <td><div style={{maxWidth:180, whiteSpace:"pre-wrap"}}>{act.metas}</div></td>
                       </tr>
                       {expandedId === act.idActividad && (
                         <tr>
