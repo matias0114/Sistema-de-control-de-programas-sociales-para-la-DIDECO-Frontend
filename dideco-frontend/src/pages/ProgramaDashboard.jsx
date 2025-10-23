@@ -126,20 +126,17 @@ function ProgramaDashboard() {
   };
 
   const cargarGastosMensuales = useCallback(() => {
-    // Agrupar los montos por mes usando las actividades
-    const gastosPorMes = {};
-    
+  // Agrupar los montos por mes usando las actividades
+  const gastosPorMes = {};
+
     actividades.forEach(actividad => {
       if (actividad.montoAsignado && actividad.fechaInicio) {
-        const fecha = new Date(actividad.fechaInicio);
-        const mes = fecha.getMonth() + 1;
-        const anio = fecha.getFullYear();
-        
+        // PARSEO SOLIDO:
+        const [yyyy, mm] = actividad.fechaInicio.split('-');
+        const mes = Number(mm);
+        const anio = Number(yyyy);
         const key = `${anio}-${mes}`;
-        if (!gastosPorMes[key]) {
-          gastosPorMes[key] = 0;
-        }
-        gastosPorMes[key] += parseFloat(actividad.montoAsignado) || 0;
+        gastosPorMes[key] = (gastosPorMes[key] || 0) + parseFloat(actividad.montoAsignado) || 0;
       }
     });
 
@@ -160,6 +157,7 @@ function ProgramaDashboard() {
 
     setGastosMensuales(datosGrafico);
   }, [actividades]);
+
 
   const cargarDatosDashboard = useCallback(async () => {
     setLoading(true);

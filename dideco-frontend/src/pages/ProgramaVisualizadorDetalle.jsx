@@ -53,19 +53,35 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
           actividades: actsProg.length
         });
 
+
+        //
+        actsProg.forEach(actividad => {
+          if (actividad.montoAsignado && actividad.fechaInicio) {
+            const fecha = new Date(actividad.fechaInicio);
+            console.log("Actividad:", actividad.nombreActividad, "Mes:", fecha.getMonth() + 1, "Año:", fecha.getFullYear(), "Monto:", actividad.montoAsignado);
+          }
+        });
+
+
         // Calcular gastos mensuales
         if (actsProg.length > 0) {
           const gastosPorMes = {};
           actsProg.forEach(actividad => {
             if (actividad.montoAsignado && actividad.fechaInicio) {
-              const fecha = new Date(actividad.fechaInicio);
-              const mes = fecha.getMonth() + 1;
-              const anio = fecha.getFullYear();
+              // PARSEO SÓLIDO DEL MES
+              const [yyyy, mm] = actividad.fechaInicio.split('-');
+              const mes = Number(mm);
+              const anio = Number(yyyy);
+              console.log(
+                "Actividad:", actividad.nombreActividad,
+                "Mes parsed:", mes,
+                "Año:", anio,
+                "Monto:", actividad.montoAsignado
+              );
               const key = `${anio}-${mes}`;
               gastosPorMes[key] = (gastosPorMes[key] || 0) + parseFloat(actividad.montoAsignado);
             }
           });
-
           const datosGrafico = Object.entries(gastosPorMes)
             .map(([key, monto]) => {
               const [anio, mes] = key.split('-');
@@ -74,6 +90,7 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
             .sort((a, b) => a.anio !== b.anio ? a.anio - b.anio : a.mes - b.mes);
           setGastosMensuales(datosGrafico);
         }
+
 
       } catch (error) {
         console.error('Error al cargar datos:', error);
