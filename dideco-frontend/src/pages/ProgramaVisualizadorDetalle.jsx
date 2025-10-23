@@ -14,6 +14,19 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
 
+  // Función para calcular avance temporal en porcentaje según fechas
+  function getActividadProgreso(act) {
+    if (!act.fechaInicio || !act.fechaTermino) return 0;
+    const inicio = new Date(act.fechaInicio);
+    const fin = new Date(act.fechaTermino);
+    const hoy = new Date();
+    if (hoy <= inicio) return 0;
+    if (hoy >= fin) return 100;
+    const total = fin - inicio;
+    const actual = hoy - inicio;
+    return Math.round((actual / total) * 100);
+  }
+
   useEffect(() => {
     async function fetchDetalle() {
       setLoading(true);
@@ -27,9 +40,8 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
         const actsProg = acts.filter(a => a.programa?.idPrograma === Number(idPrograma));
         setActividades(actsProg);
 
-        // Cargar avances (lógica corregida para que aparezcan al expandir)
+        // Cargar avances (lógica corregida)
         const avs = await fetch(`http://localhost:8080/avances`).then(res => res.json());
-        // Guardar avances que coincidan con el idActividad de las actividades del programa
         const avsProg = avs.filter(av =>
           actsProg.some(act => av.idActividad === act.idActividad || av.actividad?.idActividad === act.idActividad)
         );
@@ -53,31 +65,14 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
           actividades: actsProg.length
         });
 
-
-        //
-        actsProg.forEach(actividad => {
-          if (actividad.montoAsignado && actividad.fechaInicio) {
-            const fecha = new Date(actividad.fechaInicio);
-            console.log("Actividad:", actividad.nombreActividad, "Mes:", fecha.getMonth() + 1, "Año:", fecha.getFullYear(), "Monto:", actividad.montoAsignado);
-          }
-        });
-
-
         // Calcular gastos mensuales
         if (actsProg.length > 0) {
           const gastosPorMes = {};
           actsProg.forEach(actividad => {
             if (actividad.montoAsignado && actividad.fechaInicio) {
-              // PARSEO SÓLIDO DEL MES
               const [yyyy, mm] = actividad.fechaInicio.split('-');
               const mes = Number(mm);
               const anio = Number(yyyy);
-              console.log(
-                "Actividad:", actividad.nombreActividad,
-                "Mes parsed:", mes,
-                "Año:", anio,
-                "Monto:", actividad.montoAsignado
-              );
               const key = `${anio}-${mes}`;
               gastosPorMes[key] = (gastosPorMes[key] || 0) + parseFloat(actividad.montoAsignado);
             }
@@ -90,8 +85,6 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
             .sort((a, b) => a.anio !== b.anio ? a.anio - b.anio : a.mes - b.mes);
           setGastosMensuales(datosGrafico);
         }
-
-
       } catch (error) {
         console.error('Error al cargar datos:', error);
         setPrograma(null);
@@ -243,72 +236,49 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
             <table className="actividades-table">
               <thead>
                 <tr>
-                  <th></th>
                   <th>Nombre</th>
-                  <th>Descripción</th>
                   <th>Fecha de Inicio</th>
-                  <th>Fecha de Término</th>
                   <th>Monto Asignado</th>
-                  <th>Responsable</th>
-                  <th>Metas</th>
+                  <th>Progreso</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                {actividades.map(act => {
-                  const avancesDeActividad = avances.filter(a => a.idActividad === act.idActividad || a.actividad?.idActividad === act.idActividad);
-                  return (
-                    <React.Fragment key={act.idActividad}>
-                      <tr>
-                        <td>
-                          <button
-                            className="btn-small"
-                            onClick={() => setExpandedId(expandedId === act.idActividad ? null : act.idActividad)}
-                            style={{ minWidth: 70 }}
-                          >
-                            {expandedId === act.idActividad ? "Cerrar" : "Ver avances"}
-                          </button>
-                        </td>
-                        <td>{act.nombreActividad}</td>
-                        <td><div style={{maxWidth:240, whiteSpace:"pre-wrap"}}>{act.descripcion}</div></td>
-                        <td>{act.fechaInicio ? new Date(act.fechaInicio).toLocaleDateString('es-CL') : '—'}</td>
-                        <td>{act.fechaTermino ? new Date(act.fechaTermino).toLocaleDateString('es-CL') : '—'}</td>
-                        <td>${parseFloat(act.montoAsignado || 0).toLocaleString("es-CL")}</td>
-                        <td>{act.responsable}</td>
-                        <td><div style={{maxWidth:180, whiteSpace:"pre-wrap"}}>{act.metas}</div></td>
-                      </tr>
-                      {expandedId === act.idActividad && (
-                        <tr>
-                          <td colSpan={8} style={{background:"#f7fbff", padding:0}}>
-                            {avancesDeActividad.length === 0 ? (
-                              <div className="avances-empty" style={{padding:"18px 30px"}}>Sin avances registrados</div>
-                            ) : (
-                              <div className="avances-list" style={{padding:"16px 30px"}}>
-                                {avancesDeActividad.map(av => (
-                                  <div
-                                    key={av.idAvance ?? `${act.idActividad}-${av.fechaAvance || av.fecha}`}
-                                    className="avance-item"
-                                    style={{marginBottom: 10}}
-                                  >
-                                    <div className="avance-fecha" style={{fontWeight:600, color:'#1664c1'}}>
-                                      {av.fechaAvance || av.fecha
-                                        ? new Date(av.fechaAvance || av.fecha).toLocaleDateString("es-CL")
-                                        : "—"}
-                                    </div>
-                                    <div className="avance-content">
-                                      <div><b>Estado:</b> {av.estado}</div>
-                                      <div><b>Descripción:</b> {av.descripcion || "Sin descripción"}</div>
-                                      <div><b>Objetivos alcanzados:</b> {av.objetivosAlcanzados || "—"}</div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
+                {actividades.map(act => (
+                  <tr key={act.idActividad}>
+                    <td>{act.nombreActividad}</td>
+                    <td>{act.fechaInicio ? new Date(act.fechaInicio).toLocaleDateString('es-CL') : '—'}</td>
+                    <td>${parseFloat(act.montoAsignado || 0).toLocaleString("es-CL")}</td>
+                    <td>
+                      <div style={{minWidth:90, maxWidth:120}}>
+                        <div style={{
+                          background:"#e5eaf2",
+                          borderRadius:8,
+                          height:18,
+                          position:"relative",
+                          overflow:"hidden"
+                        }}>
+                          <div style={{
+                            width: `${getActividadProgreso(act)}%`,
+                            background:"#4caf50",
+                            height:"100%",
+                            borderRadius:8,
+                            transition:"width .3s"
+                          }}></div>
+                        </div>
+                        <span style={{fontSize:13, marginLeft:6, color:"#116880"}}>
+                          {getActividadProgreso(act)}%
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <button className="btn-small" style={{minWidth:80}}
+                        onClick={() => window.location.href = `/actividades/${act.idActividad}`}>
+                        Ver detalles
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
