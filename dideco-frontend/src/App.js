@@ -8,6 +8,7 @@ import CrearPrograma from './pages/CrearPrograma';
 import EditarProgramas from './pages/EditarProgramas';
 import VisualizadorProgramas from './pages/VisualizadorProgramas';
 import ActividadDetalle from './pages/ActividadDetalle';
+import ActividadDashboardDetalle from './pages/ActividadDashboardDetalle'; // Importa el nuevo detalle edición
 
 function PanelUsuario() {
   return <h2>Panel para encargado por implementar</h2>;
@@ -25,8 +26,14 @@ function App() {
         <Route path="/programas" element={<CrearPrograma />} />
         <Route path="/editar-programas" element={<EditarProgramas />} />
         <Route path="/visualizador" element={<VisualizadorProgramas />} />
+
+        {/* Ruta para la vista básica solo detalle */}
         <Route path="/actividades/:idActividad" element={<ActividadDetalle />} />
 
+        {/* Nueva ruta para detalle y edición de actividad usada en dashboard */}
+        <Route path="/actividad-dashboard/:idActividad" element={<ActividadDashboardDetalle />} />
+
+        {/* Ruta fallback a Login para todas las demás */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

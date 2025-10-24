@@ -28,6 +28,20 @@ function ProgramaDashboard() {
   const [editingActividadId, setEditingActividadId] = useState(null);
   const [expanded, setExpanded] = useState(new Set());
 
+
+  function getActividadProgreso(act) {
+    if (!act.fechaInicio || !act.fechaTermino) return 0;
+    const inicio = new Date(act.fechaInicio);
+    const fin = new Date(act.fechaTermino);
+    const hoy = new Date();
+    if (hoy <= inicio) return 0;
+    if (hoy >= fin) return 100;
+    const total = fin - inicio;
+    const actual = hoy - inicio;
+    return Math.round((actual / total) * 100);
+  }
+
+
   const toggleExpanded = (idAct) => {
     setExpanded(prev => {
       const next = new Set(prev);
@@ -310,15 +324,16 @@ function ProgramaDashboard() {
           />
         )}
 
-        {/* Actividades */}
+        {/* --- Tabla de actividades --- */}
         <div className="section-container">
-          <div style={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
-            <h2>Actividades</h2>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+            <h2 className="section-title">
+              <span className="section-icon">📝</span>Actividades del Programa
+            </h2>
             <button className="btn-export" onClick={() => setShowCrearActividad(!showCrearActividad)}>
               {showCrearActividad ? "Cancelar" : "Agregar actividad"}
             </button>
           </div>
-          {/* Modal flotante para crear actividad */}
           {showCrearActividad && (
             <CrearActividad
               onAdd={handleAddActividad}
@@ -326,110 +341,72 @@ function ProgramaDashboard() {
               onCancel={() => setShowCrearActividad(false)}
             />
           )}
-          <div className="table-container">
-            <table className="actividades-table">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Nombre</th>
-                  <th>Descripción</th>
-                  <th>Responsable</th>
-                  <th>Monto Asignado</th>
-                  <th>Metas</th>
-                  <th>Fecha Inicio</th>
-                  <th>Fecha Término</th>
-                  <th>Avances</th>
-                  <th>Nuevo Avance</th>
-                </tr>
-              </thead>
-              <tbody>
-                {actividades.map(act => {
-                  const avancesDeActividad = avances.filter(a =>
-                    (a.idActividad === act.idActividad) || (a.actividad?.idActividad === act.idActividad)
-                  );
-                  const isOpen = expanded.has(act.idActividad);
-                  return (
-                    <React.Fragment key={act.idActividad}>
-                      <tr>
-                        <td>
-                          <button
-                            className="caret-btn"
-                            aria-label="Mostrar avances"
-                            onClick={() => toggleExpanded(act.idActividad)}
+          {actividades.length === 0 ? (
+            <p style={{ textAlign: "center", color: "#666", padding: "40px" }}>
+              No hay actividades registradas para este programa.
+            </p>
+          ) : (
+            <div className="table-container">
+              <table className="actividades-table">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Fecha de Inicio</th>
+                    <th>Monto Asignado</th>
+                    <th>Progreso</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {actividades.map((act) => (
+                    <tr key={act.idActividad}>
+                      <td>{act.nombreActividad}</td>
+                      <td>{act.fechaInicio ? new Date(act.fechaInicio).toLocaleDateString('es-CL') : "—"}</td>
+                      <td>${parseFloat(act.montoAsignado || 0).toLocaleString("es-CL")}</td>
+                      <td>
+                        <div style={{ minWidth: 90, maxWidth: 120 }}>
+                          <div
+                            style={{
+                              background: "#e5eaf2",
+                              borderRadius: 8,
+                              height: 18,
+                              position: "relative",
+                              overflow: "hidden",
+                            }}
                           >
-                            {isOpen ? "▾" : "▸"}
-                          </button>
-                        </td>
-                        <td>{act.nombreActividad}</td>
-                        <td>{act.descripcion}</td>
-                        <td>{act.responsable}</td>
-                        <td>${act.montoAsignado?.toLocaleString("es-CL")}</td>
-                        <td>{act.metas}</td>
-                        <td>{act.fechaInicio}</td>
-                        <td>{act.fechaTermino || "—"}</td>
-                        <td>
-                          <span style={{ color: "#555" }}>
-                            {avancesDeActividad.length} avance(s)
+                            <div
+                              style={{
+                                width: `${getActividadProgreso(act)}%`,
+                                background: "#4caf50",
+                                height: "100%",
+                                borderRadius: 8,
+                                transition: "width .3s",
+                              }}
+                            ></div>
+                          </div>
+                          <span style={{ fontSize: 13, marginLeft: 6, color: "#116880" }}>
+                            {getActividadProgreso(act)}%
                           </span>
-                        </td>
-                        <td>
-                          <button
-                            className="btn-small"
-                            onClick={() => setEditingActividadId(
-                              editingActividadId === act.idActividad ? null : act.idActividad
-                            )}
-                          >
-                            {editingActividadId === act.idActividad ? "Cerrar" : "Agregar avance"}
-                          </button>
-                          {editingActividadId === act.idActividad && (
-                            <AgregarAvance
-                              idActividad={act.idActividad}
-                              idUsuario={usuario?.idUsuario}
-                              onAdd={handleAddAvance}
-                              onCancel={() => setEditingActividadId(null)}
-                            />
-                          )}
-                        </td>
-                      </tr>
-                      {isOpen && (
-                        <tr className="avances-row">
-                          <td colSpan={10}>
-                            {avancesDeActividad.length === 0 ? (
-                              <div className="avances-empty">Sin avances registrados</div>
-                            ) : (
-                              <div className="avances-list">
-                                {avancesDeActividad.map(av => (
-                                  <div
-                                    key={av.idAvance ?? `${act.idActividad}-${av.fechaAvance || av.fecha}`}
-                                    className="avance-item"
-                                  >
-                                    <div className="avance-fecha">
-                                      {av.fechaAvance || av.fecha
-                                        ? new Date(av.fechaAvance || av.fecha).toLocaleDateString("es-CL")
-                                        : "—"}
-                                    </div>
-                                    <div className="avance-content">
-                                      <div><b>Estado:</b> {av.estado}</div>
-                                      <div><b>Descripción:</b> {av.descripcion || "Sin descripción"}</div>
-                                      <div><b>Objetivos alcanzados:</b> {av.objetivosAlcanzados || "—"}</div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <button
+                          className="btn-small"
+                          style={{ minWidth: 80 }}
+                          onClick={() => navigate(`/actividad-dashboard/${act.idActividad}`)}
+                        >
+                          Ver detalle
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </Layout>
   );
 }
-
 export default ProgramaDashboard;

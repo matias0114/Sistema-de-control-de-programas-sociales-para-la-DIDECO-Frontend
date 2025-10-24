@@ -1,121 +1,186 @@
-import React, { useEffect, useState } from "react";
-import "./crearactividad.css"; // Usa el mismo CSS del modal grande
+import React, { useState, useEffect } from "react";
+import "./programadashboard.css"; // Usa tus estilos globales
 
-const estados = [
-  "Pendiente",
-  "En Proceso",
-  "Completado",
-  "Aprobado",
-];
-
-const AgregarAvance = ({ idActividad, idUsuario, onAdd, onCancel }) => {
+function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEdicion }) {
   const [fechaAvance, setFechaAvance] = useState("");
   const [estado, setEstado] = useState("Pendiente");
   const [descripcion, setDescripcion] = useState("");
-  const [objetivos, setObjetivos] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [objetivosAlcanzados, setObjetivosAlcanzados] = useState("");
 
   useEffect(() => {
-    const hoy = new Date().toISOString().split("T")[0];
-    setFechaAvance(hoy);
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    if (!fechaAvance) {
-      setError("La fecha es obligatoria.");
-      return;
-    }
-    if (!estado) {
-      setError("El estado es obligatorio.");
-      return;
-    }
-    try {
-      setSubmitting(true);
-      const payload = {
-        idActividad: Number(idActividad),
-        idUsuario: Number(idUsuario),
-        fechaAvance,
-        estado,
-        descripcion,
-        objetivosAlcanzados: objetivos
-      };
-      await onAdd(payload);
-      setDescripcion("");
-      setObjetivos("");
+    if (modoEdicion && avance) {
+      setFechaAvance(avance.fechaAvance?.slice(0, 10) || "");
+      setEstado(avance.estado || "Pendiente");
+      setDescripcion(avance.descripcion || "");
+      setObjetivosAlcanzados(avance.objetivosAlcanzados || "");
+    } else {
+      setFechaAvance("");
       setEstado("Pendiente");
-      onCancel && onCancel();
-    } catch (err) {
-      setError("No se pudo guardar el avance. Intenta nuevamente.");
-    } finally {
-      setSubmitting(false);
+      setDescripcion("");
+      setObjetivosAlcanzados("");
     }
-  };
+  }, [modoEdicion, avance]);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    onAdd({
+      idAvance: avance?.idAvance,
+      fechaAvance,
+      estado,
+      descripcion,
+      objetivosAlcanzados,
+      actividad: { idActividad },
+      usuario: { idUsuario },
+    });
+  }
 
   return (
-    <div className="modal-bg">
-      <div className="modal-box modal-large">
-        <div className="modal-header">
-          <h2 style={{ margin: 0, fontSize: 27 }}>Agregar Avance</h2>
-          <button type="button" className="modal-close-btn" onClick={onCancel}>×</button>
-        </div>
-        <form className="modal-form" onSubmit={handleSubmit}>
-          <div className="modal-field">
-            <label htmlFor="fechaAvance">Fecha</label>
-            <input
-              id="fechaAvance"
-              type="date"
-              value={fechaAvance}
-              onChange={e => setFechaAvance(e.target.value)}
-              required
-            />
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        background: "rgba(0, 0, 0, 0.4)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 999,
+      }}
+    >
+      <div
+        style={{
+          background: "#ffffff",
+          borderRadius: 14,
+          padding: "30px 32px",
+          width: "90%",
+          maxWidth: 520,
+          boxShadow: "0 4px 18px rgba(0, 0, 0, 0.25)",
+          animation: "fadeIn 0.3s ease-in-out",
+        }}
+      >
+        <h2
+          style={{
+            color: "#136fb1",
+            marginBottom: 15,
+            textAlign: "center",
+          }}
+        >
+          {modoEdicion ? "Editar Avance" : "Registrar Nuevo Avance"}
+        </h2>
+
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "flex", gap: 20 }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: "block", color: "#333", marginBottom: 6 }}>Fecha del avance</label>
+              <input
+                type="date"
+                value={fechaAvance}
+                onChange={(e) => setFechaAvance(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "8px 10px",
+                  borderRadius: 6,
+                  border: "1px solid #ccc",
+                }}
+              />
+            </div>
+
+            <div style={{ flex: 1 }}>
+              <label style={{ display: "block", color: "#333", marginBottom: 6 }}>Estado</label>
+              <select
+                value={estado}
+                onChange={(e) => setEstado(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "8px 10px",
+                  borderRadius: 6,
+                  border: "1px solid #ccc",
+                }}
+              >
+                <option>Pendiente</option>
+                <option>En progreso</option>
+                <option>Completado</option>
+              </select>
+            </div>
           </div>
-          <div className="modal-field">
-            <label htmlFor="estado">Estado</label>
-            <select
-              id="estado"
-              value={estado}
-              onChange={e => setEstado(e.target.value)}
-              required
-            >
-              {estados.map(est => (
-                <option key={est} value={est}>{est}</option>
-              ))}
-            </select>
-          </div>
-          <div className="modal-field">
-            <label htmlFor="descripcion">Descripción</label>
+
+          <div>
+            <label style={{ display: "block", color: "#333", marginBottom: 6 }}>Descripción</label>
             <textarea
-              id="descripcion"
-              rows={2}
-              placeholder="Describe brevemente el avance"
+              placeholder="Describe las acciones realizadas..."
               value={descripcion}
-              onChange={e => setDescripcion(e.target.value)}
+              onChange={(e) => setDescripcion(e.target.value)}
+              style={{
+                width: "100%",
+                minHeight: 70,
+                padding: "8px 10px",
+                borderRadius: 6,
+                border: "1px solid #ccc",
+                resize: "vertical",
+              }}
             />
           </div>
-          <div className="modal-field">
-            <label htmlFor="objetivos">Objetivos alcanzados</label>
+
+          <div>
+            <label style={{ display: "block", color: "#333", marginBottom: 6 }}>Objetivos alcanzados</label>
             <textarea
-              id="objetivos"
-              rows={2}
-              placeholder="¿Qué se logró con este avance?"
-              value={objetivos}
-              onChange={e => setObjetivos(e.target.value)}
+              placeholder="Menciona logros, resultados o hitos alcanzados..."
+              value={objetivosAlcanzados}
+              onChange={(e) => setObjetivosAlcanzados(e.target.value)}
+              style={{
+                width: "100%",
+                minHeight: 70,
+                padding: "8px 10px",
+                borderRadius: 6,
+                border: "1px solid #ccc",
+                resize: "vertical",
+              }}
             />
           </div>
-          {error && <div className="avance-error">{error}</div>}
-          <div className="modal-actions">
-            <button type="button" className="btn-ghost" onClick={onCancel}>Cancelar</button>
-            <button type="submit" className="btn-primary" disabled={submitting}>
-              {submitting ? "Guardando..." : "Guardar avance"}
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 12,
+              marginTop: 18,
+            }}
+          >
+            <button
+              type="button"
+              onClick={onCancel}
+              style={{
+                background: "#ccc",
+                color: "#000",
+                border: "none",
+                borderRadius: 6,
+                padding: "8px 16px",
+                cursor: "pointer",
+              }}
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              style={{
+                background: "#136fb1",
+                color: "#fff",
+                border: "none",
+                borderRadius: 6,
+                padding: "8px 16px",
+                cursor: "pointer",
+              }}
+            >
+              {modoEdicion ? "Guardar Cambios" : "Guardar Avance"}
             </button>
           </div>
         </form>
       </div>
     </div>
   );
-};
+}
 
 export default AgregarAvance;
