@@ -33,6 +33,10 @@ function App() {
         {/* Nueva ruta para detalle y edición de actividad usada en dashboard */}
         <Route path="/actividad-dashboard/:idActividad" element={<ActividadDashboardDetalle />} />
 
+
+        <Route path="/visualizador/:idPrograma" element={<VisualizadorProgramas />} />
+
+
         {/* Ruta fallback a Login para todas las demás */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

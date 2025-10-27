@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom"; // NUEVO
 import ProgramaVisualizadorDetalle from './ProgramaVisualizadorDetalle';
 import LayoutSimple from '../components/LayoutSimple'; 
 import './visualizador.css'; 
 
 function VisualizadorProgramas() {
   const [programas, setProgramas] = useState([]);
-  const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     activos: 0,
@@ -13,14 +13,14 @@ function VisualizadorProgramas() {
     total: 0
   });
 
+  const navigate = useNavigate(); // NUEVO
+  const { idPrograma } = useParams(); // NUEVO
 
   useEffect(() => {
     fetch("http://localhost:8080/programas")
       .then(res => res.json())
       .then(data => {
         setProgramas(data);
-        
-        // Calcular estadísticas
         const activos = data.filter(p => p.estado?.toLowerCase() === 'activo').length;
         const inactivos = data.filter(p => p.estado?.toLowerCase() === 'inactivo').length;
         setStats({
@@ -28,14 +28,14 @@ function VisualizadorProgramas() {
           inactivos,
           total: data.length
         });
-        
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
 
-  const handleProgramaClick = (idPrograma) => {
-    setSelected(idPrograma);
+  // Navega a la URL dinámica al hacer click
+  const handleProgramaClick = (id) => {
+    navigate(`/visualizador/${id}`);
   };
 
   if (loading) {
@@ -53,7 +53,7 @@ function VisualizadorProgramas() {
     <LayoutSimple title="Visualización de Programas">
       <div className="visualizador-container">
         <div className="visualizador-content">
-          {!selected ? (
+          {!idPrograma ? ( // ahora el detalle depende de la URL
             <>
               {/* Header con estadísticas */}
               <div className="stats-header">
@@ -61,7 +61,6 @@ function VisualizadorProgramas() {
                   <h1>📊 Visualizador de Programas</h1>
                   <p>Explora todos los programas sociales disponibles</p>
                 </div>
-                
                 <div className="stats-cards-horizontal">
                   <div className="stat-card-h active">
                     <div className="stat-icon">✅</div>
@@ -70,7 +69,6 @@ function VisualizadorProgramas() {
                       <p>Programas Activos</p>
                     </div>
                   </div>
-                  
                   <div className="stat-card-h inactive">
                     <div className="stat-icon">⏸️</div>
                     <div className="stat-content">
@@ -78,7 +76,6 @@ function VisualizadorProgramas() {
                       <p>Programas Inactivos</p>
                     </div>
                   </div>
-                  
                   <div className="stat-card-h total">
                     <div className="stat-icon">📊</div>
                     <div className="stat-content">
@@ -88,14 +85,12 @@ function VisualizadorProgramas() {
                   </div>
                 </div>
               </div>
-
               {/* Sección de programas */}
               <div className="programas-section">
                 <div className="section-header">
                   <h2>Programas Disponibles</h2>
                   <span className="total-count">{programas.length} programas</span>
                 </div>
-
                 {programas.length === 0 ? (
                   <div className="empty-state">
                     <div className="empty-icon">📋</div>
@@ -115,7 +110,6 @@ function VisualizadorProgramas() {
                             {programa.estado === 'activo' ? '🟢' : '🔴'} {programa.estado}
                           </span>
                         </div>
-                        
                         <div className="programa-content">
                           <h3 className="programa-nombre">{programa.nombrePrograma}</h3>
                           <div className="programa-meta">
@@ -160,7 +154,6 @@ function VisualizadorProgramas() {
                             )}
                           </div>
                         </div>
-                        
                         <div className="programa-footer">
                           <span className="ver-mas">Ver Detalles →</span>
                         </div>
@@ -173,8 +166,8 @@ function VisualizadorProgramas() {
           ) : (
             <div className="detalle-container">
               <ProgramaVisualizadorDetalle 
-                idPrograma={selected} 
-                onBack={() => setSelected(null)} 
+                idPrograma={idPrograma} // El id de la URL
+                onBack={() => navigate('/visualizador')}
               />
             </div>
           )}
