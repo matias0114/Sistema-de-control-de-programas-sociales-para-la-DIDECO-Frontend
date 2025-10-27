@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../login.css';
 
@@ -7,6 +7,25 @@ function Login() {
   const [contrasena, setContrasena] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // Redirige AUTOMÁTICAMENTE si ya está logueado
+  useEffect(() => {
+    const usuario = localStorage.getItem('usuario');
+    if (usuario) {
+      const user = JSON.parse(usuario);
+      if (user.idRol === 1) {
+        navigate('/general', { replace: true });
+      } else if (user.idRol === 2) {
+        if (user.programa && user.programa.idPrograma) {
+          navigate(`/programas/${user.programa.idPrograma}`, { replace: true });
+        } else {
+          navigate('/visualizador', { replace: true });
+        }
+      } else {
+        navigate('/visualizador', { replace: true });
+      }
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,17 +38,19 @@ function Login() {
       });
       if (response.ok) {
         const usuario = await response.json();
-        localStorage.setItem('usuario', JSON.stringify(usuario));
+        localStorage.removeItem('usuario'); // Limpiar cualquier usuario previo
+        localStorage.setItem('usuario', JSON.stringify(usuario)); // Guardar usuario nuevo
+        // Navegación con replace: true para limpiar el historial
         if (usuario.idRol === 1) {
-          navigate('/general'); // Superadmin
+          navigate('/general', { replace: true }); // Superadmin
         } else if (usuario.idRol === 2) {
           if (usuario.programa && usuario.programa.idPrograma) {
-            navigate(`/programas/${usuario.programa.idPrograma}`);
+            navigate(`/programas/${usuario.programa.idPrograma}`, { replace: true });
           } else {
             setError("No tienes programa asignado. Contacta al administrador.");
           }
         } else {
-          navigate('/visualizador');
+          navigate('/visualizador', { replace: true });
         }
       } else {
         setError('Correo o contraseña incorrectos');
@@ -41,7 +62,6 @@ function Login() {
 
   return (
     <div className="login-container">
-      {/* Sección izquierda con imagen */}
       <div className="login-left">
         <div className="logo-section">
           <img src="/logo-dideco.png" alt="DIDECO" className="dideco-logo" />
@@ -51,15 +71,12 @@ function Login() {
           </div>
         </div>
       </div>
-
-      {/* Sección derecha con formulario */}
       <div className="login-right">
         <div className="login-form-container">
           <div className="system-title">
             <h1>Sistema de control de programas sociales</h1>
             <p>Ingresa tus credenciales para acceder al sistema</p>
           </div>
-
           <form className="login-form" onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="correo">Correo electrónico</label>
@@ -72,7 +89,6 @@ function Login() {
                 required
               />
             </div>
-
             <div className="form-group">
               <label htmlFor="contrasena">Contraseña</label>
               <input
@@ -84,11 +100,9 @@ function Login() {
                 required
               />
             </div>
-
             <button type="submit" className="login-button">
               INICIAR SESIÓN
             </button>
-
             {error && <div className="error-message">{error}</div>}
           </form>
         </div>

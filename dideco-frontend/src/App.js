@@ -8,7 +8,12 @@ import CrearPrograma from './pages/CrearPrograma';
 import EditarProgramas from './pages/EditarProgramas';
 import VisualizadorProgramas from './pages/VisualizadorProgramas';
 import ActividadDetalle from './pages/ActividadDetalle';
-import ActividadDashboardDetalle from './pages/ActividadDashboardDetalle'; // Importa el nuevo detalle edición
+import ActividadDashboardDetalle from './pages/ActividadDashboardDetalle';
+
+// Importa los nuevos PrivateRoute
+import PrivateRouteSuperadmin from './components/PrivateRouteSuperadmin';
+import PrivateRouteEncargado from './components/PrivateRouteEncargado';
+import PrivateRouteVisualizador from './components/PrivateRouteVisualizador';
 
 function PanelUsuario() {
   return <h2>Panel para encargado por implementar</h2>;
@@ -19,25 +24,95 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/general" element={<General />} />
-        <Route path="/programas/:id" element={<ProgramaDashboard />} />
-        <Route path="/panel-usuario" element={<PanelUsuario />} />
-        <Route path="/usuarios" element={<Usuarios />} />
-        <Route path="/programas" element={<CrearPrograma />} />
-        <Route path="/editar-programas" element={<EditarProgramas />} />
-        <Route path="/visualizador" element={<VisualizadorProgramas />} />
 
-        {/* Ruta para la vista básica solo detalle */}
-        <Route path="/actividades/:idActividad" element={<ActividadDetalle />} />
+        {/* Rutas para SUPERADMIN */}
+        <Route
+          path="/general"
+          element={
+            <PrivateRouteSuperadmin>
+              <General />
+            </PrivateRouteSuperadmin>
+          }
+        />
+        <Route
+          path="/usuarios"
+          element={
+            <PrivateRouteSuperadmin>
+              <Usuarios />
+            </PrivateRouteSuperadmin>
+          }
+        />
 
-        {/* Nueva ruta para detalle y edición de actividad usada en dashboard */}
-        <Route path="/actividad-dashboard/:idActividad" element={<ActividadDashboardDetalle />} />
+        {/* Rutas para ENCARGADO */}
+        <Route
+          path="/programas/:id"
+          element={
+            <PrivateRouteEncargado>
+              <ProgramaDashboard />
+            </PrivateRouteEncargado>
+          }
+        />
+        <Route
+          path="/panel-usuario"
+          element={
+            <PrivateRouteEncargado>
+              <PanelUsuario />
+            </PrivateRouteEncargado>
+          }
+        />
 
+        {/* Rutas para VISUALIZADOR */}
+        <Route
+          path="/visualizador"
+          element={
+            <PrivateRouteVisualizador>
+              <VisualizadorProgramas />
+            </PrivateRouteVisualizador>
+          }
+        />
+        <Route
+          path="/visualizador/:idPrograma"
+          element={
+            <PrivateRouteVisualizador>
+              <VisualizadorProgramas />
+            </PrivateRouteVisualizador>
+          }
+        />
 
-        <Route path="/visualizador/:idPrograma" element={<VisualizadorProgramas />} />
+        {/* Rutas comunes, adaptables al tipo de usuario si quieres (usa el PrivateRoute adecuado) */}
+        <Route
+          path="/programas"
+          element={
+            <PrivateRouteSuperadmin>
+              <CrearPrograma />
+            </PrivateRouteSuperadmin>
+          }
+        />
+        <Route
+          path="/editar-programas"
+          element={
+            <PrivateRouteSuperadmin>
+              <EditarProgramas />
+            </PrivateRouteSuperadmin>
+          }
+        />
+        <Route
+          path="/actividades/:idActividad"
+          element={
+            <PrivateRouteEncargado>
+              <ActividadDetalle />
+            </PrivateRouteEncargado>
+          }
+        />
+        <Route
+          path="/actividad-dashboard/:idActividad"
+          element={
+            <PrivateRouteEncargado>
+              <ActividadDashboardDetalle />
+            </PrivateRouteEncargado>
+          }
+        />
 
-
-        {/* Ruta fallback a Login para todas las demás */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
