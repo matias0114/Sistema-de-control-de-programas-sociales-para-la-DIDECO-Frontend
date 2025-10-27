@@ -1,58 +1,90 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Sidebar.css';
 
-function Sidebar({ isOpen, onToggle, onClose }) {
-  const menuItems = [
-    { icon: '📊', label: 'Dashboard', active: true, path: '/dashboard' },
-    { icon: '📂', label: 'Programas', path: '/programas' },
-    { icon: '➕', label: 'Crear/Editar programa', path: '/programas/nuevo' },
-    { icon: '👥', label: 'Usuarios y roles', path: '/usuarios' },
-    { icon: '🧑‍💼', label: 'Asignar encargados', path: '/asignaciones' },
-    { icon: '💰', label: 'Avances y gastos', path: '/avances' },
-    { icon: '⚙️', label: 'Historial de cambios', path: '/historial-cambios' }
-  ];
+function Sidebar({ isOpen, onClose }) {
+  const navigate = useNavigate();
+  const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
 
-  const handleItemClick = (item) => {
-    console.log('Navegando a:', item.path);
-    // Aquí podrías agregar lógica de navegación
-    // Por ejemplo: navigate(item.path) si usas React Router
+  const handleNavigation = (path) => {
+    navigate(path);
+    onClose(); // Cerrar sidebar después de navegar
   };
+
+  const handleCloseClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClose();
+  };
+
+  if (!isOpen) return null;
 
   return (
     <>
-      {/* Overlay para móvil */}
-      {isOpen && <div className="sidebar-overlay" onClick={onClose}></div>}
+      {/* Overlay para cerrar al hacer clic fuera */}
+      <div className="sidebar-overlay" onClick={onClose}></div>
       
-      {/* Sidebar */}
-      <aside className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
+      <div className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
         <div className="sidebar-header">
+          <img src="/logo-circular.png" alt="Logo" className="sidebar-logo" />
           <h3>DIDECO</h3>
-          <button className="sidebar-close" onClick={onToggle}>✕</button>
+          <button 
+            className="sidebar-close" 
+            onClick={handleCloseClick}
+            aria-label="Cerrar menú"
+          >
+            ×
+          </button>
         </div>
         
         <nav className="sidebar-nav">
-          {menuItems.map((item, index) => (
-            <button
-              key={index}
-              className={`sidebar-item ${item.active ? 'active' : ''}`}
-              onClick={() => handleItemClick(item)}
+          {usuario.idRol === 1 && (
+            <>
+              <button 
+                className="nav-item" 
+                onClick={() => handleNavigation('/general')}
+              >
+                <span className="nav-icon">🏠</span>
+                Dashboard General
+              </button>
+              <button 
+                className="nav-item" 
+                onClick={() => handleNavigation('/usuarios')}
+              >
+                <span className="nav-icon">👥</span>
+                Gestión de Usuarios
+              </button>
+              <button 
+                className="nav-item" 
+                onClick={() => handleNavigation('/programas')}
+              >
+                <span className="nav-icon">📊</span>
+                Gestión de Programas
+              </button>
+            </>
+          )}
+          
+          {usuario.idRol === 2 && usuario.programa && (
+            <button 
+              className="nav-item" 
+              onClick={() => handleNavigation(`/programas/${usuario.programa.idPrograma}`)}
             >
-              <span className="sidebar-icon">{item.icon}</span>
-              <span className="sidebar-label">{item.label}</span>
+              <span className="nav-icon">📋</span>
+              Mi Programa
             </button>
-          ))}
+          )}
+          
+          {usuario.idRol === 3 && (
+            <button 
+              className="nav-item" 
+              onClick={() => handleNavigation('/visualizador')}
+            >
+              <span className="nav-icon">👁️</span>
+              Ver Programas
+            </button>
+          )}
         </nav>
-        
-        <div className="sidebar-footer">
-          <div className="user-info">
-            <span className="user-avatar">👤</span>
-            <div className="user-details">
-              <span className="user-name">Usuario</span>
-              <span className="user-role">Administrador</span>
-            </div>
-          </div>
-        </div>
-      </aside>
+      </div>
     </>
   );
 }

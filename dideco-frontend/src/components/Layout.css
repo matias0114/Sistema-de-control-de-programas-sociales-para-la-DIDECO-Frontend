@@ -30,6 +30,21 @@
   gap: 16px;
 }
 
+/* Estilo para el logo en el topbar */
+.topbar-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.topbar-logo:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
 .hamburger-menu {
   display: flex;
   flex-direction: column;
@@ -87,10 +102,18 @@
   color: #fff;
 }
 
+/* MANTENER LA CLASE ANTERIOR PARA COMPATIBILIDAD */
 .page-content {
   padding: 40px 24px;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+/* NUEVA CLASE SIN RESTRICCIONES DE ANCHO */
+.page-content-full {
+  padding: 0;
+  width: 100%;
+  margin: 0;
 }
 
 /* === RESPONSIVE === */
@@ -99,7 +122,318 @@
     font-size: 1.2rem;
   }
   
+  .topbar-logo {
+    width: 36px;
+    height: 36px;
+  }
+  
   .page-content {
     padding: 20px 16px;
   }
+}
+
+/* Estilos del perfil en el topbar */
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: 20px;
+  position: relative;
+}
+
+.user-name {
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.profile-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profile-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.profile-icon {
+  font-size: 1.2rem;
+  color: white;
+}
+
+/* Dropdown de perfil - Mejoras en el diseño */
+.profile-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 12px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  min-width: 300px;
+  z-index: 1000;
+  animation: dropdownSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Flecha del dropdown mejorada */
+.profile-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  right: 22px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid rgba(255, 255, 255, 0.98);
+  filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.profile-dropdown::after {
+  content: '';
+  position: absolute;
+  top: -11px;
+  right: 22px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Header del dropdown mejorado */
+.profile-dropdown-header {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(22, 100, 193, 0.05) 0%, rgba(24, 137, 237, 0.03) 100%);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.profile-dropdown-avatar {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(71, 85, 105, 0.2);
+}
+
+.profile-dropdown-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-dropdown-name {
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-dropdown-email {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.profile-dropdown-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(226, 232, 240, 0.8) 50%, transparent 100%);
+  margin: 0 16px;
+}
+
+/* Contenido del dropdown mejorado */
+.profile-dropdown-content {
+  padding: 16px 24px;
+  background: rgba(248, 250, 252, 0.5);
+}
+
+.profile-dropdown-item {
+  color: #475569;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  border: 1px solid rgba(226, 232, 240, 0.5);
+  transition: all 0.2s ease;
+}
+
+.profile-dropdown-item:last-child {
+  margin-bottom: 0;
+}
+
+.profile-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(148, 163, 184, 0.3);
+  transform: translateX(2px);
+}
+
+.profile-dropdown-item strong {
+  color: #334155;
+  font-weight: 700;
+}
+
+/* Botón de logout mejorado con rojo mate */
+.profile-dropdown-logout {
+  width: 100%;
+  background: linear-gradient(135deg, #be123c 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  padding: 16px 24px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 0;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.profile-dropdown-logout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #9f1239 0%, #b91c1c 100%);
+  transition: left 0.3s ease;
+}
+
+.profile-dropdown-logout:hover::before {
+  left: 0;
+}
+
+.profile-dropdown-logout:hover {
+  box-shadow: 0 6px 20px rgba(190, 18, 60, 0.3);
+  transform: translateY(-2px);
+}
+
+.profile-dropdown-logout:active {
+  transform: translateY(0);
+}
+
+.profile-dropdown-logout span,
+.profile-dropdown-logout .logout-icon {
+  position: relative;
+  z-index: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-section {
+    gap: 8px;
+    margin-right: 16px;
+  }
+  
+  .user-name {
+    display: none; /* Ocultar nombre en móviles */
+  }
+  
+  .profile-dropdown {
+    min-width: 280px;
+    right: -12px;
+    margin-top: 10px;
+  }
+  
+  .profile-dropdown::before,
+  .profile-dropdown::after {
+    right: 32px;
+  }
+  
+  .profile-dropdown-header {
+    padding: 18px 20px;
+  }
+  
+  .profile-dropdown-avatar {
+    width: 46px;
+    height: 46px;
+    font-size: 1.4rem;
+  }
+  
+  .profile-dropdown-content {
+    padding: 14px 20px;
+  }
+  
+  .profile-dropdown-logout {
+    padding: 14px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Estados adicionales para interactividad */
+.profile-dropdown-item {
+  position: relative;
+}
+
+.profile-dropdown-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  background: linear-gradient(180deg, #475569 0%, #64748b 100%);
+  border-radius: 0 2px 2px 0;
+  transition: height 0.2s ease;
+}
+
+.profile-dropdown-item:hover::before {
+  height: 60%;
+}
+
+/* Animación del icono de logout */
+@keyframes logout-bounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-2px); }
+}
+
+.profile-dropdown-logout:hover .logout-icon {
+  animation: logout-bounce 0.6s ease-in-out;
 }

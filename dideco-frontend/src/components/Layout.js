@@ -1,29 +1,56 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // <-- importa esto
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import './Layout.css';
 
-function Layout({ children, title = "Sistema de Control" }) {
+function Layout({ children, title = "Dashboard" }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const navigate = useNavigate(); // <-- inicializa
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+
+  // Obtener datos del usuario desde localStorage
+  const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+
+  // Función para obtener el nombre del rol
+  const getRolName = (idRol) => {
+    switch(idRol) {
+      case 1: return 'Superadmin';
+      case 2: return 'Administrador de Programa';
+      case 3: return 'Visualizador';
+      default: return 'Usuario';
+    }
+  };
 
   const handleLogout = () => {
-    localStorage.removeItem('usuario');   // limpia el usuario de tu app
-    navigate('/');                        // vuelve al login sin recargar
+    localStorage.removeItem('usuario');
+    navigate('/');
   };
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const toggleProfileDropdown = () => {
+    setShowProfileDropdown(!showProfileDropdown);
+  };
+
+  // Cerrar dropdown al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="layout-bg">
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onToggle={toggleSidebar}
-        onClose={() => setSidebarOpen(false)}
-      />
-
       <div className="main-content">
         <nav className="topbar">
           <div className="nav-left">
@@ -32,13 +59,54 @@ function Layout({ children, title = "Sistema de Control" }) {
               <span></span>
               <span></span>
             </button>
+            <img src="/logo-circular.png" alt="Logo" className="topbar-logo" />
             <h1>{title}</h1>
           </div>
           <div className="nav-right">
-            <button onClick={handleLogout} className="logout-btn">
-              Cerrar Sesión
-            </button>
-            <span className="user-icon">👤</span>
+            {/* Perfil del usuario */}
+            <div className="profile-section" ref={dropdownRef}>
+              <span className="user-name">{usuario.nombreUsuario || 'Usuario'}</span>
+              <button className="profile-btn" onClick={toggleProfileDropdown}>
+                <div className="profile-icon">
+                  👤
+                </div>
+              </button>
+              
+              {/* Dropdown de perfil */}
+              {showProfileDropdown && (
+                <div className="profile-dropdown">
+                  <div className="profile-dropdown-header">
+                    <div className="profile-dropdown-avatar">
+                      👤
+                    </div>
+                    <div className="profile-dropdown-info">
+                      <p className="profile-dropdown-name">{usuario.nombreUsuario || 'Usuario'}</p>
+                      <p className="profile-dropdown-email">{usuario.correo || 'No disponible'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="profile-dropdown-divider"></div>
+                  
+                  <div className="profile-dropdown-content">
+                    <div className="profile-dropdown-item">
+                      <strong>Rol:</strong> {getRolName(usuario.idRol)}
+                    </div>
+                    {usuario.programa && (
+                      <div className="profile-dropdown-item">
+                        <strong>Programa:</strong> {usuario.programa.nombrePrograma}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="profile-dropdown-divider"></div>
+                  
+                  <button className="profile-dropdown-logout" onClick={handleLogout}>
+                    <span className="logout-icon">🚪</span>
+                    <span>Cerrar Sesión</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </nav>
         
@@ -46,6 +114,8 @@ function Layout({ children, title = "Sistema de Control" }) {
           {children}
         </div>
       </div>
+      
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
     </div>
   );
 }
