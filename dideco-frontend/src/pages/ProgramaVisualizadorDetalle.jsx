@@ -3,6 +3,7 @@ import PresupuestoChart from "./PresupuestoChart";
 import GraficoProgreso from "./GraficoProgreso";
 import GraficoGastosMensuales from "./GraficoGastosMensuales";
 import "./programadashboard.css";
+import { useNavigate } from "react-router-dom";
 
 function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
   const [programa, setPrograma] = useState(null);
@@ -11,8 +12,10 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
   const [presupuesto, setPresupuesto] = useState({});
   const [gastosMensuales, setGastosMensuales] = useState([]);
   const [estadisticas, setEstadisticas] = useState({});
+  const [beneficiarios, setBeneficiarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
+  const navigate = useNavigate();
 
   // Función para calcular avance temporal en porcentaje según fechas
   function getActividadProgreso(act) {
@@ -40,7 +43,7 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
         const actsProg = acts.filter(a => a.programa?.idPrograma === Number(idPrograma));
         setActividades(actsProg);
 
-        // Cargar avances (lógica corregida)
+        // Cargar avances
         const avs = await fetch(`http://localhost:8080/avances`).then(res => res.json());
         const avsProg = avs.filter(av =>
           actsProg.some(act => av.idActividad === act.idActividad || av.actividad?.idActividad === act.idActividad)
@@ -84,6 +87,12 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
             })
             .sort((a, b) => a.anio !== b.anio ? a.anio - b.anio : a.mes - b.mes);
           setGastosMensuales(datosGrafico);
+        }
+        const respBenef = await fetch(`http://localhost:8080/beneficiarios-programa/programa/${idPrograma}`);
+        if (respBenef.ok) {
+          setBeneficiarios(await respBenef.json());
+        } else {
+          setBeneficiarios([]);
         }
       } catch (error) {
         console.error('Error al cargar datos:', error);
@@ -159,8 +168,12 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
           <div className="info-card secondary">
             <div className="info-card-icon">👤</div>
             <div className="info-card-content">
-              <h4>Encargado</h4>
-              <p>{programa.usuario?.nombreUsuario || 'Sin asignar'}</p>
+              <h4>Encargados</h4>
+              <p>
+                {programa.usuarios && programa.usuarios.length > 0
+                  ? programa.usuarios.map(u => u.nombreUsuario).join(", ")
+                  : 'Sin asignar'}
+              </p>
             </div>
           </div>
           {programa.fechaInicio && <div className="info-card success">
@@ -272,11 +285,49 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
                       </div>
                     </td>
                     <td>
-                      <button className="btn-small" style={{minWidth:80}}
-                        onClick={() => window.location.href = `/actividades/${act.idActividad}`}>
-                        Ver detalles
-                      </button>
+                      <button className="btn-small" 
+                      style={{minWidth:80}} 
+                      onClick={() => navigate(`/visualizador-actividad/${act.idActividad}`)}>
+                      Ver detalles
+                    </button>
+
+
                     </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+      {/* --- Beneficiarios del Programa (solo vista) --- */}
+      <div className="section-container" style={{marginTop:32}}>
+        <h2 className="section-title"><span className="section-icon">👥</span>Beneficiarios del Programa</h2>
+        {beneficiarios.length === 0 ? (
+          <div style={{
+            textAlign: 'center', padding: '40px', color: '#6b7280', fontSize: '15px'
+          }}>
+            <div style={{ fontSize: '42px', marginBottom: '14px' }}>👤</div>
+            Aún no hay beneficiarios registrados para este programa.
+          </div>
+        ) : (
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", background: "#fff", borderCollapse: "collapse" }}>
+              <thead>
+                <tr>
+                  <th style={{padding: 12, borderBottom: '2px solid #e5e7eb'}}>Nombre</th>
+                  <th style={{padding: 12, borderBottom: '2px solid #e5e7eb'}}>RUT</th>
+                  <th style={{padding: 12, borderBottom: '2px solid #e5e7eb'}}>Teléfono</th>
+                  <th style={{padding: 12, borderBottom: '2px solid #e5e7eb'}}>Dirección</th>
+                </tr>
+              </thead>
+              <tbody>
+                {beneficiarios.map(b => (
+                  <tr key={b.idBeneficiario} style={{borderBottom: '1px solid #e5e7eb'}}>
+                    <td style={{padding: 12}}>{b.nombreCompleto || "—"}</td>
+                    <td style={{padding: 12}}>{b.rut || "—"}</td>
+                    <td style={{padding: 12}}>{b.telefono || "—"}</td>
+                    <td style={{padding: 12}}>{b.direccion || "—"}</td>
                   </tr>
                 ))}
               </tbody>

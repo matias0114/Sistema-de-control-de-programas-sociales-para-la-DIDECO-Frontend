@@ -23,6 +23,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Ruta pública */}
         <Route path="/" element={<Login />} />
 
         {/* Rutas para SUPERADMIN */}
@@ -79,7 +80,17 @@ function App() {
           }
         />
 
-        {/* Rutas comunes, adaptables al tipo de usuario si quieres (usa el PrivateRoute adecuado) */}
+        <Route
+          path="/visualizador-actividad/:idActividad"
+          element={
+            <PrivateRouteVisualizador>
+              <ActividadDetalle />
+            </PrivateRouteVisualizador>
+          }
+        />
+
+
+        {/* Rutas comunes adaptadas por rol */}
         <Route
           path="/programas"
           element={
@@ -113,6 +124,7 @@ function App() {
           }
         />
 
+        {/* Ruta fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

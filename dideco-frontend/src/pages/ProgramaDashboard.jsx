@@ -16,12 +16,15 @@ function ProgramaDashboard() {
   const [actividades, setActividades] = useState([]);
   const [presupuesto, setPresupuesto] = useState({});
   const [gastosMensuales, setGastosMensuales] = useState([]);
+  const [beneficiarios, setBeneficiarios] = useState([]);
+  const [showPresupuesto, setShowPresupuesto] = useState(false);
+  const [showCrearActividad, setShowCrearActividad] = useState(false);
+  const [showBeneficiarioForm, setShowBeneficiarioForm] = useState(false);
+  const [editarBeneficiario, setEditarBeneficiario] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const usuario = JSON.parse(localStorage.getItem("usuario"));
-  const [showPresupuesto, setShowPresupuesto] = useState(false);
-  const [showCrearActividad, setShowCrearActividad] = useState(false);
 
   function getActividadProgreso(act) {
     if (!act.fechaInicio || !act.fechaTermino) return 0;
@@ -47,12 +50,12 @@ function ProgramaDashboard() {
           tipoPrograma: newProg.tipoPrograma,
           oficinaResponsable: newProg.oficinaResponsable,
           contactoEncargado: newProg.contactoEncargado,
-          cupos: newProg.cupos, // CAMBIADO de numeroCupos a cupos
-          metas: newProg.metas, // CAMBIADO de metasPrograma a metas
+          cupos: newProg.cupos,
+          metas: newProg.metas,
           requisitosIngreso: newProg.requisitosIngreso,
           beneficios: newProg.beneficios,
           fechaInicio: newProg.fechaInicio,
-          fechaFin: newProg.fechaFin, // CAMBIADO de fechaTermino a fechaFin
+          fechaFin: newProg.fechaFin,
           estado: newProg.estado,
           usuario: newProg.usuario
         })
@@ -118,6 +121,17 @@ function ProgramaDashboard() {
     setGastosMensuales(datosGrafico);
   }, [actividades]);
 
+
+  const cargarBeneficiarios = useCallback(async () => {
+    try {
+      const resp = await fetch(`http://localhost:8080/beneficiarios-programa/programa/${id}`);
+      if (!resp.ok) throw new Error("No se pudieron cargar los beneficiarios");
+      setBeneficiarios(await resp.json());
+    } catch (err) {
+      setBeneficiarios([]);
+    }
+  }, [id]);
+
   const cargarDatosDashboard = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -142,6 +156,7 @@ function ProgramaDashboard() {
         presupuestoData = { asignado: 0, ejecutado: 0 };
       }
       setPresupuesto(presupuestoData);
+      await cargarBeneficiarios();
       
     } catch (err) {
       setError(err.message);
@@ -180,6 +195,101 @@ function ProgramaDashboard() {
     };
     return estados[estado?.toLowerCase()] || estados['activo'];
   };
+
+
+  // BENEFICIARIOS funciones:
+  const handleAddOrUpdateBeneficiario = async (data) => {
+    if (editarBeneficiario) {
+      await fetch(`http://localhost:8080/beneficiarios-programa/${editarBeneficiario.idBeneficiario}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({...data, programa: {idPrograma: parseInt(id)}})
+      });
+    } else {
+      await fetch(`http://localhost:8080/beneficiarios-programa`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({...data, programa: {idPrograma: parseInt(id)}})
+      });
+    }
+    setShowBeneficiarioForm(false);
+    setEditarBeneficiario(null);
+    cargarBeneficiarios();
+  };
+
+  const handleEditBeneficiario = beneficiario => {
+    setEditarBeneficiario(beneficiario);
+    setShowBeneficiarioForm(true);
+  };
+
+  const handleDeleteBeneficiario = async idBeneficiario => {
+    if (window.confirm("¿Eliminar este beneficiario?")) {
+      await fetch(`http://localhost:8080/beneficiarios-programa/${idBeneficiario}`, { method: "DELETE" });
+      cargarBeneficiarios();
+    }
+  };
+
+  // Formulario Beneficiario como componente interno:
+  function BeneficiarioForm({ beneficiario, onSave, onCancel }) {
+    const [form, setForm] = useState({
+      nombreCompleto: beneficiario?.nombreCompleto || "",
+      rut: beneficiario?.rut || "",
+      telefono: beneficiario?.telefono || "",
+      direccion: beneficiario?.direccion || ""
+    });
+
+    const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+    const handleSubmit = e => {
+      e.preventDefault();
+      onSave(form);
+    };
+
+    return (
+      <form onSubmit={handleSubmit} style={{
+        background: "#f8fafc",
+        padding: 24,
+        borderRadius: 12,
+        border: '1px solid #e5e7eb',
+        maxWidth: 420,
+        minWidth: 320
+      }}>
+        <h3 style={{marginBottom: 18}}>Beneficiario</h3>
+        <input
+          name="nombreCompleto"
+          value={form.nombreCompleto}
+          onChange={handleChange}
+          placeholder="Nombre Completo"
+          style={{marginBottom: 8, width: "100%"}}
+        />
+        <input
+          name="rut"
+          value={form.rut}
+          onChange={handleChange}
+          placeholder="RUT"
+          style={{marginBottom: 8, width: "100%"}}
+        />
+        <input
+          name="telefono"
+          value={form.telefono}
+          onChange={handleChange}
+          placeholder="Teléfono"
+          style={{marginBottom: 8, width: "100%"}}
+        />
+        <input
+          name="direccion"
+          value={form.direccion}
+          onChange={handleChange}
+          placeholder="Dirección"
+          style={{marginBottom: 18, width: "100%"}}
+        />
+        <div style={{display: "flex", gap: 8}}>
+          <button type="submit" className="btn-export">Guardar</button>
+          <button type="button" onClick={onCancel} style={{background: "#e5e7eb"}}>Cancelar</button>
+        </div>
+      </form>
+    );
+  }
 
   if (loading) {
     return (
@@ -815,6 +925,76 @@ function ProgramaDashboard() {
                   })}
                 </tbody>
               </table>
+            </div>
+          )}
+        </div>
+
+        {/* Sección de beneficiarios del programa */}
+        <div style={{
+          background: 'white',
+          borderRadius: '16px',
+          padding: '32px',
+          marginTop: '32px',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.07)',
+          border: '1px solid #e5e7eb'
+        }}>
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px"
+          }}>
+            <h2 style={{fontSize: 22, fontWeight: 700, color: "#1f2937"}}>Beneficiarios del Programa</h2>
+            <button
+              className="btn-export"
+              onClick={() => { setShowBeneficiarioForm(true); setEditarBeneficiario(null); }}
+              style={{padding: "10px 20px"}}
+            >Ingresar beneficiario</button>
+          </div>
+          {beneficiarios.length === 0 ? (
+            <div style={{
+              textAlign: 'center', padding: '40px', color: '#6b7280', fontSize: '15px'
+            }}>
+              <div style={{ fontSize: '42px', marginBottom: '14px' }}>👤</div>
+              Aún no hay beneficiarios registrados para este programa.
+            </div>
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", background: "#fff", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr>
+                    <th style={{padding: 12, borderBottom: '2px solid #e5e7eb'}}>Nombre</th>
+                    <th style={{padding: 12, borderBottom: '2px solid #e5e7eb'}}>RUT</th>
+                    <th style={{padding: 12, borderBottom: '2px solid #e5e7eb'}}>Teléfono</th>
+                    <th style={{padding: 12, borderBottom: '2px solid #e5e7eb'}}>Dirección</th>
+                    <th style={{padding: 12, borderBottom: '2px solid #e5e7eb'}}>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {beneficiarios.map(b => (
+                    <tr key={b.idBeneficiario} style={{borderBottom: '1px solid #e5e7eb'}}>
+                      <td style={{padding: 12}}>{b.nombreCompleto || "—"}</td>
+                      <td style={{padding: 12}}>{b.rut || "—"}</td>
+                      <td style={{padding: 12}}>{b.telefono || "—"}</td>
+                      <td style={{padding: 12}}>{b.direccion || "—"}</td>
+                      <td style={{padding: 12, textAlign: "center"}}>
+                        <button className="btn-small" style={{marginRight: 6}} onClick={()=>handleEditBeneficiario(b)}>Editar</button>
+                        <button className="btn-small" onClick={()=>handleDeleteBeneficiario(b.idBeneficiario)} style={{background: "#e11d48"}}>Eliminar</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {showBeneficiarioForm && (
+            <div style={{
+              position: "fixed", left: 0, top: 0, width: "100%", height: "100%",
+              background: "rgba(0,0,0,0.17)", zIndex: 2000,
+              display: "flex", alignItems: "center", justifyContent: "center"
+            }}>
+              <BeneficiarioForm
+                beneficiario={editarBeneficiario}
+                onSave={handleAddOrUpdateBeneficiario}
+                onCancel={() => { setShowBeneficiarioForm(false); setEditarBeneficiario(null); }}
+              />
             </div>
           )}
         </div>
