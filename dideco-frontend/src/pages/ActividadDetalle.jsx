@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import AvanceTemporalDonut from "./AvanceTemporalDonut";
 import "./programadashboard.css";
 import LayoutSimple from "../components/LayoutSimple";
+import ModalVerDocumentos from "./ModalVerDocumentos";
+
 
 function ActividadDetalle() {
   const { idActividad } = useParams();
@@ -10,6 +12,8 @@ function ActividadDetalle() {
   const [actividad, setActividad] = useState(null);
   const [avances, setAvances] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModalVer, setShowModalVer] = React.useState(null); // guarda idAvance o null
+
 
   useEffect(() => {
     async function fetchDatos() {
@@ -611,10 +615,34 @@ function ActividadDetalle() {
                         ) : (
                           <span style={{ color: '#9ca3af' }}>—</span>
                         )}
+                        
+                      </td>
+                      <td style={{ padding: '16px 12px', textAlign: 'center' }}>
+                        <button
+                          onClick={() => setShowModalVer(av.idAvance)}
+                          style={{
+                            backgroundColor: '#10b981',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            padding: '6px 12px'
+                          }}
+                        >
+                          Ver documentos
+                        </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
+                {showModalVer && (
+                  <ModalVerDocumentos
+                    idAvance={showModalVer}
+                    onClose={() => setShowModalVer(null)}
+                  />
+                )}
               </table>
             </div>
           )}

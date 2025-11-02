@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AvanceTemporalDonut from "./AvanceTemporalDonut";
 import AgregarAvance from "./AgregarAvance";
+import ModalSubirDocumento from './ModalSubirDocumento';
+import ModalVerDocumentos from './ModalVerDocumentos';
 
 function ActividadDashboardDetalle() {
   const { idActividad } = useParams();
@@ -15,6 +17,10 @@ function ActividadDashboardDetalle() {
 
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const navigate = useNavigate();
+
+  const [showModalUpload, setShowModalUpload] = useState(null); // para idAvance
+  const [showModalVer, setShowModalVer] = useState(null);       // para idAvance
+
 
   // Cargar datos
   useEffect(() => {
@@ -1066,6 +1072,36 @@ function ActividadDashboardDetalle() {
                         >
                           ✏️ Editar
                         </button>
+                        <button
+                          onClick={() => setShowModalUpload(av.idAvance)}
+                          style={{
+                            padding: '6px 12px',
+                            background: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                          }}
+                        >
+                          Subir archivo
+                        </button>
+                        <button
+                          onClick={() => setShowModalVer(av.idAvance)}
+                          style={{
+                            padding: '6px 12px',
+                            background: '#10b981',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                          }}
+                        >
+                          Ver documentos
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -1145,6 +1181,22 @@ function ActividadDashboardDetalle() {
             />
           </div>
         )}
+
+        {showModalUpload &&
+          <ModalSubirDocumento
+            idAvance={showModalUpload}
+            onClose={() => setShowModalUpload(null)}
+            // Puedes agregar onUploadSuccess={...} si quieres refrescar la lista de documentos tras upload
+          />
+        }
+
+        {showModalVer &&
+          <ModalVerDocumentos
+            idAvance={showModalVer}
+            onClose={() => setShowModalVer(null)}
+          />
+        }
+
       </div>
 
       <style jsx>{`
