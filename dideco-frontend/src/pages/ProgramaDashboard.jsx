@@ -156,8 +156,7 @@ function ProgramaDashboard() {
         presupuestoData = { asignado: 0, ejecutado: 0 };
       }
       setPresupuesto(presupuestoData);
-      await cargarBeneficiarios();
-      
+      await cargarBeneficiarios();      
     } catch (err) {
       setError(err.message);
     } finally {
