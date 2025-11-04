@@ -81,6 +81,30 @@ function Layout({ children, title = "Dashboard" }) {
     setShowObservacionesModal(!showObservacionesModal);
   };
 
+  // Agregar esta función para borrar observación
+  const borrarObservacion = async (idPrograma, idObservacion) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/programas/${idPrograma}/observaciones/${idObservacion}`,
+        {
+          method: 'DELETE'
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Error al borrar la observación');
+      }
+
+      // Actualizar estado local removiendo la observación borrada
+      setObservaciones(prevObservaciones => 
+        prevObservaciones.filter(obs => obs.idObservacion !== idObservacion)
+      );
+
+    } catch (error) {
+      console.error('Error borrando observación:', error);
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -219,8 +243,40 @@ function Layout({ children, title = "Dashboard" }) {
             ) : (
               <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
                 {observaciones.map(obs => (
-                  <li key={obs.idObservacion} style={{ marginBottom: 12, borderBottom: '1px solid #ddd', paddingBottom: 8 }}>
-                    <div style={{ fontWeight: '600', marginBottom: 4 }}>{new Date(obs.fechaCreacion).toLocaleString()}</div>
+                  <li 
+                    key={obs.idObservacion} 
+                    style={{ 
+                      marginBottom: 12, 
+                      borderBottom: '1px solid #ddd', 
+                      paddingBottom: 8,
+                      position: 'relative'
+                    }}
+                  >
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center',
+                      marginBottom: 4 
+                    }}>
+                      <div style={{ fontWeight: '600' }}>
+                        {new Date(obs.fechaCreacion).toLocaleString()}
+                      </div>
+                      <button
+                        onClick={() => borrarObservacion(usuario.programa.idPrograma, obs.idObservacion)}
+                        style={{
+                          background: '#dc2626',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '4px 8px',
+                          fontSize: '12px',
+                          cursor: 'pointer'
+                        }}
+                        title="Eliminar observación"
+                      >
+                        🗑️ Eliminar
+                      </button>
+                    </div>
                     <div><strong>Autor:</strong> {obs.usuarioAutor || 'Desconocido'}</div>
                     <div>{obs.texto}</div>
                   </li>
@@ -228,21 +284,27 @@ function Layout({ children, title = "Dashboard" }) {
               </ul>
             )}
 
-            <button 
-              onClick={toggleObservacionesModal}
-              style={{
-                marginTop: 16,
-                padding: '8px 16px',
-                borderRadius: '6px',
-                border: 'none',
-                background: '#1664c1',
-                color: 'white',
-                fontWeight: '700',
-                cursor: 'pointer'
-              }}
-            >
-              Cerrar
-            </button>
+            <div style={{ 
+              display: 'flex', 
+              gap: '10px', 
+              marginTop: '16px',
+              justifyContent: 'flex-end' 
+            }}>
+              <button 
+                onClick={toggleObservacionesModal}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: '#1664c1',
+                  color: 'white',
+                  fontWeight: '700',
+                  cursor: 'pointer'
+                }}
+              >
+                Cerrar
+              </button>
+            </div>
           </div>
         </div>
       )}

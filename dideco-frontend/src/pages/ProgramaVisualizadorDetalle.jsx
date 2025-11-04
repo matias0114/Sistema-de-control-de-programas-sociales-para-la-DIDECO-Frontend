@@ -5,6 +5,7 @@ import GraficoGastosMensuales from "./GraficoGastosMensuales";
 import "./programadashboard.css";
 import { useNavigate } from "react-router-dom";
 import ModalObservacionInterna from "./ModalObservacionInterna";
+import FloatingAddButton from '../components/FloatingAddButton';
 
 
 function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
@@ -158,6 +159,26 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
     return Math.round((total / acts.length) * 100) / 100;
   };
 
+  const exportarPDF = async () => {
+    try {
+      // Agrega el idPrograma como parámetro de consulta
+      const response = await fetch(`http://localhost:8080/actividades/exportar-pdf?idPrograma=${idPrograma}`);
+      
+      if (!response.ok) throw new Error('Error al exportar PDF');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `actividades-${programa?.nombrePrograma || 'programa'}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al generar el PDF. Por favor, intente nuevamente.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -177,11 +198,22 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
   }
 
   return (
-    <>
+    <div style={{ position: 'relative', minHeight: '100vh' }}>
       <div className="dashboard-container">
         {/* --- Header --- */}
         <div className="programa-header-detalle">
-          <button onClick={onBack} className="btn-volver-header">← Volver a la lista</button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+            <button onClick={onBack} className="btn-volver-header">← Volver a la lista</button>
+            
+            <button 
+              onClick={exportarPDF}
+              className="btn-export"
+              title="Exportar PDF"
+            >
+              📄 Exportar PDF
+            </button>
+          </div>
+          
           <div className="header-content">
             <div className="header-main">
               <h1 className="programa-titulo">{programa.nombrePrograma}</h1>
@@ -376,20 +408,20 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
         </div>
       </div>
 
-      <button 
-        onClick={abrirModal} 
-        className="floating-button"
+      {/* FAB flotante en portal (siempre sobre todo) */}
+      <FloatingAddButton
+        onClick={() => setShowModalObservacion(true)}
         title="Agregar Observación Interna"
-      >
-        📝
-      </button>
+        icon="📝"
+      />
 
+      {/* tu modal */}
       <ModalObservacionInterna 
         visible={showModalObservacion}
         onClose={() => setShowModalObservacion(false)}
         onSave={guardarObservacion}
       />
-    </>
+    </div>
   );
 }
 

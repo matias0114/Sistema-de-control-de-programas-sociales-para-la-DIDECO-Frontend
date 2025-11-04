@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // NUEVO
+import { useParams, useNavigate } from "react-router-dom";
 import ProgramaVisualizadorDetalle from './ProgramaVisualizadorDetalle';
-import LayoutSimple from '../components/LayoutSimple'; 
-import './visualizador.css'; 
+import LayoutSimple from '../components/LayoutSimple';
+import './visualizador.css';
 
 function VisualizadorProgramas() {
   const [programas, setProgramas] = useState([]);

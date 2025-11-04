@@ -65,9 +65,25 @@ function Notificaciones() {
     }
   };
 
+  // Marcar OBSERVACIÓN como leída cuando se abre desde la lista
+  const marcarObservacionComoLeida = async (idObservacion) => {
+    try {
+      await fetch(`http://localhost:8080/observaciones-programa/${idObservacion}/leer`, {
+        method: 'PUT'
+      });
+    } catch (error) {
+      console.error('Error marcando observación como leída:', error);
+    }
+  };
+
   const handleNotificationClick = async (notificacion) => {
     if (!notificacion.leida) {
       await marcarComoLeida(notificacion.idNotificacion);
+    }
+
+    // Si es una observación interna, marcar también la observación como leída
+    if (notificacion.tipo === 'OBSERVACION_INTERNA' && notificacion.idReferencia) {
+      await marcarObservacionComoLeida(notificacion.idReferencia);
     }
     
     if (notificacion.tipo === 'NUEVA_ACTIVIDAD' && notificacion.idReferencia) {
@@ -108,6 +124,22 @@ function Notificaciones() {
   const totalPaginas = Math.ceil(notificacionesFiltradas.length / notifPorPagina);
 
   const noLeidas = notificaciones.filter(n => !n.leida).length;
+
+  // Agregar esta función para borrar notificación
+  const borrarNotificacion = async (idNotificacion) => {
+    try {
+      const resp = await fetch(`http://localhost:8080/notificaciones/${idNotificacion}`, {
+        method: 'DELETE'
+      });
+
+      if (resp.ok) {
+        // Actualizar estado local removiendo la notificación
+        setNotificaciones(prev => prev.filter(n => n.idNotificacion !== idNotificacion));
+      }
+    } catch (error) {
+      console.error('Error eliminando notificación:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -167,7 +199,6 @@ function Notificaciones() {
               <div 
                 key={notif.idNotificacion}
                 className={`notificacion-card ${!notif.leida ? 'no-leida' : ''}`}
-                onClick={() => handleNotificationClick(notif)}
               >
                 <div className="notificacion-icono">
                   {notif.tipo === 'NUEVA_ACTIVIDAD' ? '📋' : '📢'}
@@ -177,6 +208,22 @@ function Notificaciones() {
                   <span className="notificacion-fecha">{formatearFecha(notif.fechaCreacion)}</span>
                 </div>
                 {!notif.leida && <div className="notificacion-punto-azul"></div>}
+                <button
+                  onClick={() => borrarNotificacion(notif.idNotificacion)}
+                  className="notificacion-eliminar"
+                  style={{
+                    background: '#dc2626',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    padding: '4px 8px',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    marginLeft: 'auto'
+                  }}
+                >
+                  🗑️ Eliminar
+                </button>
               </div>
             ))}
           </div>

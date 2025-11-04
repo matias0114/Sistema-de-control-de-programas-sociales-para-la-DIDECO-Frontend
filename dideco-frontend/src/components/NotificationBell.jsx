@@ -11,11 +11,13 @@ function NotificationBell() {
   const navigate = useNavigate();
   
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-  const idUsuario = usuario.idUsuario;
+  const idUsuario = usuario?.idUsuario;
+  const idProgramaAsignado = usuario?.programa?.idPrograma;
 
   // Función para cargar contador
   const cargarContador = async () => {
     try {
+      if (!idUsuario) return; // guardia
       const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/contador`);
       if (resp.ok) {
         const count = await resp.json();
@@ -30,6 +32,7 @@ function NotificationBell() {
   const cargarNotificaciones = async () => {
     setLoading(true);
     try {
+      if (!idUsuario) return; // guardia
       const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/no-leidas`);
       if (resp.ok) {
         const data = await resp.json();
@@ -60,6 +63,7 @@ function NotificationBell() {
   // Marcar todas como leídas
   const marcarTodasComoLeidas = async () => {
     try {
+      if (!idUsuario) return; // guardia
       const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/leer-todas`, {
         method: 'PUT'
       });
@@ -73,12 +77,27 @@ function NotificationBell() {
     }
   };
 
+  // Marca OBSERVACIÓN como leída (PATCH anidado)
+  const marcarObservacionComoLeida = async (idObservacion) => {
+    if (!idObservacion || !idProgramaAsignado) return false;
+    try {
+      const r = await fetch(`http://localhost:8080/programas/${idProgramaAsignado}/observaciones/${idObservacion}/leer`, {
+        method: 'PATCH'
+      });
+      return r.ok;
+    } catch (e) {
+      console.error('Error marcando observación como leída:', e);
+      return false;
+    }
+  };
+
   // Manejar clic en notificación
   const handleNotificationClick = async (notificacion) => {
     await marcarComoLeida(notificacion.idNotificacion);
+    if (notificacion.tipo === 'OBSERVACION_INTERNA' && notificacion.idReferencia) {
+      await marcarObservacionComoLeida(notificacion.idReferencia);
+    }
     setShowDropdown(false);
-    
-    // Redirigir según el tipo
     if (notificacion.tipo === 'NUEVA_ACTIVIDAD' && notificacion.idReferencia) {
       navigate(`/visualizador-actividad/${notificacion.idReferencia}`);
     }

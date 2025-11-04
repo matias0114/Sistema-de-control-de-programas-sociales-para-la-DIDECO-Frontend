@@ -9,7 +9,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 24px;
 }
-x
+
 .header-info h1 {
   font-size: 2rem;
   margin: 0 0 8px 0;
@@ -42,19 +42,29 @@ x
   gap: 12px;
 }
 
+/* Estilos para el botón de exportar */
 .btn-export {
-  padding: 8px 16px;
-  background: #1664c1;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.3s;
+  background: #1664c1 !important;
+  color: white !important;
+  border: none !important;
+  padding: 10px 20px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: all 0.3s ease !important;
 }
 
 .btn-export:hover {
-  background: #1455a0;
+  background: #1455a8 !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-export:active {
+  transform: translateY(0) !important;
 }
 
 /* KPI Cards */
@@ -933,27 +943,32 @@ x
   transition: transform 0.3s ease !important;
 }
 
-.floating-button {
-  position: fixed !important;
-  bottom: 30px !important;
-  right: 30px !important;
-  width: 60px !important;
-  height: 60px !important;
-  border-radius: 50% !important;
-  background-color: #4CAF50 !important;
-  color: white !important;
-  border: none !important;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 24px !important;
-  z-index: 99999 !important;
-  transition: transform 0.3s ease !important;
-}
-
 .floating-button:hover {
   transform: scale(1.1) !important;
   background-color: #45a049 !important;
 }
+
+/* Botón de observación fuera del container */
+/* .floating-button-absolute {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  z-index: 1000;
+}
+
+.floating-button-absolute:hover {
+  transform: scale(1.1);
+  background-color: #45a049;
+} */
