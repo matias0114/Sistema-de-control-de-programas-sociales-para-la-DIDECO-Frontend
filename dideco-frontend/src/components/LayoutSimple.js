@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NotificationBell from './NotificationBell';
 import './Layout.css';
 
 function LayoutSimple({ children, title = "Sistema de Control" }) {
@@ -7,10 +8,8 @@ function LayoutSimple({ children, title = "Sistema de Control" }) {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const dropdownRef = useRef(null);
   
-  // Obtener datos del usuario desde localStorage
   const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
   
-  // Función para obtener el nombre del rol
   const getRolName = (idRol) => {
     switch(idRol) {
       case 1: return 'Superadmin';
@@ -29,7 +28,6 @@ function LayoutSimple({ children, title = "Sistema de Control" }) {
     setShowProfileDropdown(!showProfileDropdown);
   };
 
-  // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -52,7 +50,9 @@ function LayoutSimple({ children, title = "Sistema de Control" }) {
             <h1>{title}</h1>
           </div>
           <div className="nav-right">
-            {/* Perfil del usuario */}
+            {/* Campana de notificaciones (solo para visualizadores) */}
+            <NotificationBell />
+            
             <div className="profile-section" ref={dropdownRef}>
               <span className="user-name">{usuario.nombreUsuario || 'Usuario'}</span>
               <button className="profile-btn" onClick={toggleProfileDropdown}>

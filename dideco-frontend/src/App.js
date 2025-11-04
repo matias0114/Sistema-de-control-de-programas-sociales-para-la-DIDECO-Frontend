@@ -9,6 +9,8 @@ import EditarProgramas from './pages/EditarProgramas';
 import VisualizadorProgramas from './pages/VisualizadorProgramas';
 import ActividadDetalle from './pages/ActividadDetalle';
 import ActividadDashboardDetalle from './pages/ActividadDashboardDetalle';
+import Notificaciones from './pages/Notificaciones'; // Agregar esta línea
+import LayoutSimple from './components/LayoutSimple'; // Agregar esta línea
 
 // Importa los nuevos PrivateRoute
 import PrivateRouteSuperadmin from './components/PrivateRouteSuperadmin';
@@ -89,6 +91,17 @@ function App() {
           }
         />
 
+        {/* Ruta de notificaciones para VISUALIZADOR */}
+        <Route
+          path="/notificaciones"
+          element={
+            <PrivateRouteVisualizador>
+              <LayoutSimple title="Notificaciones">
+                <Notificaciones />
+              </LayoutSimple>
+            </PrivateRouteVisualizador>
+          }
+        />
 
         {/* Rutas comunes adaptadas por rol */}
         <Route
