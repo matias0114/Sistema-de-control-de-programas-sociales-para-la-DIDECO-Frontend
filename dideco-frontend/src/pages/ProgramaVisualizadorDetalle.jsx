@@ -146,6 +146,10 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
   const sumaMontosActividades = actividades.reduce(
     (total, act) => total + (parseFloat(act.montoAsignado) || 0), 0
   );
+  const finalizadas = actividades.filter(a => a.fechaTermino && new Date(a.fechaTermino) < new Date()).length;
+  const porcentajeFinalizadas = actividades.length
+    ? Math.round((finalizadas / actividades.length) * 100)
+    : 0;
 
   const calcularAvanceGeneral = (acts, avs) => {
     if (!acts.length) return 0;
@@ -236,50 +240,74 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
                 <p>{programa.oficinaResponsable || 'Sin oficina asignada'}</p>
               </div>
             </div>
+
             <div className="info-card secondary">
               <div className="info-card-icon">👤</div>
               <div className="info-card-content">
-                <h4>Encargados</h4>
+                <h4>Encargado</h4>
                 <p>
-                  {programa.usuarios && programa.usuarios.length > 0
-                    ? programa.usuarios.map(u => u.nombreUsuario).join(", ")
-                    : 'Sin asignar'}
+                  {programa.usuario
+                    ? programa.usuario.nombreUsuario
+                    : 'Sin encargado asignado'}
                 </p>
               </div>
             </div>
-            {programa.fechaInicio && <div className="info-card success">
-              <div className="info-card-icon">📅</div>
-              <div className="info-card-content">
-                <h4>Fecha de Inicio</h4>
-                <p>{new Date(programa.fechaInicio).toLocaleDateString('es-CL')}</p>
+
+            {programa.fechaInicio && (
+              <div className="info-card success">
+                <div className="info-card-icon">📅</div>
+                <div className="info-card-content">
+                  <h4>Fecha de Inicio</h4>
+                  <p>{new Date(programa.fechaInicio).toLocaleDateString('es-CL')}</p>
+                </div>
               </div>
-            </div>}
-            {programa.fechaFin && <div className="info-card warning">
-              <div className="info-card-icon">🏁</div>
-              <div className="info-card-content">
-                <h4>Fecha de Término</h4>
-                <p>{new Date(programa.fechaFin).toLocaleDateString('es-CL')}</p>
+            )}
+
+            {programa.fechaFin && (
+              <div className="info-card warning">
+                <div className="info-card-icon">🏁</div>
+                <div className="info-card-content">
+                  <h4>Fecha de Término</h4>
+                  <p>{new Date(programa.fechaFin).toLocaleDateString('es-CL')}</p>
+                </div>
               </div>
-            </div>}
-            {programa.fechaInicio && programa.fechaFin && <div className="info-card info">
-              <div className="info-card-icon">⏱️</div>
-              <div className="info-card-content">
-                <h4>Duración del Programa</h4>
-                <p>{Math.ceil((new Date(programa.fechaFin) - new Date(programa.fechaInicio)) / (1000 * 60 * 60 * 24))} días</p>
+            )}
+
+            {programa.fechaInicio && programa.fechaFin && (
+              <div className="info-card info">
+                <div className="info-card-icon">⏱️</div>
+                <div className="info-card-content">
+                  <h4>Duración del Programa</h4>
+                  <p>
+                    {Math.ceil(
+                      (new Date(programa.fechaFin) - new Date(programa.fechaInicio)) /
+                        (1000 * 60 * 60 * 24)
+                    )}{" "}
+                    días
+                  </p>
+                </div>
               </div>
-            </div>}
+            )}
+
             <div className="info-card accent">
               <div className="info-card-icon">📊</div>
               <div className="info-card-content">
                 <h4>Estado del Programa</h4>
-                <p className={`estado-texto ${programa.estado?.toLowerCase()}`}>
-                  {programa.estado === 'activo' ? 'En Ejecución' : 'Inactivo'}
+                <p
+                  className={`estado-texto ${
+                    programa.estado?.toLowerCase() === 'activo'
+                      ? 'activo'
+                      : 'inactivo'
+                  }`}
+                >
+                  {programa.estado?.toLowerCase() === 'activo'
+                    ? '🟢 En Ejecución'
+                    : '🔴 Inactivo'}
                 </p>
               </div>
             </div>
           </div>
         </div>
-
         {/* --- Gráficos de resumen --- */}
         <div className="section-container">
           <h2 className="section-title"><span className="section-icon">📈</span>Análisis del Programa</h2>
@@ -304,9 +332,18 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
           <h2 className="section-title"><span className="section-icon">📊</span>Estadísticas</h2>
           <div className="stats-grid">
             <div className="stat-item"><div className="stat-value">{estadisticas.actividades || 0}</div><div className="stat-label">Actividades Totales</div></div>
-            <div className="stat-item"><div className="stat-value">{estadisticas.avanceGeneral || 0}%</div><div className="stat-label">Avance General</div></div>
-            <div className="stat-item"><div className="stat-value">${(presupuesto.asignado || 0).toLocaleString('es-CL')}</div><div className="stat-label">Presupuesto Asignado</div></div>
+            <div className="stat-item"><div className="stat-value">{porcentajeFinalizadas}%</div><div className="stat-label">Actividades Finalizadas</div></div>            <div className="stat-item"><div className="stat-value">${(presupuesto.asignado || 0).toLocaleString('es-CL')}</div><div className="stat-label">Presupuesto Asignado</div></div>
             <div className="stat-item"><div className="stat-value">${sumaMontosActividades.toLocaleString('es-CL')}</div><div className="stat-label">Presupuesto Ejecutado</div></div>
+            <div className="stat-item"><div className="stat-value">{beneficiarios.length} / {programa.cupos ?? 0}</div><div className="stat-label">Cupos Ocupados</div></div>
+            <div className="stat-item">
+              <div className="stat-value">
+                {presupuesto.asignado > 0
+                  ? ((sumaMontosActividades / presupuesto.asignado) * 100).toFixed(1)
+                  : 0}%
+              </div>
+              <div className="stat-label">Ejecución Presupuestaria</div>
+            </div>
+
           </div>
         </div>
 

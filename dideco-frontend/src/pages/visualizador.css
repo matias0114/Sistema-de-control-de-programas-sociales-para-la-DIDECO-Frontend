@@ -620,3 +620,297 @@
 .programa-card:nth-child(6) { animation-delay: 0.6s; }
 
 .floating-button { display: none !important; }
+
+.stat-card-h {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card-h:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.stat-card-h.selected {
+  border: 2px solid #4CAF50;
+  background-color: #eaffea;
+}
+/* 🔍 Contenedor del buscador */
+.buscador-container {
+  width: 100%;
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* 🔎 Input del buscador */
+.buscador-input {
+  width: 60%;
+  max-width: 500px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #d0d7de;
+  font-size: 16px;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  transition: all 0.2s ease;
+}
+
+.buscador-input:focus {
+  border-color: #4e8cff;
+  box-shadow: 0 0 6px rgba(78, 140, 255, 0.3);
+  outline: none;
+}
+
+/* 🕵️‍♀️ Placeholder sutil */
+.buscador-input::placeholder {
+  color: #999;
+}
+
+/* 📱 Adaptación móvil */
+@media (max-width: 768px) {
+  .buscador-input {
+    width: 90%;
+    font-size: 15px;
+  }
+}
+
+/* 📦 Contenedor general */
+.visualizador-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #f7f9fb;
+}
+
+.visualizador-content {
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* 🎯 Header principal */
+.stats-header {
+  background: linear-gradient(145deg, #2d3748, #1a202c);
+  color: white;
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.welcome-section-new {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.welcome-section-new h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.welcome-section-new p {
+  opacity: 0.8;
+  font-size: 1.1rem;
+}
+
+/* 📊 Tarjetas de estado (activos, inactivos, todos) */
+.stats-cards-horizontal {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.stat-card-h {
+  cursor: pointer;
+  background: #edf2f7;
+  border-radius: 14px;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #2d3748;
+  min-width: 230px;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.stat-card-h:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.stat-card-h.selected {
+  border: 2px solid #4a90e2;
+  background: #e3f2ff;
+}
+
+.stat-card-h.active .stat-icon {
+  color: #38a169;
+}
+
+.stat-card-h.inactive .stat-icon {
+  color: #dd6b20;
+}
+
+.stat-card-h.total .stat-icon {
+  color: #3182ce;
+}
+
+.stat-content h3 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.stat-content p {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* 🔍 Buscador */
+.buscador-container {
+  margin: 1.5rem auto 2rem auto;
+  text-align: center;
+  width: 100%;
+}
+
+.buscador-input {
+  width: 60%;
+  max-width: 500px;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border: 1.5px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+.buscador-input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.15);
+}
+
+/* 📋 Sección de programas */
+.programas-section {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.section-header h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0;
+  color: #2d3748;
+}
+
+.total-count {
+  background: #edf2f7;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  color: #2d3748;
+  font-weight: 600;
+}
+
+/* 🧱 Tarjetas de programa */
+.programas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.programa-card {
+  background: #fefefe;
+  border-radius: 16px;
+  padding: 1.2rem 1.4rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: 2px solid transparent;
+}
+
+.programa-card:hover {
+  transform: translateY(-4px);
+  border-color: #4a90e2;
+}
+
+/* Estado del programa */
+.status-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.status-badge.activo {
+  background: #e6fffa;
+  color: #2f855a;
+}
+
+.status-badge.inactivo {
+  background: #fffaf0;
+  color: #c05621;
+}
+
+.status-badge.finalizado {
+  background: #fff5f5;
+  color: #c53030;
+}
+
+/* Meta info */
+.programa-meta {
+  margin-top: 0.8rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.meta-icon {
+  font-size: 1.1rem;
+}
+
+.programa-footer {
+  text-align: right;
+  margin-top: 1rem;
+}
+
+.ver-mas {
+  font-weight: 600;
+  color: #4a90e2;
+  transition: color 0.2s ease;
+}
+
+.ver-mas:hover {
+  color: #2b6cb0;
+}
+
+/* 📭 Estado vacío */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #4a5568;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
