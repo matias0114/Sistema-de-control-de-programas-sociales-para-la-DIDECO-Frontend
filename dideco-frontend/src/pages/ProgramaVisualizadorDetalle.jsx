@@ -188,10 +188,17 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
       if (!response.ok) throw new Error('Error al exportar PDF');
       
       const blob = await response.blob();
+
+      // Extraer el nombre del archivo del header Content-Disposition
+      const contentDisposition = response.headers.get('Content-Disposition');
+      const filename = contentDisposition
+        ? contentDisposition.split('filename=')[1].replace(/"/g, '')
+        : 'actividades.pdf';
+
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `actividades-${programa?.nombrePrograma || 'programa'}.pdf`;
+      a.download = filename; // Usa el nombre del servidor
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {

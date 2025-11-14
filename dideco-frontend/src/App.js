@@ -9,13 +9,15 @@ import EditarProgramas from './pages/EditarProgramas';
 import VisualizadorProgramas from './pages/VisualizadorProgramas';
 import ActividadDetalle from './pages/ActividadDetalle';
 import ActividadDashboardDetalle from './pages/ActividadDashboardDetalle';
-import Notificaciones from './pages/Notificaciones'; // Agregar esta línea
-import LayoutSimple from './components/LayoutSimple'; // Agregar esta línea
+import Notificaciones from './pages/Notificaciones';
+import Perfil from './pages/Perfil';
+import LayoutSimple from './components/LayoutSimple';
 
 // Importa los nuevos PrivateRoute
 import PrivateRouteSuperadmin from './components/PrivateRouteSuperadmin';
 import PrivateRouteEncargado from './components/PrivateRouteEncargado';
 import PrivateRouteVisualizador from './components/PrivateRouteVisualizador';
+import PrivateRoute from './components/PrivateRoute';
 
 function PanelUsuario() {
   return <h2>Panel para encargado por implementar</h2>;
@@ -100,6 +102,16 @@ function App() {
                 <Notificaciones />
               </LayoutSimple>
             </PrivateRouteVisualizador>
+          }
+        />
+
+        {/* Ruta de Perfil - Accesible para todos los usuarios autenticados */}
+        <Route
+          path="/perfil"
+          element={
+            <PrivateRoute>
+              <Perfil />
+            </PrivateRoute>
           }
         />
 

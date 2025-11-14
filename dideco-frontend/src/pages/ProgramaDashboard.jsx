@@ -202,8 +202,7 @@ function ProgramaDashboard() {
   const getEstadoBadgeStyle = (estado) => {
     const estados = {
       'activo': { bg: '#ecfdf5', color: '#059669', border: '#10b981' },
-      'inactivo': { bg: '#fef2f2', color: '#dc2626', border: '#ef4444' },
-      'pausado': { bg: '#fef3c7', color: '#d97706', border: '#f59e0b' }
+      'finalizado': { bg: '#fef2f2', color: '#dc2626', border: '#ef4444' }
     };
     return estados[estado?.toLowerCase()] || estados['activo'];
   };

@@ -45,43 +45,80 @@ function Sidebar({ isOpen, onClose }) {
                 onClick={() => handleNavigation('/general')}
               >
                 <span className="nav-icon">🏠</span>
-                Dashboard General
+                Dashboard
               </button>
               <button 
                 className="nav-item" 
                 onClick={() => handleNavigation('/usuarios')}
               >
                 <span className="nav-icon">👥</span>
-                Gestión de Usuarios
+                Gestionar Usuarios
               </button>
               <button 
                 className="nav-item" 
                 onClick={() => handleNavigation('/programas')}
               >
                 <span className="nav-icon">📊</span>
-                Gestión de Programas
+                Programas Sociales
+              </button>
+              <button 
+                className="nav-item" 
+                onClick={() => handleNavigation('/editar-programas')}
+              >
+                <span className="nav-icon">✏️</span>
+                Editar Programas
+              </button>
+              <div style={{
+                height: '1px',
+                background: 'rgba(229, 231, 235, 0.5)',
+                margin: '12px 16px'
+              }}></div>
+              <button 
+                className="nav-item" 
+                onClick={() => handleNavigation('/perfil')}
+              >
+                <span className="nav-icon">👤</span>
+                Mi Perfil
               </button>
             </>
           )}
           
           {usuario.idRol === 2 && usuario.programa && (
-            <button 
-              className="nav-item" 
-              onClick={() => handleNavigation(`/programas/${usuario.programa.idPrograma}`)}
-            >
-              <span className="nav-icon">📋</span>
-              Mi Programa
-            </button>
+            <>
+              <button 
+                className="nav-item" 
+                onClick={() => handleNavigation(`/programas/${usuario.programa.idPrograma}`)}
+              >
+                <span className="nav-icon">📋</span>
+                Mi Programa
+              </button>
+              <button 
+                className="nav-item" 
+                onClick={() => handleNavigation('/perfil')}
+              >
+                <span className="nav-icon">👤</span>
+                Mi Perfil
+              </button>
+            </>
           )}
           
           {usuario.idRol === 3 && (
-            <button 
-              className="nav-item" 
-              onClick={() => handleNavigation('/visualizador')}
-            >
-              <span className="nav-icon">👁️</span>
-              Ver Programas
-            </button>
+            <>
+              <button 
+                className="nav-item" 
+                onClick={() => handleNavigation('/visualizador')}
+              >
+                <span className="nav-icon">👁️</span>
+                Ver Programas
+              </button>
+              <button 
+                className="nav-item" 
+                onClick={() => handleNavigation('/perfil')}
+              >
+                <span className="nav-icon">👤</span>
+                Mi Perfil
+              </button>
+            </>
           )}
         </nav>
       </div>

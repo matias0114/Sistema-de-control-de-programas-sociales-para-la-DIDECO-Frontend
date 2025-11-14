@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import NotificationBell from './NotificationBell';
 import './Layout.css';
 
 function Layout({ children, title = "Dashboard" }) {
@@ -127,6 +128,9 @@ function Layout({ children, title = "Dashboard" }) {
             <h1>{title}</h1>
           </div>
           <div className="nav-right" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+            {/* Campana para visualizadores (NotificationBell) */}
+            <NotificationBell />
+            
             {/* Campana solo para encargado */}
             {usuario.idRol === 2 && (
               <button
@@ -193,6 +197,41 @@ function Layout({ children, title = "Dashboard" }) {
                       </div>
                     )}
                   </div>
+
+                  <div className="profile-dropdown-divider"></div>
+
+                  <button 
+                    className="profile-dropdown-item"
+                    onClick={() => {
+                      navigate('/perfil');
+                      setShowProfileDropdown(false);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      fontSize: '14px',
+                      color: '#374151',
+                      fontWeight: '500',
+                      transition: 'all 0.2s ease',
+                      borderRadius: '8px'
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.background = '#f3f4f6';
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.background = 'transparent';
+                    }}
+                  >
+                    <span style={{ fontSize: '18px' }}>👤</span>
+                    <span>Mi Perfil</span>
+                  </button>
 
                   <div className="profile-dropdown-divider"></div>
 

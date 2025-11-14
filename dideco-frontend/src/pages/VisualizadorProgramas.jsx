@@ -20,7 +20,6 @@ function VisualizadorProgramas() {
         setProgramas(data);
         const activos = data.filter(p => p.estado?.toLowerCase() === 'activo').length;
         const inactivos = data.filter(p => 
-          p.estado?.toLowerCase() === 'inactivo' ||
           p.estado?.toLowerCase() === 'finalizado'
         ).length;
         setStats({ activos, inactivos, total: data.length });
@@ -37,7 +36,6 @@ function VisualizadorProgramas() {
   const programasFiltradosPorEstado = programas.filter(p => {
     if (filtro === 'activos') return p.estado?.toLowerCase() === 'activo';
     if (filtro === 'inactivos') return (
-      p.estado?.toLowerCase() === 'inactivo' ||
       p.estado?.toLowerCase() === 'finalizado'
     );
     return true;
@@ -155,8 +153,6 @@ function VisualizadorProgramas() {
                           <span className={`status-badge ${programa.estado?.toLowerCase()}`}>
                             {programa.estado?.toLowerCase() === 'activo'
                               ? '🟢 Activo'
-                              : programa.estado?.toLowerCase() === 'inactivo'
-                              ? '⏸️ Inactivo'
                               : '🔴 Finalizado'}
                           </span>
                         </div>
