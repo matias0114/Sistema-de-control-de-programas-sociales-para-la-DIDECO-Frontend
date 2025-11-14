@@ -115,13 +115,30 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
               const mes = Number(mm);
               const anio = Number(yyyy);
               const key = `${anio}-${mes}`;
-              gastosPorMes[key] = (gastosPorMes[key] || 0) + parseFloat(actividad.montoAsignado);
+              
+              if (!gastosPorMes[key]) {
+                gastosPorMes[key] = {
+                  total: 0,
+                  actividades: []
+                };
+              }
+              
+              gastosPorMes[key].total += parseFloat(actividad.montoAsignado);
+              gastosPorMes[key].actividades.push({
+                nombre: actividad.nombreActividad,
+                monto: parseFloat(actividad.montoAsignado) || 0
+              });
             }
           });
           const datosGrafico = Object.entries(gastosPorMes)
-            .map(([key, monto]) => {
+            .map(([key, data]) => {
               const [anio, mes] = key.split('-');
-              return { mes: parseInt(mes), anio: parseInt(anio), total: monto };
+              return { 
+                mes: parseInt(mes), 
+                anio: parseInt(anio), 
+                total: data.total,
+                actividades: data.actividades
+              };
             })
             .sort((a, b) => a.anio !== b.anio ? a.anio - b.anio : a.mes - b.mes);
           setGastosMensuales(datosGrafico);

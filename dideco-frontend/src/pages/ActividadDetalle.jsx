@@ -130,8 +130,9 @@ function ActividadDetalle() {
             onClick={() => navigate(-1)} 
             className="btn-export"
             style={{ background: '#dc2626' }}
+            title="Volver atrás"
           >
-            ← Volver atrás
+            ←
           </button>
         </div>
       </LayoutSimple>
@@ -173,22 +174,28 @@ function ActividadDetalle() {
             <button 
               onClick={() => navigate(-1)} 
               className="btn-back"
+              title="Volver al programa"
               style={{
                 background: 'rgba(255, 255, 255, 0.2)',
                 border: 'none',
                 color: 'white',
-                padding: '8px 16px',
+                padding: '10px',
                 borderRadius: '6px',
                 cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '500',
+                fontSize: '18px',
+                fontWeight: '600',
                 marginBottom: '8px',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '40px',
+                height: '40px'
               }}
               onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
               onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
             >
-              ← Volver al programa
+              ←
             </button>
             <h1 style={{ 
               margin: 0, 
@@ -620,18 +627,33 @@ function ActividadDetalle() {
                       <td style={{ padding: '16px 12px', textAlign: 'center' }}>
                         <button
                           onClick={() => setShowModalVer(av.idAvance)}
+                          title="Ver documentos"
                           style={{
                             backgroundColor: '#10b981',
                             color: 'white',
                             border: 'none',
                             borderRadius: '6px',
                             cursor: 'pointer',
-                            fontSize: '13px',
+                            fontSize: '18px',
                             fontWeight: '600',
-                            padding: '6px 12px'
+                            padding: '8px',
+                            width: '40px',
+                            height: '40px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onMouseOver={(e) => {
+                            e.currentTarget.style.background = '#059669';
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                          }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.style.background = '#10b981';
+                            e.currentTarget.style.transform = 'scale(1)';
                           }}
                         >
-                          Ver documentos
+                          👁️
                         </button>
                       </td>
                     </tr>

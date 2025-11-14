@@ -8,13 +8,21 @@ function EditarProgramaInfo({ programa, onSave }) {
     tipoPrograma: programa.tipoPrograma || '',
     oficinaResponsable: programa.oficinaResponsable || '',
     contactoEncargado: programa.contactoEncargado || '',
-    cupos: programa.cupos || programa.numeroCupos || '', // CAMBIADO
-    metas: programa.metas || programa.metasPrograma || '', // CAMBIADO
+    cupos: programa.cupos || programa.numeroCupos || '', 
+    metas: programa.metas || programa.metasPrograma || '', 
     requisitosIngreso: programa.requisitosIngreso || '',
     beneficios: programa.beneficios || '',
     fechaInicio: programa.fechaInicio || '',
-    fechaFin: programa.fechaFin || programa.fechaTermino || '' // CAMBIADO
+    fechaFin: programa.fechaFin || programa.fechaTermino || '' 
   });
+
+  // Límites de caracteres según la base de datos
+  const limites = {
+    nombrePrograma: 150,
+    tipoPrograma: 100,
+    oficinaResponsable: 150,
+    contactoEncargado: 150
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,20 +103,23 @@ function EditarProgramaInfo({ programa, onSave }) {
           </div>
           <button
             onClick={() => setEditing(true)}
+            title="Editar información del programa"
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              padding: '10px 20px',
+              justifyContent: 'center',
+              padding: '12px',
               background: 'linear-gradient(135deg, #1664c1 0%, #1e40af 100%)',
               color: 'white',
               border: 'none',
-              borderRadius: '8px',
+              borderRadius: '12px',
               cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '600',
+              fontSize: '20px',
+              width: '48px',
+              height: '48px',
               transition: 'all 0.3s ease',
-              boxShadow: '0 2px 8px rgba(22, 100, 193, 0.3)'
+              boxShadow: '0 2px 8px rgba(22, 100, 193, 0.3)',
+              position: 'relative'
             }}
             onMouseOver={(e) => {
               e.currentTarget.style.transform = 'translateY(-2px)';
@@ -119,8 +130,7 @@ function EditarProgramaInfo({ programa, onSave }) {
               e.currentTarget.style.boxShadow = '0 2px 8px rgba(22, 100, 193, 0.3)';
             }}
           >
-            <span>✏️</span>
-            Editar Información
+            ✏️
           </button>
         </div>
 
@@ -529,17 +539,26 @@ function EditarProgramaInfo({ programa, onSave }) {
               letterSpacing: '0.5px'
             }}>
               📋 Nombre del Programa *
+              <span style={{ 
+                float: 'right', 
+                fontSize: '12px', 
+                color: formData.nombrePrograma.length > limites.nombrePrograma ? '#ef4444' : '#6b7280',
+                fontWeight: '600'
+              }}>
+                {formData.nombrePrograma.length}/{limites.nombrePrograma}
+              </span>
             </label>
             <input
               type="text"
               name="nombrePrograma"
               value={formData.nombrePrograma}
               onChange={handleChange}
+              maxLength={limites.nombrePrograma}
               required
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #e5e7eb',
+                border: `2px solid ${formData.nombrePrograma.length > limites.nombrePrograma ? '#ef4444' : '#e5e7eb'}`,
                 borderRadius: '8px',
                 fontSize: '15px',
                 transition: 'all 0.2s ease',
@@ -547,7 +566,7 @@ function EditarProgramaInfo({ programa, onSave }) {
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => e.target.style.borderColor = '#1664c1'}
-              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+              onBlur={(e) => e.target.style.borderColor = formData.nombrePrograma.length > limites.nombrePrograma ? '#ef4444' : '#e5e7eb'}
             />
           </div>
 
@@ -563,6 +582,14 @@ function EditarProgramaInfo({ programa, onSave }) {
               letterSpacing: '0.5px'
             }}>
               📝 Descripción
+              <span style={{ 
+                float: 'right', 
+                fontSize: '12px', 
+                color: '#6b7280',
+                fontWeight: '600'
+              }}>
+                {formData.descripcion.length} caracteres
+              </span>
             </label>
             <textarea
               name="descripcion"
@@ -598,6 +625,14 @@ function EditarProgramaInfo({ programa, onSave }) {
               letterSpacing: '0.5px'
             }}>
               📂 Tipo de Programa
+              <span style={{ 
+                float: 'right', 
+                fontSize: '12px', 
+                color: formData.tipoPrograma.length > limites.tipoPrograma ? '#ef4444' : '#6b7280',
+                fontWeight: '600'
+              }}>
+                {formData.tipoPrograma.length}/{limites.tipoPrograma}
+              </span>
             </label>
             <input
               type="text"
@@ -605,10 +640,11 @@ function EditarProgramaInfo({ programa, onSave }) {
               value={formData.tipoPrograma}
               onChange={handleChange}
               placeholder="Ej: Social, Educativo..."
+              maxLength={limites.tipoPrograma}
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #e5e7eb',
+                border: `2px solid ${formData.tipoPrograma.length > limites.tipoPrograma ? '#ef4444' : '#e5e7eb'}`,
                 borderRadius: '8px',
                 fontSize: '15px',
                 transition: 'all 0.2s ease',
@@ -616,7 +652,7 @@ function EditarProgramaInfo({ programa, onSave }) {
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => e.target.style.borderColor = '#1664c1'}
-              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+              onBlur={(e) => e.target.style.borderColor = formData.tipoPrograma.length > limites.tipoPrograma ? '#ef4444' : '#e5e7eb'}
             />
           </div>
 
@@ -632,16 +668,25 @@ function EditarProgramaInfo({ programa, onSave }) {
               letterSpacing: '0.5px'
             }}>
               🏢 Oficina Responsable
+              <span style={{ 
+                float: 'right', 
+                fontSize: '11px', 
+                fontWeight: 'normal', 
+                color: formData.oficinaResponsable.length > limites.oficinaResponsable ? '#ef4444' : '#6b7280' 
+              }}>
+                {formData.oficinaResponsable.length}/{limites.oficinaResponsable}
+              </span>
             </label>
             <input
               type="text"
               name="oficinaResponsable"
               value={formData.oficinaResponsable}
               onChange={handleChange}
+              maxLength={limites.oficinaResponsable}
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #e5e7eb',
+                border: formData.oficinaResponsable.length > limites.oficinaResponsable ? '2px solid #ef4444' : '2px solid #e5e7eb',
                 borderRadius: '8px',
                 fontSize: '15px',
                 transition: 'all 0.2s ease',
@@ -649,7 +694,7 @@ function EditarProgramaInfo({ programa, onSave }) {
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => e.target.style.borderColor = '#1664c1'}
-              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+              onBlur={(e) => e.target.style.borderColor = formData.oficinaResponsable.length > limites.oficinaResponsable ? '#ef4444' : '#e5e7eb'}
             />
           </div>
 
@@ -665,6 +710,14 @@ function EditarProgramaInfo({ programa, onSave }) {
               letterSpacing: '0.5px'
             }}>
               📞 Contacto del Encargado
+              <span style={{ 
+                float: 'right', 
+                fontSize: '11px', 
+                fontWeight: 'normal', 
+                color: formData.contactoEncargado.length > limites.contactoEncargado ? '#ef4444' : '#6b7280' 
+              }}>
+                {formData.contactoEncargado.length}/{limites.contactoEncargado}
+              </span>
             </label>
             <input
               type="text"
@@ -672,10 +725,11 @@ function EditarProgramaInfo({ programa, onSave }) {
               value={formData.contactoEncargado}
               onChange={handleChange}
               placeholder="Teléfono o correo"
+              maxLength={limites.contactoEncargado}
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #e5e7eb',
+                border: formData.contactoEncargado.length > limites.contactoEncargado ? '2px solid #ef4444' : '2px solid #e5e7eb',
                 borderRadius: '8px',
                 fontSize: '15px',
                 transition: 'all 0.2s ease',
@@ -683,7 +737,7 @@ function EditarProgramaInfo({ programa, onSave }) {
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => e.target.style.borderColor = '#1664c1'}
-              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+              onBlur={(e) => e.target.style.borderColor = formData.contactoEncargado.length > limites.contactoEncargado ? '#ef4444' : '#e5e7eb'}
             />
           </div>
 
@@ -801,6 +855,14 @@ function EditarProgramaInfo({ programa, onSave }) {
               letterSpacing: '0.5px'
             }}>
               🎯 Metas del Programa
+              <span style={{ 
+                float: 'right', 
+                fontSize: '11px', 
+                fontWeight: 'normal', 
+                color: '#6b7280' 
+              }}>
+                {formData.metas.length} caracteres
+              </span>
             </label>
             <textarea
               name="metas"
@@ -837,6 +899,14 @@ function EditarProgramaInfo({ programa, onSave }) {
               letterSpacing: '0.5px'
             }}>
               📋 Requisitos de Ingreso
+              <span style={{ 
+                float: 'right', 
+                fontSize: '11px', 
+                fontWeight: 'normal', 
+                color: '#6b7280' 
+              }}>
+                {formData.requisitosIngreso.length} caracteres
+              </span>
             </label>
             <textarea
               name="requisitosIngreso"
@@ -873,6 +943,14 @@ function EditarProgramaInfo({ programa, onSave }) {
               letterSpacing: '0.5px'
             }}>
               🎁 Beneficios
+              <span style={{ 
+                float: 'right', 
+                fontSize: '11px', 
+                fontWeight: 'normal', 
+                color: '#6b7280' 
+              }}>
+                {formData.beneficios.length} caracteres
+              </span>
             </label>
             <textarea
               name="beneficios"
@@ -911,15 +989,21 @@ function EditarProgramaInfo({ programa, onSave }) {
           <button
             type="button"
             onClick={handleCancel}
+            title="Cancelar edición"
             style={{
-              padding: '12px 24px',
+              padding: '12px',
               background: '#f3f4f6',
               color: '#374151',
               border: '2px solid #e5e7eb',
-              borderRadius: '8px',
+              borderRadius: '12px',
               cursor: 'pointer',
-              fontSize: '15px',
+              fontSize: '20px',
               fontWeight: '600',
+              width: '48px',
+              height: '48px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               transition: 'all 0.3s ease'
             }}
             onMouseOver={(e) => {
@@ -931,19 +1015,25 @@ function EditarProgramaInfo({ programa, onSave }) {
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
-            ✕ Cancelar
+            ✕
           </button>
           <button
             type="submit"
+            title="Guardar cambios"
             style={{
-              padding: '12px 24px',
+              padding: '12px',
               background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
               color: 'white',
               border: 'none',
-              borderRadius: '8px',
+              borderRadius: '12px',
               cursor: 'pointer',
-              fontSize: '15px',
+              fontSize: '20px',
               fontWeight: '600',
+              width: '48px',
+              height: '48px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               transition: 'all 0.3s ease',
               boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
             }}
@@ -956,7 +1046,7 @@ function EditarProgramaInfo({ programa, onSave }) {
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)';
             }}
           >
-            ✅ Guardar Cambios
+            ✅
           </button>
         </div>
       </form>

@@ -100,17 +100,30 @@ function ProgramaDashboard() {
         const mes = Number(mm);
         const anio = Number(yyyy);
         const key = `${anio}-${mes}`;
-        gastosPorMes[key] = (gastosPorMes[key] || 0) + parseFloat(actividad.montoAsignado) || 0;
+        
+        if (!gastosPorMes[key]) {
+          gastosPorMes[key] = {
+            total: 0,
+            actividades: []
+          };
+        }
+        
+        gastosPorMes[key].total += parseFloat(actividad.montoAsignado) || 0;
+        gastosPorMes[key].actividades.push({
+          nombre: actividad.nombreActividad,
+          monto: parseFloat(actividad.montoAsignado) || 0
+        });
       }
     });
 
     const datosGrafico = Object.entries(gastosPorMes)
-      .map(([key, monto]) => {
+      .map(([key, data]) => {
         const [anio, mes] = key.split('-');
         return {
           mes: parseInt(mes),
           anio: parseInt(anio),
-          total: monto
+          total: data.total,
+          actividades: data.actividades
         };
       })
       .sort((a, b) => {
@@ -245,48 +258,322 @@ function ProgramaDashboard() {
     };
 
     return (
-      <form onSubmit={handleSubmit} style={{
-        background: "#f8fafc",
-        padding: 24,
-        borderRadius: 12,
-        border: '1px solid #e5e7eb',
-        maxWidth: 420,
-        minWidth: 320
+      <div style={{
+        background: 'white',
+        borderRadius: '16px',
+        padding: '32px',
+        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+        border: '2px solid #e5e7eb',
+        maxWidth: '500px',
+        width: '90vw',
+        position: 'relative'
       }}>
-        <h3 style={{marginBottom: 18}}>Beneficiario</h3>
-        <input
-          name="nombreCompleto"
-          value={form.nombreCompleto}
-          onChange={handleChange}
-          placeholder="Nombre Completo"
-          style={{marginBottom: 8, width: "100%"}}
-        />
-        <input
-          name="rut"
-          value={form.rut}
-          onChange={handleChange}
-          placeholder="RUT"
-          style={{marginBottom: 8, width: "100%"}}
-        />
-        <input
-          name="telefono"
-          value={form.telefono}
-          onChange={handleChange}
-          placeholder="Teléfono"
-          style={{marginBottom: 8, width: "100%"}}
-        />
-        <input
-          name="direccion"
-          value={form.direccion}
-          onChange={handleChange}
-          placeholder="Dirección"
-          style={{marginBottom: 18, width: "100%"}}
-        />
-        <div style={{display: "flex", gap: 8}}>
-          <button type="submit" className="btn-export">Guardar</button>
-          <button type="button" onClick={onCancel} style={{background: "#e5e7eb"}}>Cancelar</button>
+        {/* Header */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '28px',
+          paddingBottom: '20px',
+          borderBottom: '2px solid #f3f4f6'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #1664c1 0%, #1e40af 100%)',
+              padding: '12px',
+              borderRadius: '12px',
+              boxShadow: '0 4px 12px rgba(22, 100, 193, 0.2)'
+            }}>
+              <span style={{ fontSize: '24px' }}>👤</span>
+            </div>
+            <h2 style={{
+              margin: 0,
+              fontSize: '22px',
+              fontWeight: '700',
+              color: '#1f2937'
+            }}>
+              {beneficiario ? 'Editar Beneficiario' : 'Nuevo Beneficiario'}
+            </h2>
+          </div>
+          <button
+            onClick={onCancel}
+            title="Cerrar"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              fontSize: '24px',
+              color: '#9ca3af',
+              cursor: 'pointer',
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '8px',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = '#fee2e2';
+              e.currentTarget.style.color = '#dc2626';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = '#9ca3af';
+            }}
+          >
+            ✕
+          </button>
         </div>
-      </form>
+
+        <form onSubmit={handleSubmit}>
+          {/* Nombre Completo */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '8px',
+              color: '#374151',
+              fontSize: '13px',
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              <span style={{ fontSize: '16px' }}>👤</span>
+              Nombre Completo *
+            </label>
+            <input
+              type="text"
+              name="nombreCompleto"
+              value={form.nombreCompleto}
+              onChange={handleChange}
+              required
+              placeholder="Ingrese el nombre completo"
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e5e7eb',
+                borderRadius: '8px',
+                fontSize: '15px',
+                transition: 'all 0.2s ease',
+                outline: 'none',
+                boxSizing: 'border-box',
+                fontFamily: 'inherit'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#1664c1';
+                e.target.style.boxShadow = '0 0 0 3px rgba(22, 100, 193, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#e5e7eb';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
+
+          {/* RUT */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '8px',
+              color: '#374151',
+              fontSize: '13px',
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              <span style={{ fontSize: '16px' }}>🆔</span>
+              RUT
+            </label>
+            <input
+              type="text"
+              name="rut"
+              value={form.rut}
+              onChange={handleChange}
+              placeholder="12.345.678-9"
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e5e7eb',
+                borderRadius: '8px',
+                fontSize: '15px',
+                transition: 'all 0.2s ease',
+                outline: 'none',
+                boxSizing: 'border-box',
+                fontFamily: 'inherit'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#1664c1';
+                e.target.style.boxShadow = '0 0 0 3px rgba(22, 100, 193, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#e5e7eb';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
+
+          {/* Teléfono */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '8px',
+              color: '#374151',
+              fontSize: '13px',
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              <span style={{ fontSize: '16px' }}>📞</span>
+              Teléfono
+            </label>
+            <input
+              type="tel"
+              name="telefono"
+              value={form.telefono}
+              onChange={handleChange}
+              placeholder="+56 9 1234 5678"
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e5e7eb',
+                borderRadius: '8px',
+                fontSize: '15px',
+                transition: 'all 0.2s ease',
+                outline: 'none',
+                boxSizing: 'border-box',
+                fontFamily: 'inherit'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#1664c1';
+                e.target.style.boxShadow = '0 0 0 3px rgba(22, 100, 193, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#e5e7eb';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
+
+          {/* Dirección */}
+          <div style={{ marginBottom: '28px' }}>
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '8px',
+              color: '#374151',
+              fontSize: '13px',
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              <span style={{ fontSize: '16px' }}>📍</span>
+              Dirección
+            </label>
+            <input
+              type="text"
+              name="direccion"
+              value={form.direccion}
+              onChange={handleChange}
+              placeholder="Calle, número, comuna"
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e5e7eb',
+                borderRadius: '8px',
+                fontSize: '15px',
+                transition: 'all 0.2s ease',
+                outline: 'none',
+                boxSizing: 'border-box',
+                fontFamily: 'inherit'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#1664c1';
+                e.target.style.boxShadow = '0 0 0 3px rgba(22, 100, 193, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#e5e7eb';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+          </div>
+
+          {/* Botones */}
+          <div style={{
+            display: 'flex',
+            gap: '12px',
+            paddingTop: '20px',
+            borderTop: '2px solid #f3f4f6',
+            justifyContent: 'flex-end'
+          }}>
+            <button 
+              type="button" 
+              onClick={onCancel}
+              title="Cancelar"
+              style={{
+                padding: '12px 24px',
+                background: '#f3f4f6',
+                color: '#374151',
+                border: '2px solid #e5e7eb',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                fontSize: '15px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = '#e5e7eb';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = '#f3f4f6';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <span style={{ fontSize: '16px' }}>✕</span>
+              Cancelar
+            </button>
+            <button 
+              type="submit"
+              title="Guardar beneficiario"
+              style={{
+                padding: '12px 24px',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                fontSize: '15px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(16, 185, 129, 0.4)';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.3)';
+              }}
+            >
+              <span style={{ fontSize: '16px' }}>💾</span>
+              {beneficiario ? 'Actualizar' : 'Guardar'}
+            </button>
+          </div>
+        </form>
+      </div>
     );
   }
 
@@ -332,9 +619,19 @@ function ProgramaDashboard() {
           <button 
             onClick={() => navigate(-1)} 
             className="btn-export"
-            style={{ background: '#dc2626' }}
+            title="Volver a la página anterior"
+            style={{ 
+              background: '#dc2626',
+              padding: '12px',
+              fontSize: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '48px',
+              height: '48px'
+            }}
           >
-            Volver atrás
+            ←
           </button>
         </div>
       </Layout>
@@ -518,15 +815,19 @@ function ProgramaDashboard() {
             <button
               className="btn-export"
               onClick={() => setShowPresupuesto(!showPresupuesto)}
+              title={showPresupuesto ? 'Cerrar formulario de presupuesto' : 'Ingresar presupuesto'}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px',
-                padding: '12px 24px',
-                fontSize: '15px'
+                justifyContent: 'center',
+                padding: '12px',
+                fontSize: '20px',
+                width: '48px',
+                height: '48px',
+                borderRadius: '12px'
               }}
             >
-              {showPresupuesto ? '✕ Cerrar' : '💰 Ingresar presupuesto'}
+              {showPresupuesto ? '✕' : '💰'}
             </button>
           </div>
 
@@ -677,13 +978,19 @@ function ProgramaDashboard() {
             <button
               className="btn-export"
               onClick={() => setShowCrearActividad(!showCrearActividad)}
+              title={showCrearActividad ? 'Cancelar creación de actividad' : 'Agregar actividad'}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '8px'
+                justifyContent: 'center',
+                padding: '12px',
+                fontSize: '20px',
+                width: '48px',
+                height: '48px',
+                borderRadius: '12px'
               }}
             >
-              {showCrearActividad ? '✕ Cancelar' : '➕ Agregar actividad'}
+              {showCrearActividad ? '✕' : '➕'}
             </button>
           </div>
 
@@ -896,16 +1203,22 @@ function ProgramaDashboard() {
                           <button
                             className="btn-small"
                             onClick={() => navigate(`/actividad-dashboard/${act.idActividad}`)}
+                            title="Ver detalle de la actividad"
                             style={{
-                              padding: '8px 16px',
-                              fontSize: '14px',
+                              padding: '10px',
+                              fontSize: '18px',
                               fontWeight: '600',
                               background: '#1664c1',
                               color: 'white',
                               border: 'none',
-                              borderRadius: '6px',
+                              borderRadius: '8px',
                               cursor: 'pointer',
-                              transition: 'all 0.2s ease'
+                              transition: 'all 0.2s ease',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '40px',
+                              height: '40px'
                             }}
                             onMouseOver={(e) => {
                               e.target.style.background = '#1e40af';
@@ -916,7 +1229,7 @@ function ProgramaDashboard() {
                               e.target.style.transform = 'translateY(0)';
                             }}
                           >
-                            Ver detalle →
+                            👁️
                           </button>
                         </td>
                       </tr>
@@ -944,8 +1257,20 @@ function ProgramaDashboard() {
             <button
               className="btn-export"
               onClick={() => { setShowBeneficiarioForm(true); setEditarBeneficiario(null); }}
-              style={{padding: "10px 20px"}}
-            >Ingresar beneficiario</button>
+              title="Ingresar nuevo beneficiario"
+              style={{
+                padding: '12px',
+                fontSize: '20px',
+                width: '48px',
+                height: '48px',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              👤➕
+            </button>
           </div>
           {beneficiarios.length === 0 ? (
             <div style={{
@@ -974,8 +1299,40 @@ function ProgramaDashboard() {
                       <td style={{padding: 12}}>{b.telefono || "—"}</td>
                       <td style={{padding: 12}}>{b.direccion || "—"}</td>
                       <td style={{padding: 12, textAlign: "center"}}>
-                        <button className="btn-small" style={{marginRight: 6}} onClick={()=>handleEditBeneficiario(b)}>Editar</button>
-                        <button className="btn-small" onClick={()=>handleDeleteBeneficiario(b.idBeneficiario)} style={{background: "#e11d48"}}>Eliminar</button>
+                        <button 
+                          className="btn-small" 
+                          title="Editar beneficiario"
+                          style={{
+                            marginRight: 6,
+                            padding: '8px',
+                            fontSize: '16px',
+                            width: '36px',
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }} 
+                          onClick={()=>handleEditBeneficiario(b)}
+                        >
+                          ✏️
+                        </button>
+                        <button 
+                          className="btn-small" 
+                          title="Eliminar beneficiario"
+                          onClick={()=>handleDeleteBeneficiario(b.idBeneficiario)} 
+                          style={{
+                            background: "#e11d48",
+                            padding: '8px',
+                            fontSize: '16px',
+                            width: '36px',
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          🗑️
+                        </button>
                       </td>
                     </tr>
                   ))}

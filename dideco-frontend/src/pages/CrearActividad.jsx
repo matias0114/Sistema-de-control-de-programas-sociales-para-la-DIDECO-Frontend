@@ -12,6 +12,12 @@ function CrearActividad({ onAdd, idPrograma, onCancel }) {
     metas: ""
   });
 
+  // Límites de caracteres según la base de datos
+  const limites = {
+    nombreActividad: 150,
+    responsable: 150
+  };
+
   const handleChange = e =>
     setNueva({ ...nueva, [e.target.name]: e.target.value });
 
@@ -44,19 +50,43 @@ function CrearActividad({ onAdd, idPrograma, onCancel }) {
         </div>
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="modal-field">
-            <label htmlFor="nombreActividad">Nombre de la actividad</label>
+            <label htmlFor="nombreActividad">
+              Nombre de la actividad
+              <span style={{ 
+                float: 'right', 
+                fontSize: '12px', 
+                color: nueva.nombreActividad.length > limites.nombreActividad ? '#ef4444' : '#6b7280',
+                fontWeight: '600'
+              }}>
+                {nueva.nombreActividad.length}/{limites.nombreActividad}
+              </span>
+            </label>
             <input
               id="nombreActividad"
               name="nombreActividad"
               value={nueva.nombreActividad}
               onChange={handleChange}
               placeholder="Nombre"
+              maxLength={limites.nombreActividad}
               required
               autoFocus
+              style={{
+                borderColor: nueva.nombreActividad.length > limites.nombreActividad ? '#ef4444' : undefined
+              }}
             />
           </div>
           <div className="modal-field">
-            <label htmlFor="descripcion">Descripción</label>
+            <label htmlFor="descripcion">
+              Descripción
+              <span style={{ 
+                float: 'right', 
+                fontSize: '12px', 
+                color: '#6b7280',
+                fontWeight: '600'
+              }}>
+                {nueva.descripcion.length} caracteres
+              </span>
+            </label>
             <textarea
               id="descripcion"
               name="descripcion"
@@ -106,19 +136,43 @@ function CrearActividad({ onAdd, idPrograma, onCancel }) {
               />
             </div>
             <div className="modal-field">
-              <label htmlFor="responsable">Responsable</label>
+              <label htmlFor="responsable">
+                Responsable
+                <span style={{ 
+                  float: 'right', 
+                  fontSize: '12px', 
+                  color: nueva.responsable.length > limites.responsable ? '#ef4444' : '#6b7280',
+                  fontWeight: '600'
+                }}>
+                  {nueva.responsable.length}/{limites.responsable}
+                </span>
+              </label>
               <input
                 id="responsable"
                 name="responsable"
                 value={nueva.responsable}
                 onChange={handleChange}
                 placeholder="Ingrese el responsable"
+                maxLength={limites.responsable}
                 required
+                style={{
+                  borderColor: nueva.responsable.length > limites.responsable ? '#ef4444' : undefined
+                }}
               />
             </div>
           </div>
           <div className="modal-field">
-            <label htmlFor="metas">Metas</label>
+            <label htmlFor="metas">
+              Metas
+              <span style={{ 
+                float: 'right', 
+                fontSize: '12px', 
+                color: '#6b7280',
+                fontWeight: '600'
+              }}>
+                {nueva.metas.length} caracteres
+              </span>
+            </label>
             <textarea
               id="metas"
               name="metas"

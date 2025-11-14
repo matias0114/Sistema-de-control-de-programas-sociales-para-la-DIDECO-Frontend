@@ -28,7 +28,10 @@ function GraficoGastosMensuales({ datos }) {
     parseFloat(d.totalGasto || d.total_gasto || d.total || d.monto_ejecutado || 0)
   );
 
-  console.log("📈 Datos procesados para Chart.js:", { labels, valores });
+  // Guardar las actividades para cada índice
+  const actividadesPorIndice = datos.map(d => d.actividades || []);
+
+  console.log("📈 Datos procesados para Chart.js:", { labels, valores, actividadesPorIndice });
 
   const data = {
     labels,
@@ -52,8 +55,36 @@ function GraficoGastosMensuales({ datos }) {
         display: false
       },
       tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        padding: 16,
+        cornerRadius: 8,
+        displayColors: false,
         callbacks: {
-          label: (context) => `$ ${context.parsed.y.toLocaleString('es-CL')}`
+          title: () => {
+            // No mostrar título (mes) ya que está en la etiqueta del eje X
+            return '';
+          },
+          label: (context) => {
+            return `Total: $${context.parsed.y.toLocaleString('es-CL')}`;
+          },
+          afterLabel: (context) => {
+            const index = context.dataIndex;
+            const actividades = actividadesPorIndice[index];
+            
+            if (!actividades || actividades.length === 0) {
+              return '';
+            }
+            
+            const lineas = ['\n━━━━━━━━━━━━━━━━━━', 'Actividades:'];
+            actividades.forEach((act, idx) => {
+              lineas.push(`\n${idx + 1}. ${act.nombre}`);
+              lineas.push(`   $${act.monto.toLocaleString('es-CL')}`);
+            });
+            
+            return lineas;
+          }
         }
       }
     },
@@ -61,7 +92,7 @@ function GraficoGastosMensuales({ datos }) {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (value) => `$ ${value.toLocaleString('es-CL')}`
+          callback: (value) => `$${value.toLocaleString('es-CL')}`
         }
       }
     }
@@ -79,7 +110,8 @@ function GraficoGastosMensuales({ datos }) {
         boxShadow: '0 2px 8px rgba(0,0,0,.13)',
         padding: 20,
         margin: '0 auto',
-        maxWidth: 700
+        maxWidth: 700,
+        height: 450
       }}
     >
       <Bar key={JSON.stringify(datos)} data={data} options={options} />

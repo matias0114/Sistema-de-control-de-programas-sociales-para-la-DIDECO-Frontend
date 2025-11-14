@@ -233,19 +233,22 @@ function ActividadDashboardDetalle() {
         </div>
         <button 
           onClick={() => setShowEditarModal(true)}
+          title="Editar actividad"
           style={{
             background: 'rgba(255, 255, 255, 0.2)',
             border: 'none',
             color: 'white',
-            padding: '10px 20px',
+            padding: '12px',
             borderRadius: '8px',
             cursor: 'pointer',
-            fontSize: '14px',
+            fontSize: '20px',
             fontWeight: '600',
             transition: 'all 0.2s ease',
             display: 'flex',
             alignItems: 'center',
-            gap: '8px'
+            justifyContent: 'center',
+            width: '48px',
+            height: '48px'
           }}
           onMouseOver={(e) => {
             e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
@@ -256,7 +259,7 @@ function ActividadDashboardDetalle() {
             e.currentTarget.style.transform = 'translateY(0)';
           }}
         >
-          <span>✏️</span> Editar actividad
+          ✏️
         </button>
       </div>
 
@@ -716,16 +719,22 @@ function ActividadDashboardDetalle() {
                 <button
                   type="button"
                   onClick={() => setShowEditarModal(false)}
+                  title="Cancelar"
                   style={{
-                    padding: '10px 20px',
+                    padding: '12px',
                     background: '#f3f4f6',
                     color: '#374151',
                     border: '2px solid #e5e7eb',
                     borderRadius: '8px',
                     cursor: 'pointer',
-                    fontSize: '15px',
+                    fontSize: '20px',
                     fontWeight: '600',
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.2s ease',
+                    width: '48px',
+                    height: '48px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
                   onMouseOver={(e) => {
                     e.currentTarget.style.background = '#e5e7eb';
@@ -736,21 +745,27 @@ function ActividadDashboardDetalle() {
                     e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
-                  ✕ Cancelar
+                  ✕
                 </button>
                 <button 
                   type="submit"
+                  title="Guardar cambios"
                   style={{
-                    padding: '10px 20px',
+                    padding: '12px',
                     background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
                     cursor: 'pointer',
-                    fontSize: '15px',
+                    fontSize: '20px',
                     fontWeight: '600',
                     transition: 'all 0.2s ease',
-                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)'
+                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)',
+                    width: '48px',
+                    height: '48px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
                   onMouseOver={(e) => {
                     e.currentTarget.style.transform = 'translateY(-2px)';
@@ -761,7 +776,7 @@ function ActividadDashboardDetalle() {
                     e.currentTarget.style.boxShadow = '0 2px 8px rgba(16, 185, 129, 0.3)';
                   }}
                 >
-                  ✅ Guardar cambios
+                  ✅
                 </button>
               </div>
             </form>
@@ -831,17 +846,23 @@ function ActividadDashboardDetalle() {
                 setAvanceToEdit(null);
                 setShowAgregarAvance(true);
               }}
+              title="Agregar primer avance"
               style={{
-                padding: '10px 20px',
+                padding: '12px',
                 background: 'linear-gradient(135deg, #1664c1 0%, #1e40af 100%)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '8px',
                 cursor: 'pointer',
-                fontSize: '15px',
+                fontSize: '20px',
                 fontWeight: '600',
                 transition: 'all 0.2s ease',
-                boxShadow: '0 2px 8px rgba(22, 100, 193, 0.3)'
+                boxShadow: '0 2px 8px rgba(22, 100, 193, 0.3)',
+                width: '48px',
+                height: '48px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
@@ -852,7 +873,7 @@ function ActividadDashboardDetalle() {
                 e.currentTarget.style.boxShadow = '0 2px 8px rgba(22, 100, 193, 0.3)';
               }}
             >
-              ➕ Agregar primer avance
+              ➕
             </button>
           </div>
         ) : (
@@ -1050,16 +1071,23 @@ function ActividadDashboardDetalle() {
                             setShowAgregarAvance(false);
                             setAvanceToEdit(av);
                           }}
+                          title="Editar avance"
                           style={{
-                            padding: '6px 12px',
+                            padding: '8px',
                             background: '#f59e0b',
                             color: 'white',
                             border: 'none',
                             borderRadius: '6px',
                             cursor: 'pointer',
-                            fontSize: '13px',
+                            fontSize: '18px',
                             fontWeight: '600',
-                            transition: 'all 0.2s ease'
+                            transition: 'all 0.2s ease',
+                            width: '36px',
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: '6px'
                           }}
                           onMouseOver={(e) => {
                             e.currentTarget.style.background = '#d97706';
@@ -1070,37 +1098,68 @@ function ActividadDashboardDetalle() {
                             e.currentTarget.style.transform = 'scale(1)';
                           }}
                         >
-                          ✏️ Editar
+                          ✏️
                         </button>
                         <button
                           onClick={() => setShowModalUpload(av.idAvance)}
+                          title="Subir archivo"
                           style={{
-                            padding: '6px 12px',
+                            padding: '8px',
                             background: '#3b82f6',
                             color: 'white',
                             border: 'none',
                             borderRadius: '6px',
                             cursor: 'pointer',
-                            fontSize: '13px',
+                            fontSize: '18px',
                             fontWeight: '600',
+                            width: '36px',
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: '6px',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onMouseOver={(e) => {
+                            e.currentTarget.style.background = '#2563eb';
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                          }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.style.background = '#3b82f6';
+                            e.currentTarget.style.transform = 'scale(1)';
                           }}
                         >
-                          Subir archivo
+                          📤
                         </button>
                         <button
                           onClick={() => setShowModalVer(av.idAvance)}
+                          title="Ver documentos"
                           style={{
-                            padding: '6px 12px',
+                            padding: '8px',
                             background: '#10b981',
                             color: 'white',
                             border: 'none',
                             borderRadius: '6px',
                             cursor: 'pointer',
-                            fontSize: '13px',
+                            fontSize: '18px',
                             fontWeight: '600',
+                            width: '36px',
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onMouseOver={(e) => {
+                            e.currentTarget.style.background = '#059669';
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                          }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.style.background = '#10b981';
+                            e.currentTarget.style.transform = 'scale(1)';
                           }}
                         >
-                          Ver documentos
+                          👁️
                         </button>
                       </td>
                     </tr>
@@ -1115,17 +1174,24 @@ function ActividadDashboardDetalle() {
                   setAvanceToEdit(null);
                   setShowAgregarAvance(true);
                 }}
+                title="Agregar nuevo avance"
                 style={{
-                  padding: '10px 20px',
+                  padding: '12px',
                   background: 'linear-gradient(135deg, #1664c1 0%, #1e40af 100%)',
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',
                   cursor: 'pointer',
-                  fontSize: '15px',
+                  fontSize: '20px',
                   fontWeight: '600',
                   transition: 'all 0.2s ease',
-                  boxShadow: '0 2px 8px rgba(22, 100, 193, 0.3)'
+                  boxShadow: '0 2px 8px rgba(22, 100, 193, 0.3)',
+                  width: '48px',
+                  height: '48px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: '16px'
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
@@ -1136,7 +1202,7 @@ function ActividadDashboardDetalle() {
                   e.currentTarget.style.boxShadow = '0 2px 8px rgba(22, 100, 193, 0.3)';
                 }}
               >
-                ➕ Agregar nuevo avance
+                ➕
               </button>
             )}
           </>
@@ -1186,7 +1252,6 @@ function ActividadDashboardDetalle() {
           <ModalSubirDocumento
             idAvance={showModalUpload}
             onClose={() => setShowModalUpload(null)}
-            // Puedes agregar onUploadSuccess={...} si quieres refrescar la lista de documentos tras upload
           />
         }
 
