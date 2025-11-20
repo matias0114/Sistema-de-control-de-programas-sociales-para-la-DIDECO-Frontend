@@ -11,8 +11,9 @@ RUN npm run build
 # Etapa 2: Servir con NGINX
 FROM nginx:alpine
 RUN rm -rf /etc/nginx/conf.d/*
-COPY --from=build /app/dist /usr/share/nginx/html
 
-# Usa puerto 8022 según lo asignado
-EXPOSE 8022
+# CRA genera /build, NO /dist
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
