@@ -31,11 +31,20 @@ function Login() {
     e.preventDefault();
     setError('');
     try {
-      const response = await fetch('http://localhost:8080/usuarios/login', {
+      //const response = await fetch('http://localhost:8080/usuarios/login', {
+      //  method: 'POST',
+      //  headers: { 'Content-Type': 'application/json' },
+      //  body: JSON.stringify({ correo, contrasena })
+      //});
+      const API_URL = process.env.REACT_APP_API_URL;
+
+      const response = await fetch(`${API_URL}/usuarios/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ correo, contrasena })
       });
+
+
       if (response.ok) {
         const usuario = await response.json();
         localStorage.removeItem('usuario'); // Limpiar cualquier usuario previo
