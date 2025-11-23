@@ -20,7 +20,9 @@ function Layout({ children, title = "Dashboard" }) {
     async function cargarObservaciones() {
       if (usuario.idRol === 2 && usuario.programa && usuario.programa.idPrograma) {
         try {
-          const resp = await fetch(`http://localhost:8080/programas/${usuario.programa.idPrograma}/observaciones`);
+          //const resp = await fetch(`http://localhost:8080/programas/${usuario.programa.idPrograma}/observaciones`);
+          const API_URL = process.env.REACT_APP_API_URL;
+          const resp = await fetch(`${API_URL}/programas/${usuario.programa.idPrograma}/observaciones`);
           if (!resp.ok) throw new Error('No se pudieron cargar las observaciones');
           const data = await resp.json();
           setObservaciones(data);
@@ -63,7 +65,9 @@ function Layout({ children, title = "Dashboard" }) {
     const noLeidas = observaciones.filter(o => !o.leida);
     for (const obs of noLeidas) {
       try {
-        await fetch(`http://localhost:8080/programas/${usuario.programa.idPrograma}/observaciones/${obs.idObservacion}/leer`, {
+        //await fetch(`http://localhost:8080/programas/${usuario.programa.idPrograma}/observaciones/${obs.idObservacion}/leer`, {
+        const API_URL = process.env.REACT_APP_API_URL;
+        await fetch(`${API_URL}/programas/${usuario.programa.idPrograma}/observaciones/${obs.idObservacion}/leer`, {
           method: 'PATCH'
         });
       } catch (e) {
@@ -85,8 +89,10 @@ function Layout({ children, title = "Dashboard" }) {
   // Agregar esta función para borrar observación
   const borrarObservacion = async (idPrograma, idObservacion) => {
     try {
+      const API_URL = process.env.REACT_APP_API_URL;
       const response = await fetch(
-        `http://localhost:8080/programas/${idPrograma}/observaciones/${idObservacion}`,
+        //`http://localhost:8080/programas/${idPrograma}/observaciones/${idObservacion}`,
+        `${API_URL}/programas/${idPrograma}/observaciones/${idObservacion}`,
         {
           method: 'DELETE'
         }

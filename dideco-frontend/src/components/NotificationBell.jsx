@@ -18,7 +18,9 @@ function NotificationBell() {
   const cargarContador = async () => {
     try {
       if (!idUsuario) return; // guardia
-      const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/contador`);
+      //const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/contador`);
+      const API_URL = process.env.REACT_APP_API_URL;
+      const resp = await fetch(`${API_URL}/notificaciones/usuario/${idUsuario}/contador`);
       if (resp.ok) {
         const count = await resp.json();
         setContador(count);
@@ -33,7 +35,9 @@ function NotificationBell() {
     setLoading(true);
     try {
       if (!idUsuario) return; // guardia
-      const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/no-leidas`);
+      //const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/no-leidas`);
+      const API_URL = process.env.REACT_APP_API_URL;
+      const resp = await fetch(`${API_URL}/notificaciones/usuario/${idUsuario}/no-leidas`);
       if (resp.ok) {
         const data = await resp.json();
         setNotificaciones(data.slice(0, 10)); // Solo las últimas 10
@@ -48,7 +52,9 @@ function NotificationBell() {
   // Marcar una notificación como leída
   const marcarComoLeida = async (idNotificacion) => {
     try {
-      const resp = await fetch(`http://localhost:8080/notificaciones/${idNotificacion}/leer`, {
+      //const resp = await fetch(`http://localhost:8080/notificaciones/${idNotificacion}/leer`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const resp = await fetch(`${API_URL}/notificaciones/${idNotificacion}/leer`, {
         method: 'PUT'
       });
       if (resp.ok) {
@@ -64,7 +70,9 @@ function NotificationBell() {
   const marcarTodasComoLeidas = async () => {
     try {
       if (!idUsuario) return; // guardia
-      const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/leer-todas`, {
+      //const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/leer-todas`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const resp = await fetch(`${API_URL}/notificaciones/usuario/${idUsuario}/leer-todas`, {
         method: 'PUT'
       });
       if (resp.ok) {
@@ -81,7 +89,9 @@ function NotificationBell() {
   const marcarObservacionComoLeida = async (idObservacion) => {
     if (!idObservacion || !idProgramaAsignado) return false;
     try {
-      const r = await fetch(`http://localhost:8080/programas/${idProgramaAsignado}/observaciones/${idObservacion}/leer`, {
+      //const r = await fetch(`http://localhost:8080/programas/${idProgramaAsignado}/observaciones/${idObservacion}/leer`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const r = await fetch(`${API_URL}/programas/${idProgramaAsignado}/observaciones/${idObservacion}/leer`, {
         method: 'PATCH'
       });
       return r.ok;
