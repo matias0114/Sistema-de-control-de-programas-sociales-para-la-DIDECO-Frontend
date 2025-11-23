@@ -12,7 +12,9 @@ function ModalSubirDocumento({ idAvance, onClose, onUploadSuccess }) {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const resp = await fetch(`http://localhost:8080/documentos-respaldo/avance/${idAvance}/upload`, {
+      //const resp = await fetch(`http://localhost:8080/documentos-respaldo/avance/${idAvance}/upload`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const resp = await fetch(`${API_URL}/documentos-respaldo/avance/${idAvance}/upload`, {
         method: "POST",
         body: formData
       });

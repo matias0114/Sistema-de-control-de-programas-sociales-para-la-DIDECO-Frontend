@@ -40,7 +40,9 @@ function ProgramaDashboard() {
 
   const handleUpdatePrograma = async (newProg) => {
     try {
-      const response = await fetch(`http://localhost:8080/programas/${newProg.idPrograma}`, {
+      //const response = await fetch(`http://localhost:8080/programas/${newProg.idPrograma}`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${API_URL}/programas/${newProg.idPrograma}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -72,7 +74,9 @@ function ProgramaDashboard() {
   };
 
   const handleAddActividad = async (data) => {
-    await fetch(`http://localhost:8080/actividades`, {
+    //await fetch(`http://localhost:8080/actividades`, {
+    const API_URL = process.env.REACT_APP_API_URL;
+    await fetch(`${API_URL}/actividades`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
@@ -82,7 +86,9 @@ function ProgramaDashboard() {
   };
 
   const handleAddPresupuesto = async (data) => {
-    await fetch(`http://localhost:8080/presupuestos`, {
+    //await fetch(`http://localhost:8080/presupuestos`, {
+    const API_URL = process.env.REACT_APP_API_URL;
+    await fetch(`${API_URL}/presupuestos`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
@@ -137,7 +143,9 @@ function ProgramaDashboard() {
 
   const cargarBeneficiarios = useCallback(async () => {
     try {
-      const resp = await fetch(`http://localhost:8080/beneficiarios-programa/programa/${id}`);
+      //const resp = await fetch(`http://localhost:8080/beneficiarios-programa/programa/${id}`);
+      const API_URL = process.env.REACT_APP_API_URL;
+      const resp = await fetch(`${API_URL}/beneficiarios-programa/programa/${id}`);
       if (!resp.ok) throw new Error("No se pudieron cargar los beneficiarios");
       setBeneficiarios(await resp.json());
     } catch (err) {
@@ -149,16 +157,20 @@ function ProgramaDashboard() {
     setLoading(true);
     setError("");
     try {
-      const respPrograma = await fetch(`http://localhost:8080/programas/${id}`);
+      //const respPrograma = await fetch(`http://localhost:8080/programas/${id}`);
+      const API_URL = process.env.REACT_APP_API_URL;
+      const respPrograma = await fetch(`${API_URL}/programas/${id}`);
       if (!respPrograma.ok) throw new Error("Programa no encontrado");
       const programData = await respPrograma.json();
       setPrograma(programData);
-      const respActividades = await fetch(`http://localhost:8080/actividades`);
+      //const respActividades = await fetch(`http://localhost:8080/actividades`);
+      const respActividades = await fetch(`${API_URL}/actividades`);
       const todasActividades = await respActividades.json();
       const actividadesData = todasActividades.filter(a => a.programa?.idPrograma === Number(id));
       setActividades(actividadesData);
       
-      const respPresupuesto = await fetch(`http://localhost:8080/presupuestos/programa/${id}`);
+      //const respPresupuesto = await fetch(`http://localhost:8080/presupuestos/programa/${id}`);
+      const respPresupuesto = await fetch(`${API_URL}/presupuestos/programa/${id}`);
       let presupuestoData = respPresupuesto.ok ? await respPresupuesto.json() : [];
       if (Array.isArray(presupuestoData) && presupuestoData.length > 0) {
         presupuestoData = presupuestoData.reduce((total, p) => ({
@@ -211,13 +223,17 @@ function ProgramaDashboard() {
   // BENEFICIARIOS funciones:
   const handleAddOrUpdateBeneficiario = async (data) => {
     if (editarBeneficiario) {
-      await fetch(`http://localhost:8080/beneficiarios-programa/${editarBeneficiario.idBeneficiario}`, {
+      //await fetch(`http://localhost:8080/beneficiarios-programa/${editarBeneficiario.idBeneficiario}`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      await fetch(`${API_URL}/beneficiarios-programa/${editarBeneficiario.idBeneficiario}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({...data, programa: {idPrograma: parseInt(id)}})
       });
     } else {
-      await fetch(`http://localhost:8080/beneficiarios-programa`, {
+      //await fetch(`http://localhost:8080/beneficiarios-programa`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      await fetch(`${API_URL}/beneficiarios-programa`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({...data, programa: {idPrograma: parseInt(id)}})
@@ -235,7 +251,9 @@ function ProgramaDashboard() {
 
   const handleDeleteBeneficiario = async idBeneficiario => {
     if (window.confirm("¿Eliminar este beneficiario?")) {
-      await fetch(`http://localhost:8080/beneficiarios-programa/${idBeneficiario}`, { method: "DELETE" });
+      //await fetch(`http://localhost:8080/beneficiarios-programa/${idBeneficiario}`, { method: "DELETE" });
+      const API_URL = process.env.REACT_APP_API_URL;
+      await fetch(`${API_URL}/beneficiarios-programa/${idBeneficiario}`, { method: "DELETE" });
       cargarBeneficiarios();
     }
   };

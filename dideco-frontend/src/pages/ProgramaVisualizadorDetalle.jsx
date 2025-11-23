@@ -50,7 +50,9 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
         texto,
         usuarioAutor: usuario.nombreUsuario || 'Anónimo'  // Envía el nombre del usuario como texto
       };
-      const resp = await fetch(`http://localhost:8080/programas/${idPrograma}/observaciones`, {
+      //const resp = await fetch(`http://localhost:8080/programas/${idPrograma}/observaciones`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const resp = await fetch(`${API_URL}/programas/${idPrograma}/observaciones`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(observacion)
@@ -73,23 +75,28 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
       setLoading(true);
       try {
         // Cargar programa
-        const p = await fetch(`http://localhost:8080/programas/${idPrograma}`).then(res => res.json());
+        //const p = await fetch(`http://localhost:8080/programas/${idPrograma}`).then(res => res.json());
+        const API_URL = process.env.REACT_APP_API_URL;
+        const p = await fetch(`${API_URL}/programas/${idPrograma}`).then(res => res.json());
         setPrograma(p);
 
         // Cargar actividades
-        const acts = await fetch(`http://localhost:8080/actividades`).then(res => res.json());
+        //const acts = await fetch(`http://localhost:8080/actividades`).then(res => res.json());
+        const acts = await fetch(`${API_URL}/actividades`).then(res => res.json());
         const actsProg = acts.filter(a => a.programa?.idPrograma === Number(idPrograma));
         setActividades(actsProg);
 
         // Cargar avances
-        const avs = await fetch(`http://localhost:8080/avances`).then(res => res.json());
+        //const avs = await fetch(`http://localhost:8080/avances`).then(res => res.json());
+        const avs = await fetch(`${API_URL}/avances`).then(res => res.json());
         const avsProg = avs.filter(av =>
           actsProg.some(act => av.idActividad === act.idActividad || av.actividad?.idActividad === act.idActividad)
         );
         setAvances(avsProg);
 
         // Cargar presupuesto
-        const respPresupuesto = await fetch(`http://localhost:8080/presupuestos/programa/${idPrograma}`);
+        //const respPresupuesto = await fetch(`http://localhost:8080/presupuestos/programa/${idPrograma}`);
+        const respPresupuesto = await fetch(`${API_URL}/presupuestos/programa/${idPrograma}`);
         let presupuestoData = respPresupuesto.ok ? await respPresupuesto.json() : [];
         if (Array.isArray(presupuestoData) && presupuestoData.length > 0) {
           presupuestoData = presupuestoData.reduce((total, p) => ({
@@ -143,7 +150,8 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
             .sort((a, b) => a.anio !== b.anio ? a.anio - b.anio : a.mes - b.mes);
           setGastosMensuales(datosGrafico);
         }
-        const respBenef = await fetch(`http://localhost:8080/beneficiarios-programa/programa/${idPrograma}`);
+        //const respBenef = await fetch(`http://localhost:8080/beneficiarios-programa/programa/${idPrograma}`);
+        const respBenef = await fetch(`${API_URL}/beneficiarios-programa/programa/${idPrograma}`);
         if (respBenef.ok) {
           setBeneficiarios(await respBenef.json());
         } else {
@@ -183,8 +191,9 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
   const exportarPDF = async () => {
     try {
       // Agrega el idPrograma como parámetro de consulta
-      const response = await fetch(`http://localhost:8080/actividades/exportar-pdf?idPrograma=${idPrograma}`);
-      
+      //const response = await fetch(`http://localhost:8080/actividades/exportar-pdf?idPrograma=${idPrograma}`);
+      const API_URL = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${API_URL}/actividades/exportar-pdf?idPrograma=${idPrograma}`);
       if (!response.ok) throw new Error('Error al exportar PDF');
       
       const blob = await response.blob();

@@ -16,12 +16,17 @@ function CrearPrograma() {
   }, []);
 
   const cargarDatos = () => {
-    fetch('http://localhost:8080/usuarios')
+
+    
+    //fetch('http://localhost:8080/usuarios')
+    const API_URL = process.env.REACT_APP_API_URL;
+    fetch(`${API_URL}/usuarios`)
       .then(r => r.json())
       .then(data => setUsuarios(data.filter(u => u.idRol === 2)))
       .catch(() => setMensaje('Error al cargar encargados'));
     
-    fetch('http://localhost:8080/programas')
+    //fetch('http://localhost:8080/programas')
+    fetch(`${API_URL}/programas`)
       .then(r => r.json())
       .then(data => setProgramas(data))
       .catch(() => setMensaje('Error al cargar programas'));
@@ -33,7 +38,10 @@ function CrearPrograma() {
     setMensajeExito('');
     
     try {
-      const response = await fetch('http://localhost:8080/programas', {
+
+      //const response = await fetch('http://localhost:8080/programas', {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${API_URL}/programas`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

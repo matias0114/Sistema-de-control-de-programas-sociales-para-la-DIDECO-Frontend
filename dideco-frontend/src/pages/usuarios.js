@@ -31,12 +31,15 @@ function Usuarios() {
   }, []);
 
   const cargarDatos = () => {
-    fetch('http://localhost:8080/usuarios')
+    //fetch('http://localhost:8080/usuarios')
+    const API_URL = process.env.REACT_APP_API_URL;
+    fetch(`${API_URL}/usuarios`)
       .then(r => r.json())
       .then(data => setUsuarios(data))
       .catch(() => setMensaje('Error al cargar usuarios'));
     
-    fetch('http://localhost:8080/programas')
+    //fetch('http://localhost:8080/programas')
+    fetch(`${API_URL}/programas`)
       .then(r => r.json())
       .then(data => setProgramas(data))
       .catch(() => setMensaje('Error al cargar programas'));
@@ -62,7 +65,9 @@ function Usuarios() {
     }
     
     try {
-      const response = await fetch('http://localhost:8080/usuarios', {
+      //const response = await fetch('http://localhost:8080/usuarios', {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${API_URL}/usuarios`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombreUsuario, correo, contrasena, idRol })
@@ -90,7 +95,9 @@ function Usuarios() {
   const eliminarUsuario = async (idUsuario, nombreUsuario) => {
     if (window.confirm(`¿Estás seguro de eliminar al usuario "${nombreUsuario}"?`)) {
       try {
-        const response = await fetch(`http://localhost:8080/usuarios/${idUsuario}`, { 
+        //const response = await fetch(`http://localhost:8080/usuarios/${idUsuario}`, { 
+        const API_URL = process.env.REACT_APP_API_URL;
+        const response = await fetch(`${API_URL}/usuarios/${idUsuario}`, {
           method: 'DELETE' 
         });
         

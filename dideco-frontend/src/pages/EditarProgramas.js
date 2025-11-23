@@ -27,7 +27,9 @@ function EditarPrograma({ idPrograma, programa, usuarios, onClose, onActualizar 
         usuario: nuevoEncargado ? { idUsuario: Number(nuevoEncargado) } : null
       };
       
-      const response = await fetch(`http://localhost:8080/programas/${idPrograma}`, {
+      //const response = await fetch(`http://localhost:8080/programas/${idPrograma}`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const response = await fetch(`${API_URL}/programas/${idPrograma}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -378,12 +380,15 @@ function EditarProgramas() {
   }, []);
 
   const cargarDatos = () => {
-    fetch('http://localhost:8080/programas')
+    //fetch('http://localhost:8080/programas')
+    const API_URL = process.env.REACT_APP_API_URL;
+    fetch(`${API_URL}/programas`)
       .then(r => r.json())
       .then(data => setProgramas(data))
       .catch(() => console.error('Error al cargar programas'));
     
-    fetch('http://localhost:8080/usuarios')
+    //fetch('http://localhost:8080/usuarios')
+    fetch(`${API_URL}/usuarios`)
       .then(r => r.json())
       .then(data => setUsuarios(data.filter(u => u.idRol === 2)))
       .catch(() => console.error('Error al cargar usuarios'));

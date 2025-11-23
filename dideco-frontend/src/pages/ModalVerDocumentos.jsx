@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 
 function ModalVerDocumentos({ idAvance, onClose }) {
   const [documentos, setDocumentos] = useState([]);
-
+  const API_URL = process.env.REACT_APP_API_URL;
   useEffect(() => {
-    fetch(`http://localhost:8080/documentos-respaldo/avance/${idAvance}`)
+    //fetch(`http://localhost:8080/documentos-respaldo/avance/${idAvance}`)
+    const API_URL = process.env.REACT_APP_API_URL;
+    fetch(`${API_URL}/documentos-respaldo/avance/${idAvance}`)
       .then(r => r.json())
       .then(setDocumentos);
   }, [idAvance]);
@@ -45,13 +47,15 @@ function ModalVerDocumentos({ idAvance, onClose }) {
               <li key={doc.idDocumento} style={{ marginBottom: '16px' }}>
                 {doc.tipoContenido && doc.tipoContenido.startsWith("image/") ? (
                   <img 
-                    src={`http://localhost:8080/${doc.url}`} 
+                    //src={`http://localhost:8080/${doc.url}`} 
+                    src={`${API_URL}${doc.url}`}
                     alt={doc.nombreArchivo} 
                     style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px', objectFit: 'contain' }}
                   />
                 ) : (
                   <a 
-                    href={`http://localhost:8080/${doc.url}`} 
+                    //href={`http://localhost:8080/${doc.url}`} 
+                    href={`${API_URL}${doc.url}`}
                     target="_blank" 
                     rel="noopener noreferrer"
                     style={{ color: '#1664c1', textDecoration: 'underline' }}

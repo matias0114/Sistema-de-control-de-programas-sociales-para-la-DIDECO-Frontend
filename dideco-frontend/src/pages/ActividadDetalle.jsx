@@ -19,12 +19,15 @@ function ActividadDetalle() {
     async function fetchDatos() {
       setLoading(true);
       try {
-        const actRes = await fetch('http://localhost:8080/actividades');
+        //const actRes = await fetch('http://localhost:8080/actividades');
+        const API_URL = process.env.REACT_APP_API_URL;
+        const actRes = await fetch(`${API_URL}/actividades`);
         const acts = await actRes.json();
         const actData = acts.find(a => a.idActividad === Number(idActividad));
         setActividad(actData || null);
 
-        const avRes = await fetch('http://localhost:8080/avances');
+        //const avRes = await fetch('http://localhost:8080/avances');
+        const avRes = await fetch(`${API_URL}/avances`);
         const allAvances = await avRes.json();
         const avs = allAvances.filter(av =>
           av.idActividad === Number(idActividad) ||

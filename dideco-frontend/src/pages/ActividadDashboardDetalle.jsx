@@ -27,12 +27,16 @@ function ActividadDashboardDetalle() {
     async function fetchDatos() {
       setLoading(true);
       try {
-        const resAct = await fetch(`http://localhost:8080/actividades`);
+
+        //const resAct = await fetch(`http://localhost:8080/actividades`);
+        const API_URL = process.env.REACT_APP_API_URL;
+        const resAct = await fetch(`${API_URL}/actividades`);
         const acts = await resAct.json();
         const actData = acts.find((a) => a.idActividad === Number(idActividad));
         setActividad(actData || null);
 
-        const resAv = await fetch(`http://localhost:8080/avances`);
+        //const resAv = await fetch(`http://localhost:8080/avances`);
+        const resAv = await fetch(`${API_URL}/avances`);
         const avs = await resAv.json();
         setAvances(
           avs.filter(
@@ -54,13 +58,16 @@ function ActividadDashboardDetalle() {
   async function handleSaveActividad(e) {
     e.preventDefault();
     try {
-      await fetch(`http://localhost:8080/actividades/${idActividad}`, {
+      //await fetch(`http://localhost:8080/actividades/${idActividad}`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      await fetch(`${API_URL}/actividades/${idActividad}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(actividad),
       });
       setShowEditarModal(false);
-      const res = await fetch(`http://localhost:8080/actividades`);
+      //const res = await fetch(`http://localhost:8080/actividades`);
+      const res = await fetch(`${API_URL}/actividades`);
       const acts = await res.json();
       const actData = acts.find((a) => a.idActividad === Number(idActividad));
       setActividad(actData);
@@ -74,7 +81,9 @@ function ActividadDashboardDetalle() {
     try {
       if (payload.idAvance) {
         // EDITAR AVANCE EXISTENTE
-        await fetch(`http://localhost:8080/avances/${payload.idAvance}`, {
+        //await fetch(`http://localhost:8080/avances/${payload.idAvance}`, {
+        const API_URL = process.env.REACT_APP_API_URL;
+        await fetch(`${API_URL}/avances/${payload.idAvance}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -86,7 +95,9 @@ function ActividadDashboardDetalle() {
         setAvanceToEdit(null);
       } else {
         // CREAR NUEVO AVANCE
-        await fetch(`http://localhost:8080/avances`, {
+        //await fetch(`http://localhost:8080/avances`, {
+        const API_URL = process.env.REACT_APP_API_URL;
+        await fetch(`${API_URL}/avances`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -99,7 +110,10 @@ function ActividadDashboardDetalle() {
       }
 
       // Recargar avances
-      const resAv = await fetch(`http://localhost:8080/avances`);
+      //const resAv = await fetch(`http://localhost:8080/avances`);
+      const API_URL = process.env.REACT_APP_API_URL;
+
+      const resAv = await fetch(`${API_URL}/avances`);
       const avs = await resAv.json();
       setAvances(
         avs.filter(

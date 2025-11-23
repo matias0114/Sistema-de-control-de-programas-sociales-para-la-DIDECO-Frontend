@@ -29,12 +29,14 @@ function ModalObservacionInterna({
 
   // Marcar como leída al abrir en modo view
   useEffect(() => {
+    const API_URL = process.env.REACT_APP_API_URL;
     const marcarLeida = async () => {
       if (!observacion?.idObservacion || !observacion?.programa?.idPrograma) return;
       
       try {
         const response = await fetch(
-          `http://localhost:8080/programas/${observacion.programa.idPrograma}/observaciones/${observacion.idObservacion}/leer`,
+          //`http://localhost:8080/programas/${observacion.programa.idPrograma}/observaciones/${observacion.idObservacion}/leer`,
+          `${API_URL}/programas/${observacion.programa.idPrograma}/observaciones/${observacion.idObservacion}/leer`, 
           {
             method: 'PATCH',
             headers: {

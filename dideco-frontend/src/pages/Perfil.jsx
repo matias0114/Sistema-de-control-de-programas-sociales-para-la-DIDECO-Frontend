@@ -51,9 +51,12 @@ function Perfil() {
     }
 
     try {
+      const API_URL = process.env.REACT_APP_API_URL;
       // Usar el nuevo endpoint seguro PATCH para actualizar solo el nombre
       const response = await fetch(
-        `http://localhost:8080/usuarios/${usuario.idUsuario}/nombre`,
+        
+        //`http://localhost:8080/usuarios/${usuario.idUsuario}/nombre`,
+        `${API_URL}/usuarios/${usuario.idUsuario}/nombre`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -120,9 +123,11 @@ function Perfil() {
     }
 
     try {
+      const API_URL = process.env.REACT_APP_API_URL;
       // Usar el endpoint seguro de cambio de contraseña
       const response = await fetch(
-        `http://localhost:8080/usuarios/${usuario.idUsuario}/cambiar-password`,
+        //`http://localhost:8080/usuarios/${usuario.idUsuario}/cambiar-password`,
+        `${API_URL}/usuarios/${usuario.idUsuario}/cambiar-password`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },

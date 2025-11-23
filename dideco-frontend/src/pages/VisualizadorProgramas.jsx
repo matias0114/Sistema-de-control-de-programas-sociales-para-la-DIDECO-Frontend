@@ -14,7 +14,9 @@ function VisualizadorProgramas() {
   const { idPrograma } = useParams();
 
   useEffect(() => {
-    fetch("http://localhost:8080/programas")
+    //fetch("http://localhost:8080/programas")
+    const API_URL = process.env.REACT_APP_API_URL;
+    fetch(`${API_URL}/programas`)
       .then(res => res.json())
       .then(data => {
         setProgramas(data);

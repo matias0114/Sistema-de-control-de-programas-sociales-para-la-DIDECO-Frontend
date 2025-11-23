@@ -16,7 +16,9 @@ function Notificaciones() {
   const cargarNotificaciones = async () => {
     setLoading(true);
     try {
-      const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}`);
+      //const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}`);
+      const API_URL = process.env.REACT_APP_API_URL;
+      const resp = await fetch(`${API_URL}/notificaciones/usuario/${idUsuario}`);
       if (resp.ok) {
         const data = await resp.json();
         setNotificaciones(data);
@@ -36,7 +38,9 @@ function Notificaciones() {
 
   const marcarComoLeida = async (idNotificacion) => {
     try {
-      const resp = await fetch(`http://localhost:8080/notificaciones/${idNotificacion}/leer`, {
+      //const resp = await fetch(`http://localhost:8080/notificaciones/${idNotificacion}/leer`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const resp = await fetch(`${API_URL}/notificaciones/${idNotificacion}/leer`, {
         method: 'PUT'
       });
       if (resp.ok) {
@@ -54,7 +58,9 @@ function Notificaciones() {
 
   const marcarTodasComoLeidas = async () => {
     try {
-      const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/leer-todas`, {
+      //const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/leer-todas`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const resp = await fetch(`${API_URL}/notificaciones/usuario/${idUsuario}/leer-todas`, {
         method: 'PUT'
       });
       if (resp.ok) {
@@ -68,7 +74,9 @@ function Notificaciones() {
   // Marcar OBSERVACIÓN como leída cuando se abre desde la lista
   const marcarObservacionComoLeida = async (idObservacion) => {
     try {
-      await fetch(`http://localhost:8080/observaciones-programa/${idObservacion}/leer`, {
+      //await fetch(`http://localhost:8080/observaciones-programa/${idObservacion}/leer`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      await fetch(`${API_URL}/observaciones-programa/${idObservacion}/leer`, {
         method: 'PUT'
       });
     } catch (error) {
@@ -128,7 +136,9 @@ function Notificaciones() {
   // Agregar esta función para borrar notificación
   const borrarNotificacion = async (idNotificacion) => {
     try {
-      const resp = await fetch(`http://localhost:8080/notificaciones/${idNotificacion}`, {
+      //const resp = await fetch(`http://localhost:8080/notificaciones/${idNotificacion}`, {
+      const API_URL = process.env.REACT_APP_API_URL;
+      const resp = await fetch(`${API_URL}/notificaciones/${idNotificacion}`, {
         method: 'DELETE'
       });
 
