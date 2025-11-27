@@ -1,0 +1,58 @@
+/* Fondo completo con degradado */
+.selector-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #e3ebff 0%, #f8faff 100%);
+}
+
+/* Tarjeta estilo glass */
+.selector-card {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 40px 35px;
+  width: 420px;
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+  text-align: center;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.selector-card h2 {
+  font-size: 1.6rem;
+  margin-bottom: 25px;
+  color: #1e3a8a;
+  font-weight: 700;
+}
+
+/* Botones */
+.selector-button {
+  display: block;
+  width: 100%;
+  margin: 12px 0;
+  padding: 14px;
+  font-size: 1.05rem;
+  border-radius: 10px;
+  border: none;
+  
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+
+  font-weight: 600;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+/* Hover con pequeño levantamiento y cambio de color */
+.selector-button:hover {
+  background: #1e4bb8;
+  transform: translateY(-3px);
+}
+
+/* Animación suave al cargar */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

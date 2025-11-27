@@ -12,8 +12,7 @@ import ActividadDashboardDetalle from './pages/ActividadDashboardDetalle';
 import Notificaciones from './pages/Notificaciones';
 import Perfil from './pages/Perfil';
 import LayoutSimple from './components/LayoutSimple';
-
-// Importa los nuevos PrivateRoute
+import SeleccionarPrograma from './pages/SeleccionarPrograma';
 import PrivateRouteSuperadmin from './components/PrivateRouteSuperadmin';
 import PrivateRouteEncargado from './components/PrivateRouteEncargado';
 import PrivateRouteVisualizador from './components/PrivateRouteVisualizador';
@@ -145,6 +144,15 @@ function App() {
           element={
             <PrivateRouteEncargado>
               <ActividadDashboardDetalle />
+            </PrivateRouteEncargado>
+          }
+        />
+        {/* Selección de programa (Encargado con múltiples programas activos) */}
+        <Route
+          path="/seleccionar-programa"
+          element={
+            <PrivateRouteEncargado>
+              <SeleccionarPrograma />
             </PrivateRouteEncargado>
           }
         />
