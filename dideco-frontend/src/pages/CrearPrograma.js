@@ -47,7 +47,7 @@ function CrearPrograma() {
         body: JSON.stringify({
           nombrePrograma,
           descripcion,
-          usuario: encargadoId ? { idUsuario: Number(encargadoId) } : null
+          usuario: { idUsuario: Number(encargadoId) }
         })
       });
       

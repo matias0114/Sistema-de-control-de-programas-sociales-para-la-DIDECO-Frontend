@@ -19,22 +19,27 @@ function EditarPrograma({ idPrograma, programa, usuarios, onClose, onActualizar 
   const guardar = async () => {
     setCargando(true);
     setMensaje('');
-    
+
+    if (!nuevoEncargado) {
+      setMensaje('⚠ Debe seleccionar un encargado');
+      setCargando(false);
+      return;
+    }
+
     try {
       const body = {
         ...programa,
         estado: nuevoEstado,
-        usuario: nuevoEncargado ? { idUsuario: Number(nuevoEncargado) } : null
+        usuario: { idUsuario: Number(nuevoEncargado) }
       };
-      
-      //const response = await fetch(`http://localhost:8080/programas/${idPrograma}`, {
+
       const API_URL = process.env.REACT_APP_API_URL;
       const response = await fetch(`${API_URL}/programas/${idPrograma}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       });
-      
+
       if (response.ok) {
         setMensaje('✓ Cambios guardados');
         setTimeout(() => {
@@ -50,6 +55,7 @@ function EditarPrograma({ idPrograma, programa, usuarios, onClose, onActualizar 
       setCargando(false);
     }
   };
+
 
   return (
     <div style={{
@@ -221,6 +227,7 @@ function EditarPrograma({ idPrograma, programa, usuarios, onClose, onActualizar 
             value={nuevoEncargado || ''}
             onChange={e => setNuevoEncargado(e.target.value)}
             disabled={cargando}
+            required
             style={{
               width: '100%',
               padding: '12px 16px',
@@ -242,7 +249,6 @@ function EditarPrograma({ idPrograma, programa, usuarios, onClose, onActualizar 
               e.target.style.boxShadow = 'none';
             }}
           >
-            <option value="">⚠️ Sin encargado asignado</option>
             {usuarios.map(u => (
               <option value={u.idUsuario} key={u.idUsuario}>
                 {u.nombreUsuario} ({u.correo})
