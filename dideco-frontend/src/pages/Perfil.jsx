@@ -360,39 +360,6 @@ function Perfil() {
               </p>
             </div>
 
-            <div style={{
-              background: '#fef3c7',
-              padding: '20px',
-              borderRadius: '12px',
-              border: '1px solid #fde047'
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                marginBottom: '8px'
-              }}>
-                <span style={{ fontSize: '20px' }}>🆔</span>
-                <strong style={{
-                  color: '#92400e',
-                  fontSize: '14px',
-                  fontWeight: '700',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}>
-                  ID de Usuario
-                </strong>
-              </div>
-              <p style={{
-                margin: 0,
-                color: '#78350f',
-                fontSize: '15px',
-                fontWeight: '600'
-              }}>
-                #{usuario.idUsuario}
-              </p>
-            </div>
-
             {usuario.programa && (
               <div style={{
                 background: '#f0fdf4',

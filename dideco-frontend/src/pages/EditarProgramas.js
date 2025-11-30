@@ -183,6 +183,7 @@ function EditarPrograma({ idPrograma, programa, usuarios, onClose, onActualizar 
           }}>
             📍 Estado del Programa *
           </label>
+
           <select
             value={nuevoEstado}
             onChange={e => setNuevoEstado(e.target.value)}
@@ -210,8 +211,10 @@ function EditarPrograma({ idPrograma, programa, usuarios, onClose, onActualizar 
           >
             <option value="Activo">✓ Activo</option>
             <option value="Finalizado">✕ Finalizado</option>
+            <option value="Borrador">📝 Borrador</option>
           </select>
         </div>
+
 
         <div style={{ marginBottom: '24px' }}>
           <label style={{

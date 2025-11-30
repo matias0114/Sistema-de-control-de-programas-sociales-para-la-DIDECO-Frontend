@@ -21,8 +21,58 @@ function EditarProgramaInfo({ programa, onSave }) {
     nombrePrograma: 150,
     tipoPrograma: 100,
     oficinaResponsable: 150,
-    contactoEncargado: 150
+    contactoEncargado: 150,
+    textosLargos: 2000
   };
+
+  const errores = {
+    nombrePrograma:
+      formData.nombrePrograma.length > limites.nombrePrograma
+        ? `Máximo ${limites.nombrePrograma} caracteres`
+        : '',
+
+    tipoPrograma:
+      formData.tipoPrograma.length > limites.tipoPrograma
+        ? `Máximo ${limites.tipoPrograma} caracteres`
+        : '',
+
+    oficinaResponsable:
+      formData.oficinaResponsable.length > limites.oficinaResponsable
+        ? `Máximo ${limites.oficinaResponsable} caracteres`
+        : '',
+
+    contactoEncargado:
+      formData.contactoEncargado.length > limites.contactoEncargado
+        ? `Máximo ${limites.contactoEncargado} caracteres`
+        : '',
+
+    descripcion:
+      formData.descripcion.length > limites.textosLargos
+        ? `Máximo ${limites.textosLargos} caracteres`
+        : '',
+
+    metas:
+      formData.metas.length > limites.textosLargos
+        ? `Máximo ${limites.textosLargos} caracteres`
+        : '',
+
+    requisitosIngreso:
+      formData.requisitosIngreso.length > limites.textosLargos
+        ? `Máximo ${limites.textosLargos} caracteres`
+        : '',
+
+    beneficios:
+      formData.beneficios.length > limites.textosLargos
+        ? `Máximo ${limites.textosLargos} caracteres`
+        : '',
+
+    cupos:
+      formData.cupos !== "" && (!/^[0-9]+$/.test(formData.cupos) || Number(formData.cupos) < 0)
+        ? "Debe ser un número entero positivo"
+        : ''
+  };
+
+  const tieneErrores = Object.values(errores).some(msg => msg !== "");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -585,10 +635,9 @@ function EditarProgramaInfo({ programa, onSave }) {
               <span style={{ 
                 float: 'right', 
                 fontSize: '12px', 
-                color: '#6b7280',
-                fontWeight: '600'
+                color: formData.descripcion.length > limites.textosLargos ? '#ef4444' : '#6b7280'
               }}>
-                {formData.descripcion.length} caracteres
+                {formData.descripcion.length}/{limites.textosLargos}
               </span>
             </label>
             <textarea
@@ -596,10 +645,11 @@ function EditarProgramaInfo({ programa, onSave }) {
               value={formData.descripcion}
               onChange={handleChange}
               rows="3"
+              maxLength={limites.textosLargos}
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #e5e7eb',
+                border: `2px solid ${errores.descripcion ? '#ef4444' : '#e5e7eb'}`,
                 borderRadius: '8px',
                 fontSize: '15px',
                 transition: 'all 0.2s ease',
@@ -611,6 +661,11 @@ function EditarProgramaInfo({ programa, onSave }) {
               onFocus={(e) => e.target.style.borderColor = '#1664c1'}
               onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             />
+            {errores.descripcion && (
+              <p style={{ color: '#ef4444', fontSize: '12px' }}>
+                {errores.descripcion}
+              </p>
+            )}
           </div>
 
           {/* Tipo de Programa */}
@@ -644,7 +699,7 @@ function EditarProgramaInfo({ programa, onSave }) {
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: `2px solid ${formData.tipoPrograma.length > limites.tipoPrograma ? '#ef4444' : '#e5e7eb'}`,
+                border: `2px solid ${errores.tipoPrograma ? '#ef4444' : '#e5e7eb'}`,
                 borderRadius: '8px',
                 fontSize: '15px',
                 transition: 'all 0.2s ease',
@@ -654,6 +709,11 @@ function EditarProgramaInfo({ programa, onSave }) {
               onFocus={(e) => e.target.style.borderColor = '#1664c1'}
               onBlur={(e) => e.target.style.borderColor = formData.tipoPrograma.length > limites.tipoPrograma ? '#ef4444' : '#e5e7eb'}
             />
+            {errores.tipoPrograma && (
+              <p style={{ color: '#ef4444', fontSize: '12px' }}>
+                {errores.tipoPrograma}
+              </p>
+            )}
           </div>
 
           {/* Oficina Responsable - SOLO EN MODO EDICIÓN */}
@@ -686,7 +746,7 @@ function EditarProgramaInfo({ programa, onSave }) {
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: formData.oficinaResponsable.length > limites.oficinaResponsable ? '2px solid #ef4444' : '2px solid #e5e7eb',
+                border: `2px solid ${errores.oficinaResponsable ? '#ef4444' : '#e5e7eb'}`,
                 borderRadius: '8px',
                 fontSize: '15px',
                 transition: 'all 0.2s ease',
@@ -696,6 +756,11 @@ function EditarProgramaInfo({ programa, onSave }) {
               onFocus={(e) => e.target.style.borderColor = '#1664c1'}
               onBlur={(e) => e.target.style.borderColor = formData.oficinaResponsable.length > limites.oficinaResponsable ? '#ef4444' : '#e5e7eb'}
             />
+            {errores.oficinaResponsable && (
+              <p style={{ color: '#ef4444', fontSize: '12px' }}>
+                {errores.oficinaResponsable}
+              </p>
+            )}
           </div>
 
           {/* Contacto del Encargado */}
@@ -714,7 +779,7 @@ function EditarProgramaInfo({ programa, onSave }) {
                 float: 'right', 
                 fontSize: '11px', 
                 fontWeight: 'normal', 
-                color: formData.contactoEncargado.length > limites.contactoEncargado ? '#ef4444' : '#6b7280' 
+                color: formData.contactoEncargado.length > limites.contactoEncargado ? '#ef4444' : '#6b7280'
               }}>
                 {formData.contactoEncargado.length}/{limites.contactoEncargado}
               </span>
@@ -729,7 +794,7 @@ function EditarProgramaInfo({ programa, onSave }) {
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: formData.contactoEncargado.length > limites.contactoEncargado ? '2px solid #ef4444' : '2px solid #e5e7eb',
+                border: `2px solid ${errores.contactoEncargado ? '#ef4444' : '#e5e7eb'}`,
                 borderRadius: '8px',
                 fontSize: '15px',
                 transition: 'all 0.2s ease',
@@ -739,6 +804,11 @@ function EditarProgramaInfo({ programa, onSave }) {
               onFocus={(e) => e.target.style.borderColor = '#1664c1'}
               onBlur={(e) => e.target.style.borderColor = formData.contactoEncargado.length > limites.contactoEncargado ? '#ef4444' : '#e5e7eb'}
             />
+            {errores.contactoEncargado && (
+              <p style={{ color: '#ef4444', fontSize: '12px' }}>
+                {errores.contactoEncargado}
+              </p>
+            )}
           </div>
 
           {/* Número de Cupos - CAMPO CORREGIDO */}
@@ -763,7 +833,7 @@ function EditarProgramaInfo({ programa, onSave }) {
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #e5e7eb',
+                border: `2px solid ${errores.cupos ? '#ef4444' : '#e5e7eb'}`,
                 borderRadius: '8px',
                 fontSize: '15px',
                 transition: 'all 0.2s ease',
@@ -773,6 +843,11 @@ function EditarProgramaInfo({ programa, onSave }) {
               onFocus={(e) => e.target.style.borderColor = '#1664c1'}
               onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             />
+            {errores.cupos && (
+              <p style={{ color: '#ef4444', fontSize: '12px' }}>
+                {errores.cupos}
+              </p>
+            )}
           </div>
 
           {/* Fecha de Inicio */}
@@ -809,7 +884,7 @@ function EditarProgramaInfo({ programa, onSave }) {
             />
           </div>
 
-          {/* Fecha de Finalización - CAMPO CORREGIDO */}
+          {/* Fecha de Finalización*/}
           <div>
             <label style={{
               display: 'block',
@@ -859,9 +934,9 @@ function EditarProgramaInfo({ programa, onSave }) {
                 float: 'right', 
                 fontSize: '11px', 
                 fontWeight: 'normal', 
-                color: '#6b7280' 
+                color: formData.metas.length > limites.textosLargos ? '#ef4444' : '#6b7280'
               }}>
-                {formData.metas.length} caracteres
+                {formData.metas.length}/{limites.textosLargos}
               </span>
             </label>
             <textarea
@@ -869,6 +944,7 @@ function EditarProgramaInfo({ programa, onSave }) {
               value={formData.metas}
               onChange={handleChange}
               rows="3"
+              maxLength={limites.textosLargos}
               placeholder="Describe las metas y objetivos del programa..."
               style={{
                 width: '100%',
@@ -885,6 +961,11 @@ function EditarProgramaInfo({ programa, onSave }) {
               onFocus={(e) => e.target.style.borderColor = '#1664c1'}
               onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             />
+            {errores.metas && (
+              <p style={{ color: '#ef4444', fontSize: '12px' }}>
+                {errores.metas}
+              </p>
+            )}
           </div>
 
           {/* Requisitos de Ingreso */}
@@ -903,9 +984,9 @@ function EditarProgramaInfo({ programa, onSave }) {
                 float: 'right', 
                 fontSize: '11px', 
                 fontWeight: 'normal', 
-                color: '#6b7280' 
+                color: formData.requisitosIngreso.length > limites.textosLargos ? '#ef4444' : '#6b7280'
               }}>
-                {formData.requisitosIngreso.length} caracteres
+                {formData.requisitosIngreso.length}/{limites.textosLargos}
               </span>
             </label>
             <textarea
@@ -913,11 +994,12 @@ function EditarProgramaInfo({ programa, onSave }) {
               value={formData.requisitosIngreso}
               onChange={handleChange}
               rows="3"
+              maxLength={limites.textosLargos}
               placeholder="Describe los requisitos para ingresar al programa..."
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #e5e7eb',
+                border: `2px solid ${errores.requisitosIngreso ? '#ef4444' : '#e5e7eb'}`,
                 borderRadius: '8px',
                 fontSize: '15px',
                 transition: 'all 0.2s ease',
@@ -929,6 +1011,11 @@ function EditarProgramaInfo({ programa, onSave }) {
               onFocus={(e) => e.target.style.borderColor = '#1664c1'}
               onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             />
+            {errores.requisitosIngreso && (
+              <p style={{ color: '#ef4444', fontSize: '12px' }}>
+                {errores.requisitosIngreso}
+              </p>
+            )}
           </div>
 
           {/* Beneficios */}
@@ -947,9 +1034,9 @@ function EditarProgramaInfo({ programa, onSave }) {
                 float: 'right', 
                 fontSize: '11px', 
                 fontWeight: 'normal', 
-                color: '#6b7280' 
+                color: formData.beneficios.length > limites.textosLargos ? '#ef4444' : '#6b7280'
               }}>
-                {formData.beneficios.length} caracteres
+                {formData.beneficios.length}/{limites.textosLargos}
               </span>
             </label>
             <textarea
@@ -957,6 +1044,7 @@ function EditarProgramaInfo({ programa, onSave }) {
               value={formData.beneficios}
               onChange={handleChange}
               rows="3"
+              maxLength={limites.textosLargos}
               placeholder="Describe los beneficios que ofrece el programa..."
               style={{
                 width: '100%',
@@ -973,6 +1061,11 @@ function EditarProgramaInfo({ programa, onSave }) {
               onFocus={(e) => e.target.style.borderColor = '#1664c1'}
               onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             />
+            {errores.beneficios && (
+              <p style={{ color: '#ef4444', fontSize: '12px' }}>
+                {errores.beneficios}
+              </p>
+            )}
           </div>
         </div>
 

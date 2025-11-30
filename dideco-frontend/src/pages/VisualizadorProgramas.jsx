@@ -7,24 +7,25 @@ import './visualizador.css';
 function VisualizadorProgramas() {
   const [programas, setProgramas] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ activos: 0, inactivos: 0, total: 0 });
-  const [filtro, setFiltro] = useState('activos');
+  const [stats, setStats] = useState({ activos: 0, inactivos: 0, borrador: 0, total: 0 });
+  const [filtro, setFiltro] = useState('todos');
   const [busqueda, setBusqueda] = useState("");
   const navigate = useNavigate();
   const { idPrograma } = useParams();
 
   useEffect(() => {
-    //fetch("http://localhost:8080/programas")
     const API_URL = process.env.REACT_APP_API_URL;
+
     fetch(`${API_URL}/programas`)
       .then(res => res.json())
       .then(data => {
         setProgramas(data);
+
         const activos = data.filter(p => p.estado?.toLowerCase() === 'activo').length;
-        const inactivos = data.filter(p => 
-          p.estado?.toLowerCase() === 'finalizado'
-        ).length;
-        setStats({ activos, inactivos, total: data.length });
+        const inactivos = data.filter(p => p.estado?.toLowerCase() === 'finalizado').length;
+        const borrador = data.filter(p => p.estado?.toLowerCase() === 'borrador').length;
+
+        setStats({ activos, inactivos, borrador, total: data.length });
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -34,13 +35,13 @@ function VisualizadorProgramas() {
     navigate(`/visualizador/${id}`);
   };
 
-  // Filtrar por estado
+  // Filtrar por estado desde el select
   const programasFiltradosPorEstado = programas.filter(p => {
-    if (filtro === 'activos') return p.estado?.toLowerCase() === 'activo';
-    if (filtro === 'inactivos') return (
-      p.estado?.toLowerCase() === 'finalizado'
-    );
-    return true;
+    const estado = p.estado?.toLowerCase();
+    if (filtro === 'activos') return estado === 'activo';
+    if (filtro === 'inactivos') return estado === 'finalizado';
+    if (filtro === 'borrador') return estado === 'borrador';
+    return true; // todos
   });
 
   // Filtrar por búsqueda
@@ -69,74 +70,52 @@ function VisualizadorProgramas() {
         <div className="visualizador-content">
           {!idPrograma ? (
             <>
-              {/* 🔹 Header con estadísticas y botones filtro */}
+              {/* Header */}
               <div className="stats-header">
                 <div className="welcome-section-new">
                   <h1>📊 Visualizador de Programas</h1>
                   <p>Explora todos los programas sociales disponibles</p>
                 </div>
-
-                <div className="stats-cards-horizontal">
-                  <div
-                    className={`stat-card-h active ${filtro === 'activos' ? 'selected' : ''}`}
-                    onClick={() => setFiltro('activos')}
-                  >
-                    <div className="stat-icon">✅</div>
-                    <div className="stat-content">
-                      <h3>{stats.activos}</h3>
-                      <p>Programas Activos</p>
-                    </div>
-                  </div>
-
-                  <div
-                    className={`stat-card-h inactive ${filtro === 'inactivos' ? 'selected' : ''}`}
-                    onClick={() => setFiltro('inactivos')}
-                  >
-                    <div className="stat-icon">⏸️</div>
-                    <div className="stat-content">
-                      <h3>{stats.inactivos}</h3>
-                      <p>Programas Finalizados</p>
-                    </div>
-                  </div>
-
-                  <div
-                    className={`stat-card-h total ${filtro === 'todos' ? 'selected' : ''}`}
-                    onClick={() => setFiltro('todos')}
-                  >
-                    <div className="stat-icon">📋</div>
-                    <div className="stat-content">
-                      <h3>{stats.total}</h3>
-                      <p>Todos los Programas</p>
-                    </div>
-                  </div>
-                </div>
               </div>
 
-              {/* 🔹 Sección de programas */}
+              {/* Sección de programas */}
               <div className="programas-section">
                 <div className="section-header">
-                  <h2>
-                    {filtro === 'activos'
-                      ? 'Programas Activos'
-                      : filtro === 'inactivos'
-                      ? 'Programas Finalizados'
-                      : 'Todos los Programas'}
-                  </h2>
+                  <h2>Programas</h2>
                   <span className="total-count">{programasFiltrados.length} programas</span>
                 </div>
 
-                {/* 🔍 Campo de búsqueda (colocado debajo del título) */}
-                <div className="buscador-container">
+                {/* BUSCADOR + SELECT FILTRO */}
+                <div className="buscador-container" style={{ display: "flex", gap: 12 }}>
                   <input
                     type="text"
                     placeholder="🔍 Buscar por nombre de programa o encargado..."
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
                     className="buscador-input"
+                    style={{ flex: 1 }}
                   />
+
+                  <select
+                    value={filtro}
+                    onChange={(e) => setFiltro(e.target.value)}
+                    className="buscador-input"
+                    style={{
+                      width: "180px",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      border: "2px solid #d1d5db",
+                      fontSize: "15px"
+                    }}
+                  >
+                    <option value="todos">Todos los estados</option>
+                    <option value="activos">Activos</option>
+                    <option value="inactivos">Finalizados</option>
+                    <option value="borrador">Borrador</option>
+                  </select>
                 </div>
 
-                {/* 🔹 Lista de programas */}
+                {/* Lista de programas */}
                 {programasFiltrados.length === 0 ? (
                   <div className="empty-state">
                     <div className="empty-icon">📋</div>
@@ -153,9 +132,9 @@ function VisualizadorProgramas() {
                       >
                         <div className="programa-status">
                           <span className={`status-badge ${programa.estado?.toLowerCase()}`}>
-                            {programa.estado?.toLowerCase() === 'activo'
-                              ? '🟢 Activo'
-                              : '🔴 Finalizado'}
+                            {programa.estado?.toLowerCase() === 'activo' && '🟢 Activo'}
+                            {programa.estado?.toLowerCase() === 'finalizado' && '🔴 Finalizado'}
+                            {programa.estado?.toLowerCase() === 'borrador' && '🟡 Borrador'}
                           </span>
                         </div>
 

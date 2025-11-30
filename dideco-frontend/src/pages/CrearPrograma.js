@@ -11,6 +11,10 @@ function CrearPrograma() {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [programas, setProgramas] = useState([]);
 
+  const [errorNombre, setErrorNombre] = useState("");
+  const [errorDescripcion, setErrorDescripcion] = useState("");
+  const regexNombre = /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ.,\-\s]+$/;
+
   useEffect(() => {
     cargarDatos();
   }, []);
@@ -32,11 +36,48 @@ function CrearPrograma() {
       .catch(() => setMensaje('Error al cargar programas'));
   };
 
+  // VALIDACIÓN DE NOMBRE
+  const handleNombreChange = (e) => {
+    const value = e.target.value;
+    setNombrePrograma(value);
+
+    if (value.trim().length === 0) {
+      setErrorNombre("El nombre es obligatorio.");
+    } else if (!regexNombre.test(value)) {
+      setErrorNombre("Solo se permiten letras, números, espacios, puntos, comas y guiones.");
+    } else {
+      setErrorNombre("");
+    }
+  };
+
+  // VALIDACIÓN DE DESCRIPCIÓN
+  const handleDescripcionChange = (e) => {
+    const value = e.target.value;
+    setDescripcion(value);
+
+    if (value.length > 500) {
+      setErrorDescripcion("La descripción no puede superar los 500 caracteres.");
+    } else {
+      setErrorDescripcion("");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje('');
     setMensajeExito('');
     
+    // VALIDACIÓN FINAL ANTES DE ENVIAR
+    if (errorNombre || errorDescripcion) {
+      setMensaje("⚠ Corrige los errores antes de continuar.");
+      return;
+    }
+
+    if (descripcion.length > 500) {
+      setMensaje("⚠ La descripción supera el límite permitido.");
+      return;
+    }
+
     try {
 
       //const response = await fetch('http://localhost:8080/programas', {
@@ -253,33 +294,42 @@ function CrearPrograma() {
                     fontWeight: '600'
                   }}>
                     📋 Nombre del Programa *
+                    <span style={{
+                      float: 'right',
+                      fontSize: '12px',
+                      color: nombrePrograma.length > 150 ? '#ef4444' : '#6b7280',
+                      fontWeight: '600'
+                    }}>
+                      {nombrePrograma.length}/150
+                    </span>
                   </label>
+
                   <input
                     type="text"
                     placeholder="Ej: Programa de Apoyo Escolar"
                     value={nombrePrograma}
-                    onChange={e => setNombrePrograma(e.target.value)}
+                    onChange={handleNombreChange}
+                    maxLength={150}
                     required
                     style={{
                       width: '100%',
                       padding: '12px 16px',
-                      border: '2px solid #e5e7eb',
+                      border: `2px solid ${errorNombre ? '#ef4444' : '#e5e7eb'}`,
                       borderRadius: '8px',
                       fontSize: '15px',
                       transition: 'all 0.2s ease',
                       outline: 'none',
                       boxSizing: 'border-box'
                     }}
-                    onFocus={(e) => {
-                      e.target.style.borderColor = '#1664c1';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(22, 100, 193, 0.1)';
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = '#e5e7eb';
-                      e.target.style.boxShadow = 'none';
-                    }}
                   />
+
+                  {errorNombre && (
+                    <p style={{ color: '#ef4444', fontSize: '13px', marginTop: '6px' }}>
+                      {errorNombre}
+                    </p>
+                  )}
                 </div>
+
 
                 <div style={{ gridColumn: 'span 1' }}>
                   <label style={{
@@ -325,7 +375,6 @@ function CrearPrograma() {
                   </select>
                 </div>
               </div>
-
               <div style={{ marginBottom: '24px' }}>
                 <label style={{
                   display: 'block',
@@ -335,16 +384,26 @@ function CrearPrograma() {
                   fontWeight: '600'
                 }}>
                   📝 Descripción del Programa
+                  <span style={{
+                    float: 'right',
+                    fontSize: '12px',
+                    color: descripcion.length > 500 ? '#ef4444' : '#6b7280',
+                    fontWeight: '600'
+                  }}>
+                    {descripcion.length}/500
+                  </span>
                 </label>
+
                 <textarea
                   placeholder="Describe los objetivos y alcance del programa..."
                   value={descripcion}
-                  onChange={e => setDescripcion(e.target.value)}
+                  onChange={handleDescripcionChange}
+                  maxLength={500}
                   rows={4}
                   style={{
                     width: '100%',
                     padding: '12px 16px',
-                    border: '2px solid #e5e7eb',
+                    border: `2px solid ${errorDescripcion ? '#ef4444' : '#e5e7eb'}`,
                     borderRadius: '8px',
                     fontSize: '15px',
                     transition: 'all 0.2s ease',
@@ -353,16 +412,15 @@ function CrearPrograma() {
                     resize: 'vertical',
                     fontFamily: 'inherit'
                   }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#1664c1';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(22, 100, 193, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
                 />
+
+                {errorDescripcion && (
+                  <p style={{ color: '#ef4444', fontSize: '13px', marginTop: '6px' }}>
+                    {errorDescripcion}
+                  </p>
+                )}
               </div>
+
 
               <div style={{
                 display: 'flex',
@@ -530,7 +588,6 @@ function CrearPrograma() {
                             fontSize: '13px',
                             color: '#6b7280'
                           }}>
-                            ID: {p.idPrograma}
                           </p>
                         </div>
                       </div>

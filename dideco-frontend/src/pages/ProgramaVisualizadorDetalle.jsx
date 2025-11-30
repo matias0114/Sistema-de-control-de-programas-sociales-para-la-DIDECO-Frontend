@@ -20,11 +20,7 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
   const [expandedId, setExpandedId] = useState(null);
   const navigate = useNavigate();
   const [showModalObservacion, setShowModalObservacion] = useState(false);
-  const [observaciones, setObservaciones] = useState([]);
-
-  // Función para calcular avance temporal en porcentaje según fechas
-  
-
+  const [observaciones, setObservaciones] = useState([]);  
 
   function getActividadProgreso(act) {
     if (!act.fechaInicio || !act.fechaTermino) return 0;

@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import "./programadashboard.css"; // Usa tus estilos globales
 
 function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEdicion }) {
+
+  // ⚠️ LIMITES DOBLES
   const limites = {
-    estado: 50
-    // descripcion y objetivosAlcanzados son TEXT (sin límite)
+    estado: 100,
+    descripcion: 2000,
+    objetivos: 1000
   };
 
   const [fechaAvance, setFechaAvance] = useState("");
@@ -86,9 +89,11 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
         </h2>
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          {/* Fila de Fecha y Estado */}
+          
+          {/* FILA FECHA + ESTADO */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-            {/* Fecha del Avance */}
+            
+            {/* FECHA */}
             <div>
               <label style={{
                 display: "block",
@@ -112,17 +117,13 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
                   border: "2px solid #e5e7eb",
                   borderRadius: "8px",
                   fontSize: "15px",
-                  transition: "all 0.2s ease",
                   outline: "none",
                   boxSizing: "border-box",
-                  fontFamily: "inherit"
                 }}
-                onFocus={(e) => e.target.style.borderColor = "#1664c1"}
-                onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
               />
             </div>
 
-            {/* Estado */}
+            {/* ESTADO */}
             <div>
               <label style={{
                 display: "block",
@@ -134,34 +135,27 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
                 letterSpacing: "0.5px"
               }}>
                 🎯 Estado *
-                <span style={{ 
-                  float: 'right', 
-                  fontSize: '11px', 
-                  fontWeight: 'normal', 
-                  color: estado.length > limites.estado ? '#ef4444' : '#6b7280' 
+                <span style={{
+                  float: "right",
+                  fontSize: "11px",
+                  color: estado.length > limites.estado ? "#ef4444" : "#6b7280"
                 }}>
                   {estado.length}/{limites.estado}
                 </span>
               </label>
               <select
                 value={estado}
-                onChange={(e) => setEstado(e.target.value)}
+                onChange={(e) => setEstado(e.target.value.slice(0, limites.estado))}
                 required
-                maxLength={limites.estado}
                 style={{
                   width: "100%",
                   padding: "12px 16px",
                   border: estado.length > limites.estado ? "2px solid #ef4444" : "2px solid #e5e7eb",
                   borderRadius: "8px",
                   fontSize: "15px",
-                  transition: "all 0.2s ease",
-                  outline: "none",
-                  boxSizing: "border-box",
-                  fontFamily: "inherit",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  outline: "none"
                 }}
-                onFocus={(e) => e.target.style.borderColor = "#1664c1"}
-                onBlur={(e) => e.target.style.borderColor = estado.length > limites.estado ? "#ef4444" : "#e5e7eb"}
               >
                 <option>Pendiente</option>
                 <option>En progreso</option>
@@ -170,7 +164,7 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
             </div>
           </div>
 
-          {/* Descripción */}
+          {/* DESCRIPCIÓN */}
           <div>
             <label style={{
               display: "block",
@@ -178,23 +172,21 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
               color: "#374151",
               fontSize: "13px",
               fontWeight: "700",
-              textTransform: "uppercase",
-              letterSpacing: "0.5px"
+              textTransform: "uppercase"
             }}>
               📋 Descripción *
-              <span style={{ 
-                float: 'right', 
-                fontSize: '11px', 
-                fontWeight: 'normal', 
-                color: '#6b7280' 
+              <span style={{
+                float: "right",
+                fontSize: "11px",
+                color: "#6b7280"
               }}>
-                {descripcion.length} caracteres
+                {descripcion.length}/{limites.descripcion}
               </span>
             </label>
             <textarea
-              placeholder="Describe las acciones realizadas, actividades ejecutadas y el contexto del avance..."
+              placeholder="Describe las acciones realizadas..."
               value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
+              onChange={(e) => setDescripcion(e.target.value.slice(0, limites.descripcion))}
               required
               rows="4"
               style={{
@@ -203,19 +195,14 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
                 border: "2px solid #e5e7eb",
                 borderRadius: "8px",
                 fontSize: "15px",
-                transition: "all 0.2s ease",
-                outline: "none",
                 resize: "vertical",
-                fontFamily: "inherit",
-                boxSizing: "border-box",
-                minHeight: "100px"
+                minHeight: "100px",
+                outline: "none"
               }}
-              onFocus={(e) => e.target.style.borderColor = "#1664c1"}
-              onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
             />
           </div>
 
-          {/* Objetivos Alcanzados */}
+          {/* OBJETIVOS */}
           <div>
             <label style={{
               display: "block",
@@ -223,23 +210,21 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
               color: "#374151",
               fontSize: "13px",
               fontWeight: "700",
-              textTransform: "uppercase",
-              letterSpacing: "0.5px"
+              textTransform: "uppercase"
             }}>
               🎯 Objetivos Alcanzados
-              <span style={{ 
-                float: 'right', 
-                fontSize: '11px', 
-                fontWeight: 'normal', 
-                color: '#6b7280' 
+              <span style={{
+                float: "right",
+                fontSize: "11px",
+                color: "#6b7280"
               }}>
-                {objetivosAlcanzados.length} caracteres
+                {objetivosAlcanzados.length}/{limites.objetivos}
               </span>
             </label>
             <textarea
-              placeholder="Menciona logros específicos, resultados cuantificables, hitos alcanzados y el impacto logrado..."
+              placeholder="Menciona logros o hitos alcanzados..."
               value={objetivosAlcanzados}
-              onChange={(e) => setObjetivosAlcanzados(e.target.value)}
+              onChange={(e) => setObjetivosAlcanzados(e.target.value.slice(0, limites.objetivos))}
               rows="4"
               style={{
                 width: "100%",
@@ -247,19 +232,14 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
                 border: "2px solid #e5e7eb",
                 borderRadius: "8px",
                 fontSize: "15px",
-                transition: "all 0.2s ease",
-                outline: "none",
                 resize: "vertical",
-                fontFamily: "inherit",
-                boxSizing: "border-box",
-                minHeight: "100px"
+                minHeight: "100px",
+                outline: "none"
               }}
-              onFocus={(e) => e.target.style.borderColor = "#1664c1"}
-              onBlur={(e) => e.target.style.borderColor = "#e5e7eb"}
             />
           </div>
 
-          {/* Botones de Acción */}
+          {/* BOTONES */}
           <div
             style={{
               display: "flex",
@@ -267,7 +247,7 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
               gap: 12,
               marginTop: 8,
               paddingTop: 20,
-              borderTop: "1px solid #e5e7eb"
+              borderTop: "1px solid #e5e7eb",
             }}
           >
             <button
@@ -275,23 +255,13 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
               onClick={onCancel}
               style={{
                 background: "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)",
-                color: "#ffffff",
+                color: "#fff",
                 border: "none",
                 borderRadius: 8,
                 padding: "12px 24px",
                 cursor: "pointer",
                 fontSize: "15px",
                 fontWeight: "600",
-                transition: "all 0.2s ease",
-                boxShadow: "0 2px 4px rgba(220,38,38,0.3)"
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = "translateY(-1px)";
-                e.target.style.boxShadow = "0 4px 12px rgba(220,38,38,0.4)";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "0 2px 4px rgba(220,38,38,0.3)";
               }}
             >
               ✕ Cancelar
@@ -301,23 +271,13 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
               type="submit"
               style={{
                 background: "linear-gradient(135deg, #136fb1 0%, #1e88e5 100%)",
-                color: "#ffffff",
+                color: "#fff",
                 border: "none",
                 borderRadius: 8,
                 padding: "12px 24px",
                 cursor: "pointer",
                 fontSize: "15px",
                 fontWeight: "600",
-                transition: "all 0.2s ease",
-                boxShadow: "0 2px 4px rgba(19,111,177,0.3)"
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = "translateY(-1px)";
-                e.target.style.boxShadow = "0 4px 12px rgba(19,111,177,0.4)";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "0 2px 4px rgba(19,111,177,0.3)";
               }}
             >
               {modoEdicion ? "💾 Guardar Cambios" : "✓ Guardar Avance"}

@@ -11,14 +11,26 @@ function ModalObservacionInterna({
   onMarked
 }) {
   const [texto, setTexto] = useState('');
+    const [error, setError] = useState("");              
   const dialogRef = useRef(null);
 
-  // Inicializa texto
+  const limite = 2000;                                 
+
   useEffect(() => {
     if (visible && mode === 'view') setTexto(observacion?.texto || '');
     if (visible && mode === 'create') setTexto('');
   }, [visible, mode, observacion]);
 
+
+  const handleChange = (e) => {                        
+    const value = e.target.value;
+    if (value.length > limite) {
+      setError("No puedes superar los 500 caracteres.");
+    } else {
+      setError("");
+    }
+    setTexto(value);
+  }
   // Bloquea scroll
   useEffect(() => {
     if (!visible) return;
@@ -27,7 +39,6 @@ function ModalObservacionInterna({
     return () => { document.body.style.overflow = prev; };
   }, [visible]);
 
-  // Marcar como leída al abrir en modo view
   useEffect(() => {
     const API_URL = process.env.REACT_APP_API_URL;
     const marcarLeida = async () => {
@@ -58,7 +69,6 @@ function ModalObservacionInterna({
     }
   }, [visible, mode, autoMarkAsRead, observacion, onMarked]);
 
-  // Keyboard shortcuts
   useEffect(() => {
     if (!visible) return;
     
@@ -157,23 +167,44 @@ function ModalObservacionInterna({
             {texto || '—'}
           </div>
         ) : (
-          <textarea
-            rows={6}
-            value={texto}
-            onChange={(e) => setTexto(e.target.value)}
-            placeholder="Escribe aquí tu observación interna..."
-            style={{
-              width: '100%',
-              padding: 12,
-              borderRadius: 10,
-              border: '1px solid #e2e8f0',
-              background: '#f8fafc',
-              color: '#0f172a',
-              fontSize: 14,
-              resize: 'vertical',
-              fontFamily: 'inherit'
-            }}
-          />
+          <>
+            {/* 🔵 CONTADOR DE CARACTERES */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                fontSize: 12,
+                color: texto.length > limite ? "#ef4444" : "#6b7280",
+              }}
+            >
+              {texto.length}/{limite}
+            </div>
+
+            <textarea
+              rows={6}
+              value={texto}
+              onChange={handleChange}
+              placeholder="Escribe aquí tu observación interna..."
+              style={{
+                width: '100%',
+                padding: 12,
+                borderRadius: 10,
+                border: '1px solid #e2e8f0',
+                background: '#f8fafc',
+                color: '#0f172a',
+                fontSize: 14,
+                resize: 'vertical',
+                fontFamily: 'inherit'
+              }}
+            />
+
+            {/* 🔴 MENSAJE DE ERROR */}
+            {error && (
+              <p style={{ color: "#ef4444", fontSize: 13 }}>
+                {error}
+              </p>
+            )}
+          </>
         )}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 6 }}>
