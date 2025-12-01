@@ -1,0 +1,118 @@
+/* === Overlay === */
+.sidevisual-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.0);
+  z-index: 900;
+  animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+  to { background: rgba(0,0,0,0.55); }
+}
+
+/* === Panel === */
+.sidevisual-panel {
+  position: fixed;
+  left: -300px;
+  top: 0;
+  width: 300px;
+  height: 100vh;
+  background: #2d3748;
+  color: #e2e8f0;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.3);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: left 0.3s cubic-bezier(.25,.46,.45,.94);
+}
+
+.sidevisual-panel.open {
+  left: 0;
+}
+
+/* === Header === */
+.sidevisual-header {
+  display: flex;
+  align-items: center;
+  padding: 18px;
+  background: #1a202c;
+  border-bottom: 1px solid #4a5568;
+  gap: 12px;
+}
+
+.sidevisual-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.sidevisual-close {
+  margin-left: auto;
+  font-size: 26px;
+  border: none;
+  background: none;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.sidevisual-close:hover {
+  transform: rotate(90deg) scale(1.1);
+  color: #fff;
+}
+
+/* === NAV === */
+.sidevisual-nav {
+  padding-top: 10px;
+}
+
+/* Categoría */
+.sidevisual-nav-item {
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 14px 18px;
+  color: #cbd5e0;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: 0.25s;
+}
+
+.sidevisual-nav-item:hover {
+  background: #4a5568;
+  border-left-color: #63b3ed;
+}
+
+.right-number {
+  margin-left: auto;
+  opacity: 0.8;
+}
+
+/* Lista desplegable */
+.sidevisual-list {
+  background: #2d3748;
+  animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sidevisual-item {
+  padding: 10px 30px;
+  cursor: pointer;
+  color: #e2e8f0;
+  transition: 0.25s;
+}
+
+.sidevisual-item:hover {
+  background: #4a5568;
+  border-left: 3px solid #63b3ed;
+}

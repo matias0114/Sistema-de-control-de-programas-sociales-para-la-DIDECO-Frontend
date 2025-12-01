@@ -51,6 +51,13 @@ function LayoutSimple({ children, title = "Sistema de Control" }) {
       <div className="main-content">
         <nav className="topbar">
           <div className="nav-left">
+            <button 
+  className="topbar-menu-btn"
+  onClick={() => window.dispatchEvent(new Event("openSidebarVisualizador"))}
+>
+  ☰
+</button>
+
             <img src="/logo-circular.png" alt="Logo" className="topbar-logo" />
             <h1>{title}</h1>
           </div>

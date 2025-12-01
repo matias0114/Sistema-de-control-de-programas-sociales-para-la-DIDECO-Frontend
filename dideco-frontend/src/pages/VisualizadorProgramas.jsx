@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import ProgramaVisualizadorDetalle from './ProgramaVisualizadorDetalle';
 import LayoutSimple from '../components/LayoutSimple';
 import './visualizador.css';
+import SidebarVisualizador from "../components/SidebarVisualizador";
+
 
 function VisualizadorProgramas() {
   const [programas, setProgramas] = useState([]);
@@ -10,12 +12,13 @@ function VisualizadorProgramas() {
   const [stats, setStats] = useState({ activos: 0, inactivos: 0, borrador: 0, total: 0 });
   const [filtro, setFiltro] = useState('todos');
   const [busqueda, setBusqueda] = useState("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const { idPrograma } = useParams();
 
   useEffect(() => {
     const API_URL = process.env.REACT_APP_API_URL;
-
+    
     fetch(`${API_URL}/programas`)
       .then(res => res.json())
       .then(data => {
@@ -27,6 +30,12 @@ function VisualizadorProgramas() {
 
         setStats({ activos, inactivos, borrador, total: data.length });
         setLoading(false);
+        const handleOpenSidebar = () => {
+    setIsSidebarOpen(true);
+  };
+
+  window.addEventListener("openSidebarVisualizador", handleOpenSidebar);
+  return () => window.removeEventListener("openSidebarVisualizador", handleOpenSidebar);
       })
       .catch(() => setLoading(false));
   }, []);
@@ -67,6 +76,17 @@ function VisualizadorProgramas() {
   return (
     <LayoutSimple title="Visualización de Programas">
       <div className="visualizador-container">
+        {/*  🔥 SIDEBAR DESLIZABLE */}
+        <SidebarVisualizador
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          programas={programas}
+          onSelect={(id) => {
+            navigate(`/visualizador/${id}`);
+            setIsSidebarOpen(false);
+          }}
+        />
+
         <div className="visualizador-content">
           {!idPrograma ? (
             <>

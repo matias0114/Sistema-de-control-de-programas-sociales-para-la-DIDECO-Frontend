@@ -157,7 +157,7 @@ function ActividadDetalle() {
   };
 
   return (
-    <LayoutSimple title={`Actividad: ${actividad.nombreActividad}`}>
+    <LayoutSimple title={`Visualización de Programas`}>
       <div className="actividad-detalle-wrapper" style={{ maxWidth: '1200px', margin: '0 auto' }}>
         
         {/* Header con navegación */}

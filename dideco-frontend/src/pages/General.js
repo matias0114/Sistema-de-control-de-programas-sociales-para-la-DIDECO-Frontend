@@ -68,7 +68,7 @@ function General() {
   }
 
   return (
-    <Layout title="Panel de Superadministrador">
+    <Layout title="Panel de Administrador">
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         
         {/* Header con bienvenida */}
@@ -143,7 +143,7 @@ function General() {
               border: '1px solid rgba(255, 255, 255, 0.2)'
             }}>
               <div style={{ fontSize: '14px', opacity: 0.9, marginBottom: '4px' }}>Rol del Sistema</div>
-              <div style={{ fontSize: '18px', fontWeight: '700' }}>Superadministrador</div>
+              <div style={{ fontSize: '18px', fontWeight: '700' }}>Administrador</div>
               
             </div>
           </div>
