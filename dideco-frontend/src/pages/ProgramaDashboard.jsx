@@ -25,6 +25,8 @@ function ProgramaDashboard() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const [presupuestosLista, setPresupuestosLista] = useState([]);
+
 
   function getActividadProgreso(act) {
     if (!act.fechaInicio || !act.fechaTermino) return 0;
@@ -171,16 +173,15 @@ function ProgramaDashboard() {
       
       //const respPresupuesto = await fetch(`http://localhost:8080/presupuestos/programa/${id}`);
       const respPresupuesto = await fetch(`${API_URL}/presupuestos/programa/${id}`);
-      let presupuestoData = respPresupuesto.ok ? await respPresupuesto.json() : [];
-      if (Array.isArray(presupuestoData) && presupuestoData.length > 0) {
-        presupuestoData = presupuestoData.reduce((total, p) => ({
-          asignado: total.asignado + (parseFloat(p.montoAsignado) || 0),
+      const listaPresupuestos = respPresupuesto.ok ? await respPresupuesto.json() : [];
+
+      setPresupuesto({
+          asignado: listaPresupuestos.reduce((t, p) => t + Number(p.montoAsignado || 0), 0),
           ejecutado: 0
-        }), { asignado: 0, ejecutado: 0 });
-      } else {
-        presupuestoData = { asignado: 0, ejecutado: 0 };
-      }
-      setPresupuesto(presupuestoData);
+      });
+
+      // Guardamos la lista completa para mostrarla en tabla
+      setPresupuestosLista(listaPresupuestos);
       await cargarBeneficiarios();      
     } catch (err) {
       setError(err.message);
@@ -876,6 +877,63 @@ function ProgramaDashboard() {
               {showPresupuesto ? '✕' : '💰'}
             </button>
           </div>
+          <div style={{
+              marginTop: "40px",
+              background: "white",
+              padding: "24px",
+              borderRadius: "12px",
+              border: "1px solid #e5e7eb",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.06)",
+              marginBottom: "40px"
+          }}>
+              <h3 style={{
+                  fontSize: "20px",
+                  fontWeight: "700",
+                  color: "#1f2937",
+                  marginBottom: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px"
+              }}>
+                  📄 Historial de Ingresos de Presupuesto
+              </h3>
+
+              {presupuestosLista.length === 0 ? (
+                  <p style={{ color: "#6b7280", textAlign: "center", padding: "20px" }}>
+                      Aún no existen ingresos registrados para este programa.
+                  </p>
+              ) : (
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                          <tr style={{ background: "#f3f4f6" }}>
+                              <th style={{ padding: "12px", borderBottom: "2px solid #e5e7eb", textAlign: "left" }}>
+                                  Origen
+                              </th>
+                              <th style={{ padding: "12px", borderBottom: "2px solid #e5e7eb", textAlign: "center" }}>
+                                  Fecha
+                              </th>
+                              <th style={{ padding: "12px", borderBottom: "2px solid #e5e7eb", textAlign: "right" }}>
+                                  Monto
+                              </th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          {presupuestosLista.map((p, i) => (
+                              <tr key={i} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                                  <td style={{ padding: "12px" }}>{p.fuentePresupuesto}</td>
+                                  <td style={{ padding: "12px", textAlign: "center" }}>
+                                      {new Date(p.fechaRegistro).toLocaleDateString("es-CL")}
+                                  </td>
+                                  <td style={{ padding: "12px", textAlign: "right", fontWeight: "600" }}>
+                                      ${Number(p.montoAsignado).toLocaleString("es-CL")}
+                                  </td>
+                              </tr>
+                          ))}
+                      </tbody>
+                  </table>
+              )}
+          </div>
+
 
           {showPresupuesto && (
             <div style={{

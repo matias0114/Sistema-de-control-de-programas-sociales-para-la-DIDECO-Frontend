@@ -3,25 +3,19 @@ import "./crearactividad.css";
 
 function IngresoPresupuesto({ idPrograma, onAdd, onCancel }) {
 
-  const [data, setData] = useState({ montoAsignado: "", fechaRegistro: "" });
+  const [data, setData] = useState({ montoAsignado: "", fechaRegistro: "", origen: "" });
+  const [error, setError] = useState("");
 
-  const [error, setError] = useState("");  // 🔵 CAMBIO: mensaje rojo
-
-  // 🔵 CAMBIO — formateo miles
   const formatearMiles = (valor) => {
     if (!valor) return "";
     const limpio = valor.replace(/\D/g, ""); 
     return limpio.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
-  // 🔵 CAMBIO — manejar monto separado para validación
   const handleMontoChange = (e) => {
     const value = e.target.value;
-
-    // solo números
     const soloNumeros = value.replace(/\D/g, "");
 
-    // no permitir negativo
     if (soloNumeros === "") {
       setData({ ...data, montoAsignado: "" });
       setError("El monto es obligatorio.");
@@ -48,14 +42,15 @@ function IngresoPresupuesto({ idPrograma, onAdd, onCancel }) {
     const montoNumerico = Number(data.montoAsignado.replace(/\./g, ""));
 
     onAdd({
-      ...data,
       montoAsignado: montoNumerico,
       montoEjecutado: 0,
+      fechaRegistro: data.fechaRegistro,
+      fuentePresupuesto: data.origen,   // ← CAMBIO IMPORTANTE
       idPrograma,
       programa: { idPrograma }
     });
 
-    setData({ montoAsignado: "", fechaRegistro: "" });
+    setData({ montoAsignado: "", fechaRegistro: "", origen: "" });
     onCancel && onCancel();
   };
 
@@ -70,7 +65,6 @@ function IngresoPresupuesto({ idPrograma, onAdd, onCancel }) {
 
         <form onSubmit={handleSubmit} className="modal-form">
 
-          {/* FECHA */}
           <div className="modal-field">
             <label htmlFor="fechaRegistro">Fecha:</label>
             <input
@@ -83,7 +77,20 @@ function IngresoPresupuesto({ idPrograma, onAdd, onCancel }) {
             />
           </div>
 
-          {/* MONTO — con contador y validación */}
+          <div className="modal-field">
+            <label htmlFor="origen">¿De dónde proviene este presupuesto?</label>
+            <input
+              id="origen"
+              name="origen"
+              type="text"
+              placeholder="Ej: Ministerio de Desarrollo Social"
+              value={data.origen}
+              onChange={e => setData({ ...data, origen: e.target.value })}
+              maxLength={100}
+              required
+            />
+          </div>
+          
           <div className="modal-field">
             <label htmlFor="montoAsignado">
               Monto total asignado:
@@ -100,15 +107,14 @@ function IngresoPresupuesto({ idPrograma, onAdd, onCancel }) {
             <input
               id="montoAsignado"
               name="montoAsignado"
-              type="text"              // 🔵 CAMBIO — deja de ser number (permite formatear miles)
+              type="text"
               value={data.montoAsignado}
               onChange={handleMontoChange}
               placeholder="Ej: 1.500.000"
-              maxLength={10}            // 🔵 CAMBIO — limite razonable
+              maxLength={10}
               required
             />
 
-            {/* 🔵 CAMBIO — Mensaje rojo */}
             {error && (
               <p style={{ color: "#ef4444", fontSize: "13px", marginTop: 4 }}>
                 {error}

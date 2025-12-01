@@ -20,7 +20,8 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
   const [expandedId, setExpandedId] = useState(null);
   const navigate = useNavigate();
   const [showModalObservacion, setShowModalObservacion] = useState(false);
-  const [observaciones, setObservaciones] = useState([]);  
+  const [observaciones, setObservaciones] = useState([]); 
+  const [presupuestosLista, setPresupuestosLista] = useState([]); 
 
   function getActividadProgreso(act) {
     if (!act.fechaInicio || !act.fechaTermino) return 0;
@@ -102,6 +103,11 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
           presupuestoData = { asignado: 0 };
         }
         setPresupuesto(presupuestoData);
+
+        // Cargar lista completa de ingresos de presupuesto
+        const respLista = await fetch(`${API_URL}/presupuestos/programa/${idPrograma}`);
+        if (respLista.ok) setPresupuestosLista(await respLista.json());
+
 
         // Calcular estadísticas
         setEstadisticas({
@@ -340,7 +346,128 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
         {/* --- Gráficos de resumen --- */}
         <div className="section-container">
           <h2 className="section-title"><span className="section-icon">📈</span>Análisis del Programa</h2>
-          <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+          <div
+  style={{
+    marginTop: "30px",
+    marginBottom: "40px",
+    background: "white",
+    padding: "28px",
+    borderRadius: "16px",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.05)"
+  }}
+>
+  <h3
+    style={{
+      fontSize: "22px",
+      fontWeight: "700",
+      color: "#1f2937",
+      marginBottom: "22px",
+      display: "flex",
+      alignItems: "center",
+      gap: "10px"
+    }}
+  >
+    📄 Historial de Ingresos de Presupuesto
+  </h3>
+
+  {presupuestosLista.length === 0 ? (
+    <p
+      style={{
+        color: "#6b7280",
+        textAlign: "center",
+        padding: "28px",
+        fontSize: "15px"
+      }}
+    >
+      Aún no existen ingresos registrados para este programa.
+    </p>
+  ) : (
+    <div style={{ overflowX: "auto" }}>
+      <table
+        style={{
+          width: "100%",
+          borderCollapse: "separate",
+          borderSpacing: "0 8px"
+        }}
+      >
+        <thead>
+          <tr style={{ background: "#f3f4f6" }}>
+            <th
+              style={{
+                padding: "14px",
+                textAlign: "left",
+                fontWeight: "600",
+                fontSize: "14px",
+                color: "#374151"
+              }}
+            >
+              Origen
+            </th>
+            <th
+              style={{
+                padding: "14px",
+                textAlign: "center",
+                fontWeight: "600",
+                fontSize: "14px",
+                color: "#374151"
+              }}
+            >
+              Fecha
+            </th>
+            <th
+              style={{
+                padding: "14px",
+                textAlign: "right",
+                fontWeight: "600",
+                fontSize: "14px",
+                color: "#374151"
+              }}
+            >
+              Monto
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {presupuestosLista.map((p, i) => (
+            <tr
+              key={i}
+              style={{
+                background: "white",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+                borderRadius: "12px"
+              }}
+            >
+              <td style={{ padding: "14px", borderRadius: "12px 0 0 12px" }}>
+                {p.fuentePresupuesto}
+              </td>
+
+              <td style={{ padding: "14px", textAlign: "center" }}>
+                {new Date(p.fechaRegistro).toLocaleDateString("es-CL")}
+              </td>
+
+              <td
+                style={{
+                  padding: "14px",
+                  textAlign: "right",
+                  fontWeight: "700",
+                  borderRadius: "0 12px 12px 0",
+                  color: "#166534"
+                }}
+              >
+                ${Number(p.montoAsignado).toLocaleString("es-CL")}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</div>
+
+          
+          <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'flex-start' }}>  
+            
             <div>
               <h3 style={{textAlign:'center', marginBottom:15, color:'#4CAF50'}}>Progreso Temporal</h3>
               <GraficoProgreso programa={programa} />
@@ -361,9 +488,8 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
           <h2 className="section-title"><span className="section-icon">📊</span>Estadísticas</h2>
           <div className="stats-grid">
             <div className="stat-item"><div className="stat-value">{estadisticas.actividades || 0}</div><div className="stat-label">Actividades Totales</div></div>
-            <div className="stat-item"><div className="stat-value">{porcentajeFinalizadas}%</div><div className="stat-label">Actividades Finalizadas</div></div>            <div className="stat-item"><div className="stat-value">${(presupuesto.asignado || 0).toLocaleString('es-CL')}</div><div className="stat-label">Presupuesto Asignado</div></div>
-            <div className="stat-item"><div className="stat-value">${sumaMontosActividades.toLocaleString('es-CL')}</div><div className="stat-label">Presupuesto Ejecutado</div></div>
-            <div className="stat-item"><div className="stat-value">{beneficiarios.length} / {programa.cupos ?? 0}</div><div className="stat-label">Cupos Ocupados</div></div>
+            <div className="stat-item"><div className="stat-value">{porcentajeFinalizadas}%</div><div className="stat-label">Actividades Finalizadas</div></div>           
+            <div className="stat-item"><div className="stat-value">{beneficiarios.length} / {programa.cupos ?? 0}</div><div className="stat-label">Beneficiarios Ocupados/Totales</div></div>
             <div className="stat-item">
               <div className="stat-value">
                 {presupuesto.asignado > 0

@@ -21,6 +21,7 @@ function ActividadDashboardDetalle() {
 
   const [showModalUpload, setShowModalUpload] = useState(null); // para idAvance
   const [showModalVer, setShowModalVer] = useState(null);       // para idAvance
+  const [actividadEdit, setActividadEdit] = useState(null);
 
 
   // Cargar datos
@@ -58,24 +59,62 @@ function ActividadDashboardDetalle() {
   // Guardar cambios en actividad
   async function handleSaveActividad(e) {
     e.preventDefault();
+
+    // --- VALIDACIONES ---
+
+    // 1. Validar monto
+    const monto = Number(actividad.montoAsignado);
+
+    if (isNaN(monto)) {
+      alert("El monto asignado debe ser un número válido.");
+      return;
+    }
+
+    if (monto <= 0) {
+      alert("El monto asignado debe ser mayor a 0.");
+      return;
+    }
+
+    // 2. Validar fechas
+    if (!actividad.fechaInicio || !actividad.fechaTermino) {
+      alert("Debe ingresar ambas fechas: inicio y término.");
+      return;
+    }
+
+    const inicio = new Date(actividad.fechaInicio);
+    const fin = new Date(actividad.fechaTermino);
+
+    if (fin < inicio) {
+      alert("La fecha de término no puede ser anterior a la fecha de inicio.");
+      return;
+    }
+
+    // --- SI TODAS LAS VALIDACIONES PASAN, GUARDAR ---
     try {
-      //await fetch(`http://localhost:8080/actividades/${idActividad}`, {
       const API_URL = process.env.REACT_APP_API_URL;
+
       await fetch(`${API_URL}/actividades/${idActividad}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(actividad),
+        body: JSON.stringify(actividadEdit),
       });
+
       setShowEditarModal(false);
-      //const res = await fetch(`http://localhost:8080/actividades`);
+
       const res = await fetch(`${API_URL}/actividades`);
       const acts = await res.json();
       const actData = acts.find((a) => a.idActividad === Number(idActividad));
       setActividad(actData);
+
+      setActividad(actividadEdit);
+      setActividadEdit(null);
+
     } catch (err) {
       console.error("Error al actualizar actividad", err);
+      alert("Ocurrió un error al guardar la actividad.");
     }
   }
+
 
   // Agregar o editar avance
   async function handleAddEditarAvance(payload) {
@@ -254,7 +293,10 @@ function ActividadDashboardDetalle() {
             </h1>
           </div>
           <button 
-            onClick={() => setShowEditarModal(true)}
+            onClick={() => {
+              setActividadEdit({ ...actividad }); // COPIA
+              setShowEditarModal(true);
+            }}
             title="Editar actividad"
             style={{
               background: 'rgba(255, 255, 255, 0.2)',
@@ -464,87 +506,105 @@ function ActividadDashboardDetalle() {
 
         {/* Modal editar actividad */}
         {showEditarModal && (
-          <div style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 999,
-            padding: '20px'
-          }}>
-            <div style={{
-              background: "#fff",
-              borderRadius: 12,
-              padding: "30px",
-              width: "90%",
-              maxWidth: 600,
-              maxHeight: '90vh',
-              overflowY: 'auto',
-              boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-            }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                marginBottom: '24px',
-                paddingBottom: '16px',
-                borderBottom: '2px solid #e5e7eb'
-              }}>
-                <span style={{ fontSize: '24px' }}>✏️</span>
-                <h2 style={{ margin: 0, color: "#1664c1", fontSize: '22px', fontWeight: '700' }}>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              background: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 999,
+              padding: "20px",
+            }}
+          >
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: 12,
+                padding: "30px",
+                width: "90%",
+                maxWidth: 600,
+                maxHeight: "90vh",
+                overflowY: "auto",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  marginBottom: "24px",
+                  paddingBottom: "16px",
+                  borderBottom: "2px solid #e5e7eb",
+                }}
+              >
+                <span style={{ fontSize: "24px" }}>✏️</span>
+                <h2 style={{ margin: 0, color: "#1664c1", fontSize: "22px", fontWeight: "700" }}>
                   Editar actividad
                 </h2>
               </div>
+
               <form onSubmit={handleSaveActividad}>
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '8px',
-                    color: '#374151',
-                    fontSize: '14px',
-                    fontWeight: '600'
-                  }}>
-                    📋 Nombre de la actividad
-                  </label>
-                  <input
-                    name="nombreActividad"
-                    value={actividad.nombreActividad}
-                    onChange={(e) =>
-                      setActividad({
-                        ...actividad,
-                        nombreActividad: e.target.value,
-                      })
-                    }
+
+                {/* Nombre actividad */}
+                <div style={{ marginBottom: "16px" }}>
+                  <label
                     style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '15px',
-                      boxSizing: 'border-box',
-                      transition: 'border-color 0.2s ease'
+                      display: "block",
+                      marginBottom: "8px",
+                      color: "#374151",
+                      fontSize: "14px",
+                      fontWeight: "600",
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#1664c1'}
-                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                  >
+                    📋 Nombre de la actividad
+                    <span style={{ float: "right", fontSize: "12px", color: "#6b7280" }}>
+                      {actividad.nombreActividad.length}/80
+                    </span>
+                  </label>
+
+                  <input
+                    maxLength={80}
+                    name="nombreActividad"
+                    value={actividadEdit.nombreActividad}
+                    onChange={(e) => setActividadEdit({ ...actividadEdit, nombreActividad: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "10px 12px",
+                      border: "2px solid #e5e7eb",
+                      borderRadius: "8px",
+                      fontSize: "15px",
+                      transition: "border-color 0.2s ease",
+                    }}
+                    onFocus={(e) => (e.target.style.borderColor = "#1664c1")}
+                    onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
                   />
                 </div>
 
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '8px',
-                    color: '#374151',
-                    fontSize: '14px',
-                    fontWeight: '600'
-                  }}>
+                {/* Descripción */}
+                <div style={{ marginBottom: "16px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "8px",
+                      color: "#374151",
+                      fontSize: "14px",
+                      fontWeight: "600",
+                    }}
+                  >
                     📝 Descripción
+                    <span style={{ float: "right", fontSize: "12px", color: "#6b7280" }}>
+                      {actividad.descripcion.length}/300
+                    </span>
                   </label>
+
                   <textarea
+                    maxLength={300}
                     name="descripcion"
                     value={actividad.descripcion}
                     onChange={(e) =>
@@ -553,249 +613,280 @@ function ActividadDashboardDetalle() {
                     rows="4"
                     style={{
                       width: "100%",
-                      padding: '10px 12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '15px',
-                      boxSizing: 'border-box',
-                      fontFamily: 'inherit',
-                      resize: 'vertical',
-                      transition: 'border-color 0.2s ease'
+                      padding: "10px 12px",
+                      border: "2px solid #e5e7eb",
+                      borderRadius: "8px",
+                      fontSize: "15px",
+                      fontFamily: "inherit",
+                      resize: "vertical",
+                      transition: "border-color 0.2s ease",
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#1664c1'}
-                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                    onFocus={(e) => (e.target.style.borderColor = "#1664c1")}
+                    onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                {/* Responsable + Monto asignado */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "16px",
+                    marginBottom: "16px",
+                  }}
+                >
+                  {/* Responsable */}
                   <div>
-                    <label style={{
-                      display: 'block',
-                      marginBottom: '8px',
-                      color: '#374151',
-                      fontSize: '14px',
-                      fontWeight: '600'
-                    }}>
+                    <label
+                      style={{
+                        display: "block",
+                        marginBottom: "8px",
+                        color: "#374151",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                      }}
+                    >
                       👤 Responsable
+                      <span style={{ float: "right", fontSize: "12px", color: "#6b7280" }}>
+                        {(actividad.responsable || "").length}/60
+                      </span>
                     </label>
+
                     <input
+                      maxLength={60}
                       name="responsable"
                       value={actividad.responsable || ""}
                       onChange={(e) =>
                         setActividad({ ...actividad, responsable: e.target.value })
                       }
                       style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '2px solid #e5e7eb',
-                        borderRadius: '8px',
-                        fontSize: '15px',
-                        boxSizing: 'border-box',
-                        transition: 'border-color 0.2s ease'
+                        width: "100%",
+                        padding: "10px 12px",
+                        border: "2px solid #e5e7eb",
+                        borderRadius: "8px",
+                        fontSize: "15px",
+                        transition: "border-color 0.2s ease",
                       }}
-                      onFocus={(e) => e.target.style.borderColor = '#1664c1'}
-                      onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                      onFocus={(e) => (e.target.style.borderColor = "#1664c1")}
+                      onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
                     />
                   </div>
 
+                  {/* Monto asignado (ya tenía contador correcto) */}
                   <div>
-                    <label style={{
-                      display: 'block',
-                      marginBottom: '8px',
-                      color: '#374151',
-                      fontSize: '14px',
-                      fontWeight: '600'
-                    }}>
-                      💰 Monto asignado
-                    </label>
-                    <input
-                      type="number"
-                      name="montoAsignado"
-                      value={actividad.montoAsignado || ""}
-                      onChange={(e) =>
-                        setActividad({
-                          ...actividad,
-                          montoAsignado: e.target.value,
-                        })
-                      }
+                    <label
                       style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '2px solid #e5e7eb',
-                        borderRadius: '8px',
-                        fontSize: '15px',
-                        boxSizing: 'border-box',
-                        transition: 'border-color 0.2s ease'
+                        display: "block",
+                        marginBottom: "8px",
+                        color: "#374151",
+                        fontSize: "14px",
+                        fontWeight: "600",
                       }}
-                      onFocus={(e) => e.target.style.borderColor = '#1664c1'}
-                      onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                    >
+                      💰 Monto asignado
+                      <span
+                        style={{
+                          float: "right",
+                          fontSize: "12px",
+                          color: "#6b7280",
+                          fontWeight: "600",
+                        }}
+                      >
+                        {(actividad.montoAsignado + "").replace(/\./g, "").length}/10
+                      </span>
+                    </label>
+
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={10}
+                      value={actividad.montoAsignado}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const soloNumeros = value.replace(/\D/g, "");
+
+                        if (!soloNumeros) {
+                          setActividad({ ...actividad, montoAsignado: "" });
+                          return;
+                        }
+
+                        if (Number(soloNumeros) <= 0) {
+                          setActividad({ ...actividad, montoAsignado: "" });
+                          alert("El monto debe ser mayor a 0.");
+                          return;
+                        }
+
+                        const formateado = soloNumeros.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                        setActividad({ ...actividad, montoAsignado: formateado });
+                      }}
+                      style={{
+                        width: "100%",
+                        padding: "10px 12px",
+                        border: "2px solid #e5e7eb",
+                        borderRadius: "8px",
+                        fontSize: "15px",
+                        transition: "border-color 0.2s ease",
+                      }}
+                      onFocus={(e) => (e.target.style.borderColor = "#1664c1")}
+                      onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
                     />
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '8px',
-                    color: '#374151',
-                    fontSize: '14px',
-                    fontWeight: '600'
-                  }}>
+                {/* Metas */}
+                <div style={{ marginBottom: "16px" }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: "8px",
+                      color: "#374151",
+                      fontSize: "14px",
+                      fontWeight: "600",
+                    }}
+                  >
                     🎯 Metas
+                    <span style={{ float: "right", fontSize: "12px", color: "#6b7280" }}>
+                      {(actividad.metas || "").length}/120
+                    </span>
                   </label>
                   <input
+                    maxLength={120}
                     name="metas"
                     value={actividad.metas || ""}
                     onChange={(e) =>
                       setActividad({ ...actividad, metas: e.target.value })
                     }
                     style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '15px',
-                      boxSizing: 'border-box',
-                      transition: 'border-color 0.2s ease'
+                      width: "100%",
+                      padding: "10px 12px",
+                      border: "2px solid #e5e7eb",
+                      borderRadius: "8px",
+                      fontSize: "15px",
+                      transition: "border-color 0.2s ease",
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#1664c1'}
-                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                    onFocus={(e) => (e.target.style.borderColor = "#1664c1")}
+                    onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+                {/* Fechas */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "16px",
+                    marginBottom: "24px",
+                  }}
+                >
                   <div>
-                    <label style={{
-                      display: 'block',
-                      marginBottom: '8px',
-                      color: '#374151',
-                      fontSize: '14px',
-                      fontWeight: '600'
-                    }}>
+                    <label
+                      style={{
+                        display: "block",
+                        marginBottom: "8px",
+                        color: "#374151",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                      }}
+                    >
                       📅 Fecha inicio
                     </label>
                     <input
                       type="date"
                       value={actividad.fechaInicio || ""}
                       onChange={(e) =>
-                        setActividad({
-                          ...actividad,
-                          fechaInicio: e.target.value,
-                        })
+                        setActividad({ ...actividad, fechaInicio: e.target.value })
                       }
                       style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '2px solid #e5e7eb',
-                        borderRadius: '8px',
-                        fontSize: '15px',
-                        boxSizing: 'border-box',
-                        transition: 'border-color 0.2s ease'
+                        width: "100%",
+                        padding: "10px 12px",
+                        border: "2px solid #e5e7eb",
+                        borderRadius: "8px",
+                        fontSize: "15px",
+                        transition: "border-color 0.2s ease",
                       }}
-                      onFocus={(e) => e.target.style.borderColor = '#1664c1'}
-                      onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                      onFocus={(e) => (e.target.style.borderColor = "#1664c1")}
+                      onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
                     />
                   </div>
 
                   <div>
-                    <label style={{
-                      display: 'block',
-                      marginBottom: '8px',
-                      color: '#374151',
-                      fontSize: '14px',
-                      fontWeight: '600'
-                    }}>
+                    <label
+                      style={{
+                        display: "block",
+                        marginBottom: "8px",
+                        color: "#374151",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                      }}
+                    >
                       🏁 Fecha término
                     </label>
                     <input
                       type="date"
                       value={actividad.fechaTermino || ""}
                       onChange={(e) =>
-                        setActividad({
-                          ...actividad,
-                          fechaTermino: e.target.value,
-                        })
+                        setActividad({ ...actividad, fechaTermino: e.target.value })
                       }
                       style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        border: '2px solid #e5e7eb',
-                        borderRadius: '8px',
-                        fontSize: '15px',
-                        boxSizing: 'border-box',
-                        transition: 'border-color 0.2s ease'
+                        width: "100%",
+                        padding: "10px 12px",
+                        border: "2px solid #e5e7eb",
+                        borderRadius: "8px",
+                        fontSize: "15px",
+                        transition: "border-color 0.2s ease",
                       }}
-                      onFocus={(e) => e.target.style.borderColor = '#1664c1'}
-                      onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                      onFocus={(e) => (e.target.style.borderColor = "#1664c1")}
+                      onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
                     />
                   </div>
                 </div>
 
-                <div style={{ 
-                  display: 'flex', 
-                  gap: '12px', 
-                  justifyContent: 'flex-end',
-                  paddingTop: '16px',
-                  borderTop: '1px solid #e5e7eb'
-                }}>
+                {/* Botones */}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "12px",
+                    justifyContent: "flex-end",
+                    paddingTop: "16px",
+                    borderTop: "1px solid #e5e7eb",
+                  }}
+                >
                   <button
                     type="button"
-                    onClick={() => setShowEditarModal(false)}
+                    onClick={() => {
+                      setShowEditarModal(false);
+                      setActividadEdit(null);
+                    }}
+
                     title="Cancelar"
                     style={{
-                      padding: '12px',
-                      background: '#f3f4f6',
-                      color: '#374151',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontSize: '20px',
-                      fontWeight: '600',
-                      transition: 'all 0.2s ease',
-                      width: '48px',
-                      height: '48px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.background = '#e5e7eb';
-                      e.currentTarget.style.transform = 'translateY(-1px)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.background = '#f3f4f6';
-                      e.currentTarget.style.transform = 'translateY(0)';
+                      padding: "12px",
+                      background: "#f3f4f6",
+                      color: "#374151",
+                      border: "2px solid #e5e7eb",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontSize: "20px",
+                      width: "48px",
+                      height: "48px",
                     }}
                   >
                     ✕
                   </button>
-                  <button 
+
+                  <button
                     type="submit"
                     title="Guardar cambios"
                     style={{
-                      padding: '12px',
-                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontSize: '20px',
-                      fontWeight: '600',
-                      transition: 'all 0.2s ease',
-                      boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)',
-                      width: '48px',
-                      height: '48px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.4)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(16, 185, 129, 0.3)';
+                      padding: "12px",
+                      background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontSize: "20px",
+                      width: "48px",
+                      height: "48px",
                     }}
                   >
                     ✅
@@ -805,6 +896,7 @@ function ActividadDashboardDetalle() {
             </div>
           </div>
         )}
+
 
         {/* Sección de avances */}
         <div className="avances-section" style={{
