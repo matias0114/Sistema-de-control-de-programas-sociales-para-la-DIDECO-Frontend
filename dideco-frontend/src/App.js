@@ -17,6 +17,9 @@ import PrivateRouteSuperadmin from './components/PrivateRouteSuperadmin';
 import PrivateRouteEncargado from './components/PrivateRouteEncargado';
 import PrivateRouteVisualizador from './components/PrivateRouteVisualizador';
 import PrivateRoute from './components/PrivateRoute';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+
 
 function PanelUsuario() {
   return <h2>Panel para encargado por implementar</h2>;
@@ -29,6 +32,19 @@ function App() {
         {/* Ruta pública */}
         <Route path="/" element={<Login />} />
 
+         {/* Recuperación de contraseña */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+        {/* Rutas para SUPERADMIN */}
+        <Route
+          path="/general"
+          element={
+            <PrivateRouteSuperadmin>
+              <General />
+            </PrivateRouteSuperadmin>
+          }
+        />
         {/* Rutas para SUPERADMIN */}
         <Route
           path="/general"
