@@ -553,13 +553,15 @@ function EditarProgramaInfo({ programa, onSave }) {
         paddingBottom: '20px',
         borderBottom: '2px solid #f3f4f6'
       }}>
-        <div style={{
-          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-          padding: '12px',
-          borderRadius: '12px',
-          boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
-        }}>
-          <span style={{ fontSize: '24px' }}>✏️</span>
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #1664c1 0%, #1e40af 100%)',
+            padding: '12px',
+            borderRadius: '12px',
+            boxShadow: '0 4px 12px rgba(22, 100, 193, 0.4)'
+          }}
+        >
+          <span style={{ fontSize: '24px', color: 'white' }}>✏️</span>
         </div>
         <h2 style={{
           margin: 0,
