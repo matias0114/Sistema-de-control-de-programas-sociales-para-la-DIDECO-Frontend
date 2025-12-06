@@ -103,16 +103,31 @@ function Login() {
 
   return (
     <div className="login-container">
-      <div className="login-left">
-        <div className="logo-section">
-          <img src="/logo-dideco.png" alt="DIDECO" className="dideco-logo" />
-          <div className="brand-info">
-            <h2>DIDECO</h2>
-            <p>Dirección de Desarrollo Comunitario</p>
-          </div>
-        </div>
-      </div>
 
+      <div className="login-left">
+      <div className="logo-section">
+
+        {/* Logo DIDECO arriba */}
+        <img 
+      src="/logo-dideco.png" 
+      alt="DIDECO"
+      className="dideco-logo"
+    />
+
+      {/* Texto institucional */}
+        <div className="brand-info">
+          <h2>DIDECO</h2>
+          <p>Dirección de Desarrollo Comunitario</p>
+        </div>
+
+        {/* Logo UBB  */}
+        <img
+          src="/logo-universidad.png"
+          alt="Universidad del Bío-Bío"
+          className="universidad-logo"
+        />
+      </div>
+    </div>
       <div className="login-right">
         <div className="login-form-container">
           <div className="system-title">
@@ -149,16 +164,14 @@ function Login() {
               INICIAR SESIÓN
             </button>
             <div className="forgot-password">
-  <button 
-    type="button" 
-    className="forgot-password-btn"
-    onClick={() => navigate("/forgot-password")}
-  >
-    ¿Olvidaste tu contraseña?
-  </button>
-</div>
-
-
+              <button
+                type="button"
+                className="forgot-password-btn"
+                onClick={() => navigate("/forgot-password")}
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
             {error && <div className="error-message">{error}</div>}
           </form>
           

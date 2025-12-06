@@ -41,14 +41,27 @@ function ResetPassword() {
   return (
     <div className="login-container">
 
-      {/* IZQUIERDA */}
+      {/* IZQUIERDO */}
       <div className="login-left">
         <div className="logo-section">
-          <img src="/logo-dideco.png" alt="DIDECO" className="dideco-logo" />
+
+          <img 
+            src="/logo-dideco.png" 
+            alt="DIDECO"
+            className="dideco-logo"
+          />
+
           <div className="brand-info">
             <h2>DIDECO</h2>
-            <p>Sistema de Programas Sociales</p>
+            <p>Dirección de Desarrollo Comunitario</p>
           </div>
+
+          <img
+            src="/logo-universidad.png"
+            alt="Universidad del Bío-Bío"
+            className="universidad-logo"
+          />
+
         </div>
       </div>
 

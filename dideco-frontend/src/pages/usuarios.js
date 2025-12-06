@@ -25,6 +25,8 @@ function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [programas, setProgramas] = useState([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [verContrasena, setVerContrasena] = useState(false);
+
 
   useEffect(() => {
     cargarDatos();
@@ -362,43 +364,63 @@ function Usuarios() {
                   />
                 </div>
 
-                <div>
-                  <label style={{
-                    display: 'block',
-                    marginBottom: '8px',
-                    color: '#374151',
-                    fontSize: '14px',
-                    fontWeight: '600'
-                  }}>
-                    🔒 Contraseña *
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="Mínimo 6 caracteres y 1 símbolo (!@#$...)"
-                    value={contrasena}
-                    onChange={e => setContrasena(e.target.value)}
-                    required
-                    minLength={6}
-                    style={{
-                      width: '100%',
-                      padding: '12px 16px',
-                      border: '2px solid #e5e7eb',
-                      borderRadius: '8px',
-                      fontSize: '15px',
-                      transition: 'all 0.2s ease',
-                      outline: 'none',
-                      boxSizing: 'border-box'
-                    }}
-                    onFocus={(e) => {
-                      e.target.style.borderColor = '#1664c1';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(22, 100, 193, 0.1)';
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = '#e5e7eb';
-                      e.target.style.boxShadow = 'none';
-                    }}
-                  />
-                </div>
+                <div style={{ position: 'relative' }}>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  color: '#374151',
+                  fontSize: '14px',
+                  fontWeight: '600'
+                }}>
+                  🔒 Contraseña *
+                </label>
+
+                <input
+                  type={verContrasena ? "text" : "password"}
+                  placeholder="Mínimo 6 caracteres y 1 símbolo (!@#$...)"
+                  value={contrasena}
+                  onChange={e => setContrasena(e.target.value)}
+                  required
+                  minLength={6}
+                  style={{
+                    width: '100%',
+                    padding: '12px 46px 12px 16px', /* espacio para el botón */
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '8px',
+                    fontSize: '15px',
+                    transition: 'all 0.2s ease',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#1664c1';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(22, 100, 193, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#e5e7eb';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+
+                {/* Botón mostrar/ocultar contraseña */}
+                <button
+                  type="button"
+                  onClick={() => setVerContrasena(!verContrasena)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '48px',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '18px'
+                  }}
+                >
+                  {verContrasena ? "🔓" : "🔒"}
+                </button>
+              </div>
+
 
                 <div>
                   <label style={{

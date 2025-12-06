@@ -366,3 +366,66 @@ body, .main-bg {
     max-width: 100%;
   }
 }
+
+/* Panel azul centrado */
+.login-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Contenedor de logos */
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  margin-top: -20px;   /* Ajusta si quieres el bloque más arriba o abajo */
+}
+
+/* LOGO DIDECO — crece hacia ABAJO */
+.dideco-logo {
+  width: 350px;        /* tamaño del cuadro */
+  height: 350px;       /* CUADRADO perfecto */
+  object-fit: contain; /* mantiene proporción real sin deformar */
+  padding: 5px;        /* espacio interno opcional */
+}
+
+
+/* Texto de marca */
+.brand-info {
+  text-align: center;
+  margin-top: -20px;     /* se pega más al logo */
+}
+
+/* LOGO UBB — un poco más abajo */
+.universidad-logo {
+  width: 380px;
+  height: auto;          /* crece solo hacia abajo */
+  object-fit: contain;
+  margin-top: 10px;      /* separación exacta */
+}
+.forgot-password {
+  margin-top: 10px;
+  text-align: left;
+}
+
+
+.forgot-password-btn {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0;
+  color: #000 !important;      /* negro inicial */
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: none !important;
+}
+
+.forgot-password-btn:hover {
+  text-decoration: underline;
+  color: #0077cc !important;   /* azul en hover */
+}

@@ -5,7 +5,10 @@ function Perfil() {
   const [usuario, setUsuario] = useState(null);
   const [editandoNombre, setEditandoNombre] = useState(false);
   const [cambiandoPassword, setCambiandoPassword] = useState(false);
-  
+  const [verPasswordActual, setVerPasswordActual] = useState(false);
+  const [verNuevaPassword, setVerNuevaPassword] = useState(false);  
+  const [verConfirmarPassword, setVerConfirmarPassword] = useState(false);
+
   // Estados para editar nombre
   const [nuevoNombre, setNuevoNombre] = useState('');
   
@@ -88,45 +91,52 @@ function Perfil() {
       setTimeout(() => setMensajeError(''), 5000);
     }
   };
+  
 
+  
   const handleCambiarPassword = async () => {
+
     // Validaciones en el frontend (solo para UX)
     if (!passwordData.passwordActual || !passwordData.nuevaPassword || !passwordData.confirmarPassword) {
+      console.log('VALIDACIÓN: campos vacíos');
       setMensajeError('⚠ Todos los campos de contraseña son obligatorios');
+      // si quieres que el mensaje no desaparezca rápido, puedes comentar la línea siguiente
       setTimeout(() => setMensajeError(''), 3000);
       return;
     }
 
     if (passwordData.nuevaPassword !== passwordData.confirmarPassword) {
-      setMensajeError('⚠ Las contraseñas nuevas no coinciden');
+      console.log('VALIDACIÓN: no coinciden');
+      setMensajeError('Las contraseñas nuevas no coinciden');
       setTimeout(() => setMensajeError(''), 3000);
       return;
     }
 
     if (passwordData.nuevaPassword.length < 6) {
-      setMensajeError('⚠ La nueva contraseña debe tener al menos 6 caracteres');
+      console.log('VALIDACIÓN: menos de 6 caracteres');
+      setMensajeError('La nueva contraseña debe tener al menos 6 caracteres');
       setTimeout(() => setMensajeError(''), 3000);
       return;
     }
 
-    const simbolosRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    const simbolosRegex = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/;
     if (!simbolosRegex.test(passwordData.nuevaPassword)) {
-      setMensajeError('⚠ La nueva contraseña debe contener al menos un símbolo (!@#$%^&*...)');
+      console.log('VALIDACIÓN: sin símbolo');
+      setMensajeError('La nueva contraseña debe contener al menos un símbolo (!@#$%^&*...)');
       setTimeout(() => setMensajeError(''), 5000);
       return;
     }
 
     if (passwordData.passwordActual === passwordData.nuevaPassword) {
-      setMensajeError('⚠ La nueva contraseña debe ser diferente a la actual');
+      console.log('VALIDACIÓN: igual a la actual');
+      setMensajeError('La nueva contraseña debe ser diferente a la actual');
       setTimeout(() => setMensajeError(''), 3000);
       return;
     }
 
     try {
       const API_URL = process.env.REACT_APP_API_URL;
-      // Usar el endpoint seguro de cambio de contraseña
       const response = await fetch(
-        //`http://localhost:8080/usuarios/${usuario.idUsuario}/cambiar-password`,
         `${API_URL}/usuarios/${usuario.idUsuario}/cambiar-password`,
         {
           method: 'PATCH',
@@ -139,10 +149,9 @@ function Perfil() {
       );
 
       const data = await response.json();
+      console.log('RESPUESTA BACKEND', response.status, data);
 
       if (response.ok) {
-        // Éxito - Contraseña cambiada
-        // NO guardamos la contraseña en localStorage (seguridad)
         setCambiandoPassword(false);
         setPasswordData({
           passwordActual: '',
@@ -153,10 +162,9 @@ function Perfil() {
         setMensajeExito('✓ ' + (data.mensaje || 'Contraseña actualizada correctamente'));
         setTimeout(() => setMensajeExito(''), 3000);
       } else {
-        // Error - Mostrar mensaje del servidor
         if (response.status === 401) {
           setMensajeError('⚠ La contraseña actual es incorrecta');
-          setPasswordData({...passwordData, passwordActual: ''}); // Limpiar contraseña incorrecta
+          setPasswordData({ ...passwordData, passwordActual: '' });
         } else {
           setMensajeError('⚠ ' + (data.mensaje || 'Error al cambiar la contraseña'));
         }
@@ -167,7 +175,9 @@ function Perfil() {
       setMensajeError('⚠ Error de conexión. Verifique su conexión a internet.');
       setTimeout(() => setMensajeError(''), 5000);
     }
-  };
+        
+};
+
 
   if (!usuario) {
     return (
@@ -198,64 +208,96 @@ function Perfil() {
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
         
         {/* Mensajes de éxito y error */}
-        {mensajeExito && (
+        {(mensajeExito || mensajeError) && (
           <div style={{
-            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-            color: 'white',
-            padding: '16px 20px',
-            borderRadius: '12px',
-            marginBottom: '24px',
+            position: 'fixed',
+            top: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 999,
             display: 'flex',
-            alignItems: 'center',
+            flexDirection: 'column',
             gap: '12px',
-            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
-            animation: 'slideDown 0.3s ease-out'
+            width: '90%',
+            maxWidth: '400px'
           }}>
-            <span style={{ fontSize: '24px' }}>✓</span>
-            <span style={{ fontSize: '15px', fontWeight: '600' }}>{mensajeExito}</span>
+            {mensajeExito && (
+              <div style={{
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: 'white',
+                padding: '16px 20px',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                animation: 'slideDown 0.3s ease-out'
+              }}>
+                <span style={{ fontSize: '24px' }}>✓</span>
+                <span style={{ fontSize: '15px', fontWeight: '600' }}>{mensajeExito}</span>
+                <button 
+                  onClick={() => setMensajeExito('')}
+                  style={{
+                    marginLeft: 'auto',
+                    background: 'rgba(255,255,255,0.2)',
+                    border: 'none',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '28px',
+                    height: '28px',
+                    cursor: 'pointer',
+                    fontSize: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {mensajeError && (
+              <div style={{
+                background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
+                color: 'white',
+                padding: '16px 20px',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)',
+                animation: 'slideDown 0.3s ease-out'
+              }}>
+                <span style={{ fontSize: '24px' }}>⚠</span>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: '15px', fontWeight: '600' }}>{mensajeError}</span>
+                </div>
+                <button 
+                  onClick={() => setMensajeError('')}
+                  style={{
+                    background: 'rgba(255,255,255,0.2)',
+                    border: 'none',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '28px',
+                    height: '28px',
+                    cursor: 'pointer',
+                    fontSize: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+            )}
           </div>
         )}
 
-        {mensajeError && (
-          <div style={{
-            background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
-            color: 'white',
-            padding: '16px 20px',
-            borderRadius: '12px',
-            marginBottom: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)',
-            animation: 'slideDown 0.3s ease-out'
-          }}>
-            <span style={{ fontSize: '24px' }}>⚠</span>
-            <div style={{ flex: 1 }}>
-              <span style={{ fontSize: '15px', fontWeight: '600' }}>{mensajeError}</span>
-            </div>
-            <button
-              onClick={() => setMensajeError('')}
-              style={{
-                background: 'rgba(255, 255, 255, 0.2)',
-                border: 'none',
-                color: 'white',
-                borderRadius: '50%',
-                width: '28px',
-                height: '28px',
-                cursor: 'pointer',
-                fontSize: '18px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseOver={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
-              onMouseOut={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
-            >
-              ✕
-            </button>
-          </div>
-        )}
+
+
 
         {/* Tarjeta de perfil principal */}
         <div style={{
@@ -645,111 +687,172 @@ function Perfil() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: '#374151',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}>
-                  🔐 Contraseña actual *
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.passwordActual}
-                  onChange={(e) => setPasswordData({...passwordData, passwordActual: e.target.value})}
-                  placeholder="Ingrese su contraseña actual"
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '15px',
-                    transition: 'all 0.2s ease',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#f59e0b';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '8px',
+                    color: '#374151',
+                    fontSize: '14px',
+                    fontWeight: '600'
+                  }}>
+                    🔐 Contraseña actual *
+                  </label>
+
+                  <input
+                    type={verPasswordActual ? "text" : "password"}
+                    value={passwordData.passwordActual}
+                    onChange={(e) => setPasswordData({ ...passwordData, passwordActual: e.target.value })}
+                    placeholder="Ingrese su contraseña actual"
+                    style={{
+                      width: '100%',
+                      padding: '12px 46px 12px 16px', // espacio para el botón
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '15px',
+                      transition: 'all 0.2s ease',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#f59e0b';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setVerPasswordActual(!verPasswordActual)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '48px',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '18px'
+                    }}
+                  >
+                    {verPasswordActual ? "🔓" : "🔒"}
+                  </button>
+                </div>
               </div>
 
               <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: '#374151',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}>
-                  🔑 Nueva contraseña *
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.nuevaPassword}
-                  onChange={(e) => setPasswordData({...passwordData, nuevaPassword: e.target.value})}
-                  placeholder="Ingrese su nueva contraseña"
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '15px',
-                    transition: 'all 0.2s ease',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#f59e0b';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '8px',
+                    color: '#374151',
+                    fontSize: '14px',
+                    fontWeight: '600'
+                  }}>
+                    🔑 Nueva contraseña *
+                  </label>
+
+                  <input
+                    type={verNuevaPassword ? "text" : "password"}
+                    value={passwordData.nuevaPassword}
+                    onChange={(e) => setPasswordData({ ...passwordData, nuevaPassword: e.target.value })}
+                    placeholder="Ingrese su nueva contraseña"
+                    style={{
+                      width: '100%',
+                      padding: '12px 46px 12px 16px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '15px',
+                      transition: 'all 0.2s ease',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#f59e0b';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setVerNuevaPassword(!verNuevaPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '48px',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '18px'
+                    }}
+                  >
+                    {verNuevaPassword ? "🔓" : "🔒"}
+                  </button>
+                </div>
               </div>
 
               <div>
-                <label style={{
-                  display: 'block',
-                  marginBottom: '8px',
-                  color: '#374151',
-                  fontSize: '14px',
-                  fontWeight: '600'
-                }}>
-                  🔑 Confirmar nueva contraseña *
-                </label>
-                <input
-                  type="password"
-                  value={passwordData.confirmarPassword}
-                  onChange={(e) => setPasswordData({...passwordData, confirmarPassword: e.target.value})}
-                  placeholder="Confirme su nueva contraseña"
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    border: '2px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '15px',
-                    transition: 'all 0.2s ease',
-                    outline: 'none',
-                    boxSizing: 'border-box'
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#f59e0b';
-                    e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#e5e7eb';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '8px',
+                    color: '#374151',
+                    fontSize: '14px',
+                    fontWeight: '600'
+                  }}>
+                    🔑 Confirmar nueva contraseña *
+                  </label>
+
+                  <input
+                    type={verConfirmarPassword ? "text" : "password"}
+                    value={passwordData.confirmarPassword}
+                    onChange={(e) => setPasswordData({ ...passwordData, confirmarPassword: e.target.value })}
+                    placeholder="Confirme su nueva contraseña"
+                    style={{
+                      width: '100%',
+                      padding: '12px 46px 12px 16px',
+                      border: '2px solid #e5e7eb',
+                      borderRadius: '8px',
+                      fontSize: '15px',
+                      transition: 'all 0.2s ease',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#f59e0b';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(245, 158, 11, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#e5e7eb';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setVerConfirmarPassword(!verConfirmarPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '48px',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '18px'
+                    }}
+                  >
+                    {verConfirmarPassword ? "🔓" : "🔒"}
+                  </button>
+                </div>
+
               </div>
             </div>
 

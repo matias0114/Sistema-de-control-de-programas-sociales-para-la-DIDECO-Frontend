@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../login.css"; // REUTILIZAMOS EL MISMO CSS
+import "../login.css"; 
 
 function ForgotPassword() {
   const [correo, setCorreo] = useState("");
@@ -37,14 +37,27 @@ function ForgotPassword() {
   return (
     <div className="login-container">
 
-      {/* LADO IZQUIERDO (IGUAL AL LOGIN) */}
+      {/* PANEL IZQUIERDO IGUAL AL LOGIN */}
       <div className="login-left">
         <div className="logo-section">
-          <img src="/logo-dideco.png" alt="DIDECO" className="dideco-logo" />
+
+          <img 
+            src="/logo-dideco.png" 
+            alt="DIDECO"
+            className="dideco-logo"
+          />
+
           <div className="brand-info">
             <h2>DIDECO</h2>
             <p>Dirección de Desarrollo Comunitario</p>
           </div>
+
+          <img
+            src="/logo-universidad.png"
+            alt="Universidad del Bío-Bío"
+            className="universidad-logo"
+          />
+
         </div>
       </div>
 
