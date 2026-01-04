@@ -201,12 +201,21 @@ function ActividadDashboardDetalle() {
 
   const formatDate = (dateString) => {
     if (!dateString) return '—';
-    return new Date(dateString).toLocaleDateString('es-CL', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+
+    const [year, month, day] = dateString.split('-');
+
+    return `${day} de ${getMes(month)} de ${year}`;
   };
+
+  const getMes = (mes) => {
+    const meses = [
+      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+
+    return meses[Number(mes) - 1];
+  };
+
 
   if (loading) {
     return (
@@ -1335,6 +1344,8 @@ function ActividadDashboardDetalle() {
                 avance={null}
                 idUsuario={usuario?.idUsuario}
                 idActividad={actividad.idActividad}
+                fechaInicio={actividad.fechaInicio}
+                fechaTermino={actividad.fechaTermino}
                 onAdd={handleAddEditarAvance}
                 onCancel={() => setShowAgregarAvance(false)}
                 modoEdicion={false}

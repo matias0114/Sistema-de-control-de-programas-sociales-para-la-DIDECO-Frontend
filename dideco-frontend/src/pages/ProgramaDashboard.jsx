@@ -26,6 +26,12 @@ function ProgramaDashboard() {
   const navigate = useNavigate();
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const [presupuestosLista, setPresupuestosLista] = useState([]);
+  console.log(
+    "Fechas del programa:",
+    programa?.fechaInicio,
+    programa?.fechaFin || programa?.fechaTermino
+  );
+
 
 
   function getActividadProgreso(act) {
@@ -922,7 +928,9 @@ function ProgramaDashboard() {
                               <tr key={i} style={{ borderBottom: "1px solid #f3f4f6" }}>
                                   <td style={{ padding: "12px" }}>{p.fuentePresupuesto}</td>
                                   <td style={{ padding: "12px", textAlign: "center" }}>
-                                      {new Date(p.fechaRegistro).toLocaleDateString("es-CL")}
+                                    {p.fechaRegistro
+                                      ? p.fechaRegistro.slice(0, 10).split("-").reverse().join("-")
+                                      : "—"}
                                   </td>
                                   <td style={{ padding: "12px", textAlign: "right", fontWeight: "600" }}>
                                       ${Number(p.montoAsignado).toLocaleString("es-CL")}
@@ -1109,6 +1117,8 @@ function ProgramaDashboard() {
               <CrearActividad
                 onAdd={handleAddActividad}
                 idPrograma={programa.idPrograma}
+                fechaInicioPrograma={programa.fechaInicio}
+                fechaFinPrograma={programa.fechaFin || programa.fechaTermino}
                 onCancel={() => setShowCrearActividad(false)}
               />
             </div>
@@ -1254,7 +1264,7 @@ function ProgramaDashboard() {
                               fontSize: '13px',
                               fontWeight: '600'
                             }}>
-                              {new Date(act.fechaInicio).toLocaleDateString('es-CL')}
+                              <p>{act.fechaInicio.split("-").reverse().join("-")}</p>
                             </div>
                           ) : '—'}
                         </td>

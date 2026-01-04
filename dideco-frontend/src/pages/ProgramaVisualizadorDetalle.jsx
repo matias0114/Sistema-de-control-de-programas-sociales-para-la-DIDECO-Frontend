@@ -65,6 +65,12 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
       console.error('Error de red guardando observación', e);
     }
   }
+  const formatDate = (dateString) => {
+    if (!dateString) return '—';
+    const [y, m, d] = dateString.split('-');
+    return `${d}-${m}-${y}`;
+  };
+
 
 
   useEffect(() => {
@@ -293,7 +299,7 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
                 <div className="info-card-icon">📅</div>
                 <div className="info-card-content">
                   <h4>Fecha de Inicio</h4>
-                  <p>{new Date(programa.fechaInicio).toLocaleDateString('es-CL')}</p>
+                    <p>{programa.fechaInicio.split("-").reverse().join("-")}</p>
                 </div>
               </div>
             )}
@@ -303,7 +309,7 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
                 <div className="info-card-icon">🏁</div>
                 <div className="info-card-content">
                   <h4>Fecha de Término</h4>
-                  <p>{new Date(programa.fechaFin).toLocaleDateString('es-CL')}</p>
+                  <p>{programa.fechaFin.split("-").reverse().join("-")}</p>
                 </div>
               </div>
             )}
@@ -441,11 +447,11 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
               <td style={{ padding: "14px", borderRadius: "12px 0 0 12px" }}>
                 {p.fuentePresupuesto}
               </td>
-
               <td style={{ padding: "14px", textAlign: "center" }}>
-                {new Date(p.fechaRegistro).toLocaleDateString("es-CL")}
+                {p.fechaRegistro
+                  ? p.fechaRegistro.slice(0, 10).split("-").reverse().join("-")
+                  : "—"}
               </td>
-
               <td
                 style={{
                   padding: "14px",
@@ -523,7 +529,7 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
                   {actividades.map(act => (
                     <tr key={act.idActividad}>
                       <td>{act.nombreActividad}</td>
-                      <td>{act.fechaInicio ? new Date(act.fechaInicio).toLocaleDateString('es-CL') : '—'}</td>
+                      <td>{formatDate(act.fechaInicio)}</td>
                       <td>${parseFloat(act.montoAsignado || 0).toLocaleString("es-CL")}</td>
                       <td>
                         <div style={{minWidth:90, maxWidth:120}}>

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./programadashboard.css"; // Usa tus estilos globales
 
-function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEdicion }) {
+const normalizarFecha = (fecha) =>
+fecha ? fecha.slice(0, 10) : "";
+function AgregarAvance({ avance, idActividad, idUsuario, fechaInicio, fechaTermino, onAdd, onCancel, modoEdicion }) {
 
   // ⚠️ LIMITES DOBLES
   const limites = {
@@ -14,6 +16,10 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
   const [estado, setEstado] = useState("Pendiente");
   const [descripcion, setDescripcion] = useState("");
   const [objetivosAlcanzados, setObjetivosAlcanzados] = useState("");
+  const fechaMin = normalizarFecha(fechaInicio);
+  const fechaMax = normalizarFecha(fechaTermino);
+
+
 
   useEffect(() => {
     if (modoEdicion && avance) {
@@ -31,6 +37,17 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    if (
+      (fechaMin && fechaAvance < fechaMin) ||
+      (fechaMax && fechaAvance > fechaMax)
+    ) {
+      alert(
+        `La fecha del avance debe estar entre ${fechaMin} y ${fechaMax}`
+      );
+      return;
+    }
+
     onAdd({
       idAvance: avance?.idAvance,
       fechaAvance,
@@ -41,6 +58,7 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
       usuario: { idUsuario },
     });
   }
+
 
   return (
     <div
@@ -109,6 +127,8 @@ function AgregarAvance({ avance, idActividad, idUsuario, onAdd, onCancel, modoEd
               <input
                 type="date"
                 value={fechaAvance}
+                min={fechaMin}
+                max={fechaMax}
                 onChange={(e) => setFechaAvance(e.target.value)}
                 required
                 style={{

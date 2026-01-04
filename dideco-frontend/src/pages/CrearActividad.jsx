@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./crearactividad.css";
 
-function CrearActividad({ onAdd, idPrograma, onCancel }) {
+function CrearActividad({ onAdd, idPrograma, onCancel,  fechaInicioPrograma,
+  fechaFinPrograma }) {
   const [nueva, setNueva] = useState({
     nombreActividad: "",
     descripcion: "",
@@ -60,17 +61,39 @@ function CrearActividad({ onAdd, idPrograma, onCancel }) {
   const validarFechas = () => {
     const { fechaInicio, fechaTermino } = nueva;
 
-    if (fechaInicio && fechaTermino && fechaTermino < fechaInicio) {
+    if (!fechaInicio) return true;
+
+    // Inicio fuera del rango del programa
+    if (fechaInicio < fechaInicioPrograma || fechaInicio > fechaFinPrograma) {
       setErrores({
         ...errores,
-        fechas: "La fecha de término no puede ser menor que la fecha de inicio."
+        fechas: "La fecha de inicio debe estar dentro del período del programa."
       });
       return false;
+    }
+
+    if (fechaTermino) {
+      if (fechaTermino < fechaInicio) {
+        setErrores({
+          ...errores,
+          fechas: "La fecha de término no puede ser menor que la fecha de inicio."
+        });
+        return false;
+      }
+
+      if (fechaTermino > fechaFinPrograma) {
+        setErrores({
+          ...errores,
+          fechas: "La fecha de término no puede superar la fecha de término del programa."
+        });
+        return false;
+      }
     }
 
     setErrores({ ...errores, fechas: "" });
     return true;
   };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -95,7 +118,11 @@ function CrearActividad({ onAdd, idPrograma, onCancel }) {
     <div className="modal-bg">
       <div className="modal-box modal-large">
         <div className="modal-header">
-          <h2 style={{ margin: 0, fontSize: 28 }}>Crear Nueva Actividad</h2>
+          <p style={{ fontSize: 14, color: "#6b7280", marginTop: 6 }}>
+            El programa se ejecuta desde{" "}
+            <strong>{fechaInicioPrograma}</strong> hasta{" "}
+            <strong>{fechaFinPrograma}</strong>
+          </p>
           <button type="button" className="modal-close-btn" onClick={onCancel}>
             ×
           </button>
@@ -160,6 +187,8 @@ function CrearActividad({ onAdd, idPrograma, onCancel }) {
                 name="fechaInicio"
                 type="date"
                 value={nueva.fechaInicio}
+                min={fechaInicioPrograma}
+                max={fechaFinPrograma}
                 onChange={(e) => {
                   handleChange(e);
                   validarFechas();
@@ -175,6 +204,8 @@ function CrearActividad({ onAdd, idPrograma, onCancel }) {
                 name="fechaTermino"
                 type="date"
                 value={nueva.fechaTermino}
+                min={nueva.fechaInicio || fechaInicioPrograma}
+                max={fechaFinPrograma}
                 onChange={(e) => {
                   handleChange(e);
                   validarFechas();

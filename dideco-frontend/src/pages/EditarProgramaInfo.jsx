@@ -105,12 +105,17 @@ function EditarProgramaInfo({ programa, onSave }) {
 
   const formatDate = (dateString) => {
     if (!dateString) return '—';
-    return new Date(dateString).toLocaleDateString('es-CL', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+
+    const [year, month, day] = dateString.split('-');
+
+    const meses = [
+      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+      'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+
+    return `${day} de ${meses[month - 1]} de ${year}`;
   };
+
 
   if (!editing) {
     return (
