@@ -303,7 +303,7 @@ function ActividadDashboardDetalle() {
           </div>
           <button 
             onClick={() => {
-              setActividadEdit({ ...actividad }); // COPIA
+              setActividadEdit({ ...actividad });
               setShowEditarModal(true);
             }}
             title="Editar actividad"
@@ -615,9 +615,9 @@ function ActividadDashboardDetalle() {
                   <textarea
                     maxLength={300}
                     name="descripcion"
-                    value={actividad.descripcion}
+                    value={actividadEdit.descripcion || ""}
                     onChange={(e) =>
-                      setActividad({ ...actividad, descripcion: e.target.value })
+                      setActividadEdit({ ...actividadEdit, descripcion: e.target.value })
                     }
                     rows="4"
                     style={{
@@ -664,9 +664,9 @@ function ActividadDashboardDetalle() {
                     <input
                       maxLength={60}
                       name="responsable"
-                      value={actividad.responsable || ""}
+                      value={actividadEdit.responsable || ""}
                       onChange={(e) =>
-                        setActividad({ ...actividad, responsable: e.target.value })
+                        setActividadEdit({ ...actividadEdit, responsable: e.target.value })
                       }
                       style={{
                         width: "100%",
@@ -709,36 +709,35 @@ function ActividadDashboardDetalle() {
                       type="text"
                       inputMode="numeric"
                       maxLength={10}
-                      value={actividad.montoAsignado}
+                      value={actividadEdit.montoAsignado || ""}
                       onChange={(e) => {
-                        const value = e.target.value;
-                        const soloNumeros = value.replace(/\D/g, "");
-
-                        if (!soloNumeros) {
-                          setActividad({ ...actividad, montoAsignado: "" });
-                          return;
-                        }
-
-                        if (Number(soloNumeros) <= 0) {
-                          setActividad({ ...actividad, montoAsignado: "" });
-                          alert("El monto debe ser mayor a 0.");
-                          return;
-                        }
-
-                        const formateado = soloNumeros.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                        setActividad({ ...actividad, montoAsignado: formateado });
+                        const soloNumeros = e.target.value.replace(/\D/g, "");
+                        setActividadEdit({ ...actividadEdit, montoAsignado: soloNumeros });
                       }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = "#e5e7eb";
+
+                        if (!actividadEdit.montoAsignado) return;
+
+                        const formateado = Number(
+                          actividadEdit.montoAsignado.replace(/\./g, "")
+                        ).toLocaleString("es-CL");
+
+                        setActividadEdit({
+                          ...actividadEdit,
+                          montoAsignado: formateado,
+                        });
+                      }}
+                      onFocus={(e) => (e.target.style.borderColor = "#1664c1")}
                       style={{
                         width: "100%",
                         padding: "10px 12px",
                         border: "2px solid #e5e7eb",
                         borderRadius: "8px",
                         fontSize: "15px",
-                        transition: "border-color 0.2s ease",
                       }}
-                      onFocus={(e) => (e.target.style.borderColor = "#1664c1")}
-                      onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
                     />
+
                   </div>
                 </div>
 
@@ -761,9 +760,9 @@ function ActividadDashboardDetalle() {
                   <input
                     maxLength={120}
                     name="metas"
-                    value={actividad.metas || ""}
+                    value={actividadEdit.metas || ""}
                     onChange={(e) =>
-                      setActividad({ ...actividad, metas: e.target.value })
+                      setActividadEdit({ ...actividadEdit, metas: e.target.value })
                     }
                     style={{
                       width: "100%",
@@ -801,9 +800,11 @@ function ActividadDashboardDetalle() {
                     </label>
                     <input
                       type="date"
-                      value={actividad.fechaInicio || ""}
+                      value={actividadEdit.fechaInicio || ""}
+                      min={actividad.programa?.fechaInicio}
+                      max={actividadEdit.fechaTermino || actividad.programa?.fechaFin}
                       onChange={(e) =>
-                        setActividad({ ...actividad, fechaInicio: e.target.value })
+                        setActividadEdit({ ...actividadEdit, fechaInicio: e.target.value })
                       }
                       style={{
                         width: "100%",
@@ -832,9 +833,11 @@ function ActividadDashboardDetalle() {
                     </label>
                     <input
                       type="date"
-                      value={actividad.fechaTermino || ""}
+                      value={actividadEdit.fechaTermino || ""}
+                      min={actividadEdit.fechaInicio || actividad.programa?.fechaInicio}
+                      max={actividad.programa?.fechaFin}
                       onChange={(e) =>
-                        setActividad({ ...actividad, fechaTermino: e.target.value })
+                        setActividadEdit({ ...actividadEdit, fechaTermino: e.target.value })
                       }
                       style={{
                         width: "100%",

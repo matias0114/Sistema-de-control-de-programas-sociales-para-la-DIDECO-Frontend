@@ -10,10 +10,20 @@ import {
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+const parseFechaLocal = (fecha) => {
+  if (!fecha) return null;
+  const [year, month, day] = fecha.split("-");
+  return new Date(year, month - 1, day);
+};
+
+
 function AvanceTemporalDonut({ fechaInicio, fechaTermino }) {
-  const inicio = fechaInicio ? new Date(fechaInicio) : null;
-  const fin = fechaTermino ? new Date(fechaTermino) : null;
+  const inicio = parseFechaLocal(fechaInicio);
+  const fin = parseFechaLocal(fechaTermino);
+
   const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
 
   if (!inicio || !fin || inicio >= fin) {
     return <div style={{color:"#c00"}}>Fechas no válidas</div>;
