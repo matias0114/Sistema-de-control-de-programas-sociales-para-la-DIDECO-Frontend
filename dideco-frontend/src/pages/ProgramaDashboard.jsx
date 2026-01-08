@@ -1187,7 +1187,7 @@ function ProgramaDashboard() {
                       borderBottom: '2px solid #e5e7eb',
                       minWidth: '150px'
                     }}>
-                      Progreso
+                      Progreso Temporal
                     </th>
                     <th style={{
                       padding: '16px',
