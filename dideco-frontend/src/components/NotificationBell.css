@@ -1,7 +1,7 @@
 .notification-bell-container {
   position: relative;
-  margin-left: 20px; /* Aumentado de 15px */
-  margin-right: 10px; /* Nuevo: espacio antes del perfil */
+  margin-left: 20px;
+  margin-right: 10px;
 }
 
 .notification-bell-btn {

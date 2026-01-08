@@ -36,7 +36,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* Rutas para SUPERADMIN */}
+        {/* Rutas para ADMIN */}
         <Route
           path="/general"
           element={
@@ -45,7 +45,7 @@ function App() {
             </PrivateRouteSuperadmin>
           }
         />
-        {/* Rutas para SUPERADMIN */}
+        {/* Rutas para ADMIN */}
         <Route
           path="/general"
           element={
@@ -130,7 +130,7 @@ function App() {
           }
         />
 
-        {/* Rutas comunes adaptadas por rol */}
+        {/* Rutas adaptadas por rol */}
         <Route
           path="/programas"
           element={
@@ -163,7 +163,7 @@ function App() {
             </PrivateRouteEncargado>
           }
         />
-        {/* Selección de programa (Encargado con múltiples programas activos) */}
+        {/* Selección de programa */}
         <Route
           path="/seleccionar-programa"
           element={

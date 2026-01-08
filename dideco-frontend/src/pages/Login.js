@@ -8,7 +8,6 @@ function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Redirige automáticamente si ya está logueado
   useEffect(() => {
     const usuario = localStorage.getItem('usuario');
     if (usuario) {
@@ -66,7 +65,7 @@ function Login() {
       const activos = usuario.programasActivos || [];
       localStorage.setItem("programasActivos", JSON.stringify(activos));
 
-      // SUPERADMIN
+      // ADMINISTRADOR
       if (usuario.idRol === 1) {
         navigate('/general', { replace: true });
         return;
@@ -107,7 +106,7 @@ function Login() {
       <div className="login-left">
       <div className="logo-section">
 
-        {/* Logo DIDECO arriba */}
+        {/* Logo DIDECO */}
         <img 
       src="/logo-dideco.png" 
       alt="DIDECO"

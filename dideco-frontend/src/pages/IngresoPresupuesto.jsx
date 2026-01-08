@@ -45,7 +45,7 @@ function IngresoPresupuesto({ idPrograma, onAdd, onCancel }) {
       montoAsignado: montoNumerico,
       montoEjecutado: 0,
       fechaRegistro: data.fechaRegistro,
-      fuentePresupuesto: data.origen,   // ← CAMBIO IMPORTANTE
+      fuentePresupuesto: data.origen, 
       idPrograma,
       programa: { idPrograma }
     });

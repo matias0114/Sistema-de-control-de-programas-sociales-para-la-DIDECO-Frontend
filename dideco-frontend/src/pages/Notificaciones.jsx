@@ -71,7 +71,6 @@ function Notificaciones() {
     }
   };
 
-  // Marcar OBSERVACIÓN como leída cuando se abre desde la lista
   const marcarObservacionComoLeida = async (idObservacion) => {
     try {
       //await fetch(`http://localhost:8080/observaciones-programa/${idObservacion}/leer`, {
@@ -89,7 +88,6 @@ function Notificaciones() {
       await marcarComoLeida(notificacion.idNotificacion);
     }
 
-    // Si es una observación interna, marcar también la observación como leída
     if (notificacion.tipo === 'OBSERVACION_INTERNA' && notificacion.idReferencia) {
       await marcarObservacionComoLeida(notificacion.idReferencia);
     }
@@ -133,7 +131,6 @@ function Notificaciones() {
 
   const noLeidas = notificaciones.filter(n => !n.leida).length;
 
-  // Agregar esta función para borrar notificación
   const borrarNotificacion = async (idNotificacion) => {
     try {
       //const resp = await fetch(`http://localhost:8080/notificaciones/${idNotificacion}`, {
@@ -143,7 +140,6 @@ function Notificaciones() {
       });
 
       if (resp.ok) {
-        // Actualizar estado local removiendo la notificación
         setNotificaciones(prev => prev.filter(n => n.idNotificacion !== idNotificacion));
       }
     } catch (error) {

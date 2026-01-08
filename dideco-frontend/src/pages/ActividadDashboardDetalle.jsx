@@ -19,12 +19,11 @@ function ActividadDashboardDetalle() {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
   const navigate = useNavigate();
 
-  const [showModalUpload, setShowModalUpload] = useState(null); // para idAvance
-  const [showModalVer, setShowModalVer] = useState(null);       // para idAvance
+  const [showModalUpload, setShowModalUpload] = useState(null); 
+  const [showModalVer, setShowModalVer] = useState(null);       
   const [actividadEdit, setActividadEdit] = useState(null);
 
 
-  // Cargar datos
   useEffect(() => {
     async function fetchDatos() {
       setLoading(true);
@@ -60,8 +59,6 @@ function ActividadDashboardDetalle() {
   async function handleSaveActividad(e) {
     e.preventDefault();
 
-    // --- VALIDACIONES ---
-
     // 1. Validar monto
     const monto = Number(actividad.montoAsignado);
 
@@ -89,7 +86,6 @@ function ActividadDashboardDetalle() {
       return;
     }
 
-    // --- SI TODAS LAS VALIDACIONES PASAN, GUARDAR ---
     try {
       const API_URL = process.env.REACT_APP_API_URL;
 
@@ -120,7 +116,6 @@ function ActividadDashboardDetalle() {
   async function handleAddEditarAvance(payload) {
     try {
       if (payload.idAvance) {
-        // EDITAR AVANCE EXISTENTE
         //await fetch(`http://localhost:8080/avances/${payload.idAvance}`, {
         const API_URL = process.env.REACT_APP_API_URL;
         await fetch(`${API_URL}/avances/${payload.idAvance}`, {
@@ -681,7 +676,7 @@ function ActividadDashboardDetalle() {
                     />
                   </div>
 
-                  {/* Monto asignado (ya tenía contador correcto) */}
+                  {/* Monto asignado */}
                   <div>
                     <label
                       style={{

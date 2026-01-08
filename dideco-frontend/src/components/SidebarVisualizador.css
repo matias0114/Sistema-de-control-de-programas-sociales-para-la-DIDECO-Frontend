@@ -1,4 +1,3 @@
-/* === Overlay === */
 .sidevisual-overlay {
   position: fixed;
   inset: 0;
@@ -11,7 +10,6 @@
   to { background: rgba(0,0,0,0.55); }
 }
 
-/* === Panel === */
 .sidevisual-panel {
   position: fixed;
   left: -300px;
@@ -31,7 +29,6 @@
   left: 0;
 }
 
-/* === Header === */
 .sidevisual-header {
   display: flex;
   align-items: center;
@@ -62,12 +59,10 @@
   color: #fff;
 }
 
-/* === NAV === */
 .sidevisual-nav {
   padding-top: 10px;
 }
 
-/* Categoría */
 .sidevisual-nav-item {
   width: 100%;
   background: none;
@@ -94,7 +89,6 @@
   opacity: 0.8;
 }
 
-/* Lista desplegable */
 .sidevisual-list {
   background: #2d3748;
   animation: slideDown 0.25s ease;

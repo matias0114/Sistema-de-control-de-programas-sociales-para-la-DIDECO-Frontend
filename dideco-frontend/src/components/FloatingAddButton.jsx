@@ -15,7 +15,6 @@ function FloatingAddButton({ onClick, title = 'Agregar Observación Interna', ic
     </button>
   );
 
-  // Render fuera del árbol (evita stacking-contexts y overflow de contenedores)
   return ReactDOM.createPortal(btn, document.body);
 }
 

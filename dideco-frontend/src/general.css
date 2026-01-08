@@ -47,7 +47,6 @@
   font-size: 1rem;
 }
 
-/* === RESPONSIVE === */
 @media (max-width: 767px) {
   .welcome-section h2 {
     font-size: 2rem;

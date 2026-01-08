@@ -31,7 +31,6 @@ function ModalObservacionInterna({
     }
     setTexto(value);
   }
-  // Bloquea scroll
   useEffect(() => {
     if (!visible) return;
     const prev = document.body.style.overflow;
@@ -168,7 +167,7 @@ function ModalObservacionInterna({
           </div>
         ) : (
           <>
-            {/* 🔵 CONTADOR DE CARACTERES */}
+            {/* CONTADOR DE CARACTERES */}
             <div
               style={{
                 display: "flex",
@@ -198,7 +197,7 @@ function ModalObservacionInterna({
               }}
             />
 
-            {/* 🔴 MENSAJE DE ERROR */}
+            {/* MENSAJE DE ERROR */}
             {error && (
               <p style={{ color: "#ef4444", fontSize: 13 }}>
                 {error}

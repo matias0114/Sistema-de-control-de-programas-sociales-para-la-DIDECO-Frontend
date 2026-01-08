@@ -80,13 +80,11 @@ function Layout({ children, title = "Dashboard" }) {
 
   const toggleObservacionesModal = () => {
     if (!showObservacionesModal) {
-      // Cuando se abre el modal, marcar como leídas
       marcarObservacionesLeidas();
     }
     setShowObservacionesModal(!showObservacionesModal);
   };
 
-  // Agregar esta función para borrar observación
   const borrarObservacion = async (idPrograma, idObservacion) => {
     try {
       const API_URL = process.env.REACT_APP_API_URL;
@@ -134,7 +132,7 @@ function Layout({ children, title = "Dashboard" }) {
             <h1>{title}</h1>
           </div>
           <div className="nav-right" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-            {/* Campana para visualizadores (NotificationBell) */}
+            {/* Campana para visualizadores*/}
             <NotificationBell />
             
             {/* Campana solo para encargado */}

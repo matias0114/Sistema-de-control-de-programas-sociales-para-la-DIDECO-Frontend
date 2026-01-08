@@ -9,10 +9,8 @@ function Perfil() {
   const [verNuevaPassword, setVerNuevaPassword] = useState(false);  
   const [verConfirmarPassword, setVerConfirmarPassword] = useState(false);
 
-  // Estados para editar nombre
   const [nuevoNombre, setNuevoNombre] = useState('');
   
-  // Estados para cambiar contraseña
   const [passwordData, setPasswordData] = useState({
     passwordActual: '',
     nuevaPassword: '',
@@ -55,7 +53,6 @@ function Perfil() {
 
     try {
       const API_URL = process.env.REACT_APP_API_URL;
-      // Usar el nuevo endpoint seguro PATCH para actualizar solo el nombre
       const response = await fetch(
         
         //`http://localhost:8080/usuarios/${usuario.idUsuario}/nombre`,
@@ -68,9 +65,8 @@ function Perfil() {
       );
 
       if (response.ok) {
-        const usuarioDTO = await response.json(); // El backend devuelve DTO sin contraseña
+        const usuarioDTO = await response.json();
         
-        // Actualizar localStorage con los datos del DTO (sin contraseña)
         const usuarioActualizado = { ...usuario, ...usuarioDTO };
         localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
         setUsuario(usuarioActualizado);
@@ -96,11 +92,9 @@ function Perfil() {
   
   const handleCambiarPassword = async () => {
 
-    // Validaciones en el frontend (solo para UX)
     if (!passwordData.passwordActual || !passwordData.nuevaPassword || !passwordData.confirmarPassword) {
       console.log('VALIDACIÓN: campos vacíos');
       setMensajeError('⚠ Todos los campos de contraseña son obligatorios');
-      // si quieres que el mensaje no desaparezca rápido, puedes comentar la línea siguiente
       setTimeout(() => setMensajeError(''), 3000);
       return;
     }
@@ -705,7 +699,7 @@ function Perfil() {
                     placeholder="Ingrese su contraseña actual"
                     style={{
                       width: '100%',
-                      padding: '12px 46px 12px 16px', // espacio para el botón
+                      padding: '12px 46px 12px 16px',
                       border: '2px solid #e5e7eb',
                       borderRadius: '8px',
                       fontSize: '15px',

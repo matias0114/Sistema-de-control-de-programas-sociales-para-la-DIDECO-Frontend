@@ -36,7 +36,6 @@ function CrearPrograma() {
       .catch(() => setMensaje('Error al cargar programas'));
   };
 
-  // VALIDACIÓN DE NOMBRE
   const handleNombreChange = (e) => {
     const value = e.target.value;
     setNombrePrograma(value);
@@ -50,7 +49,6 @@ function CrearPrograma() {
     }
   };
 
-  // VALIDACIÓN DE DESCRIPCIÓN
   const handleDescripcionChange = (e) => {
     const value = e.target.value;
     setDescripcion(value);
@@ -67,7 +65,6 @@ function CrearPrograma() {
     setMensaje('');
     setMensajeExito('');
     
-    // VALIDACIÓN FINAL ANTES DE ENVIAR
     if (errorNombre || errorDescripcion) {
       setMensaje("⚠ Corrige los errores antes de continuar.");
       return;

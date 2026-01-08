@@ -4,7 +4,6 @@
   margin: 0;
 }
 
-/* === CONTENIDO PRINCIPAL === */
 .main-content {
   width: 100%;
   min-height: 100vh;
@@ -30,7 +29,6 @@
   gap: 16px;
 }
 
-/* Estilo para el logo en el topbar */
 .topbar-logo {
   width: 40px;
   height: 40px;
@@ -102,21 +100,18 @@
   color: #fff;
 }
 
-/* MANTENER LA CLASE ANTERIOR PARA COMPATIBILIDAD */
 .page-content {
   padding: 40px 24px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-/* NUEVA CLASE SIN RESTRICCIONES DE ANCHO */
 .page-content-full {
   padding: 0;
   width: 100%;
   margin: 0;
 }
 
-/* === RESPONSIVE === */
 @media (max-width: 767px) {
   .nav-left h1 {
     font-size: 1.2rem;
@@ -132,7 +127,6 @@
   }
 }
 
-/* Estilos del perfil en el topbar */
 .profile-section {
   display: flex;
   align-items: center;
@@ -170,7 +164,6 @@
   color: white;
 }
 
-/* Dropdown de perfil - Mejoras en el diseño */
 .profile-dropdown {
   position: absolute;
   top: 100%;
@@ -198,7 +191,6 @@
   }
 }
 
-/* Flecha del dropdown mejorada */
 .profile-dropdown::before {
   content: '';
   position: absolute;
@@ -224,7 +216,6 @@
   border-bottom: 10px solid rgba(226, 232, 240, 0.8);
 }
 
-/* Header del dropdown mejorado */
 .profile-dropdown-header {
   padding: 20px 24px;
   display: flex;
@@ -279,7 +270,6 @@
   margin: 0 16px;
 }
 
-/* Contenido del dropdown mejorado */
 .profile-dropdown-content {
   padding: 16px 24px;
   background: rgba(248, 250, 252, 0.5);
@@ -312,7 +302,6 @@
   font-weight: 700;
 }
 
-/* Botón de logout mejorado con rojo mate */
 .profile-dropdown-logout {
   width: 100%;
   background: linear-gradient(135deg, #be123c 0%, #dc2626 100%);
@@ -364,7 +353,6 @@
   z-index: 1;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .profile-section {
     gap: 8px;
@@ -372,7 +360,7 @@
   }
   
   .user-name {
-    display: none; /* Ocultar nombre en móviles */
+    display: none;
   }
   
   .profile-dropdown {
@@ -406,7 +394,6 @@
   }
 }
 
-/* Estados adicionales para interactividad */
 .profile-dropdown-item {
   position: relative;
 }
@@ -428,7 +415,6 @@
   height: 60%;
 }
 
-/* Animación del icono de logout */
 @keyframes logout-bounce {
   0%, 100% { transform: translateX(0); }
   50% { transform: translateX(-2px); }

@@ -25,10 +25,8 @@ function CrearActividad({ onAdd, idPrograma, onCancel,  fechaInicioPrograma,
     metas: 500
   };
 
-  // Validación para RESPONSABLE (opción B)
   const regexResponsable = /^[A-Za-zÁÉÍÓÚáéíóúÑñüÜ\- ]*$/;
 
-  // Formateo del monto: 10000 → 10.000
   const formatearMiles = (valor) => {
     if (!valor) return "";
     const limpio = valor.replace(/\D/g, "");
@@ -39,7 +37,7 @@ function CrearActividad({ onAdd, idPrograma, onCancel,  fechaInicioPrograma,
     const valor = e.target.value;
     const soloNumeros = valor.replace(/\D/g, "");
 
-    if (soloNumeros.length > 10) return; // límite razonable
+    if (soloNumeros.length > 10) return; 
 
     setNueva({ ...nueva, montoAsignado: formatearMiles(soloNumeros) });
 

@@ -220,12 +220,10 @@
   transform: scale(1.1) rotate(5deg);
 }
 
-/* Efecto de pulsación en el icono */
 .nav-item:active .nav-icon {
   transform: scale(0.95);
 }
 
-/* === RESPONSIVE === */
 @media (min-width: 768px) {
   .sidebar-overlay {
     display: block;
@@ -238,7 +236,6 @@
     left: -280px;
   }
   
-  /* Animaciones más rápidas en móvil */
   .sidebar {
     transition: all 0.3s ease;
   }
@@ -292,7 +289,6 @@
   }
 }
 
-/* Efecto especial cuando el sidebar se cierra */
 .sidebar:not(.sidebar-open) .sidebar-header,
 .sidebar:not(.sidebar-open) .nav-item {
   animation: none;
@@ -300,7 +296,6 @@
   transform: translateX(0);
 }
 
-/* Animación de rebote sutil para el logo */
 .sidebar-logo:hover {
   animation: logoBounce 0.6s ease;
 }
@@ -312,7 +307,6 @@
   75% { transform: scale(1.05); }
 }
 
-/* Efecto de ondas en el overlay */
 .sidebar-overlay::before {
   content: '';
   position: absolute;

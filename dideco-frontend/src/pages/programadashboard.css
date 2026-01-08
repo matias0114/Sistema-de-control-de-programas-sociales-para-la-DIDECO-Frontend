@@ -42,7 +42,6 @@
   gap: 12px;
 }
 
-/* Estilos para el botón de exportar */
 .btn-export {
   background: #1664c1 !important;
   color: white !important;
@@ -67,7 +66,6 @@
   transform: translateY(0) !important;
 }
 
-/* KPI Cards */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -276,7 +274,6 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Estilos adicionales para el visualizador */
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -383,7 +380,6 @@
   margin-bottom: 20px;
 }
 
-/* Header mejorado para el visualizador */
 .programa-header-detalle {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 20px;
@@ -486,7 +482,6 @@
   opacity: 0.95;
 }
 
-/* Títulos de sección mejorados */
 .section-title {
   display: flex;
   align-items: center;
@@ -501,7 +496,6 @@
   font-size: 1.8rem;
 }
 
-/* Grid de cards de información */
 .info-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -591,7 +585,6 @@
   color: #e74c3c;
 }
 
-/* Mejoras para estadísticas */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -632,7 +625,6 @@
   letter-spacing: 0.5px;
 }
 
-/* Nuevo Avance (card flotante) */
 .avance-popover {
   position: relative;
   background: #ffffff;
@@ -824,22 +816,20 @@
   font-style: italic;
 }
 
-/* Contenedor específico para gráfico de barras */
 .section-container div[style*="marginTop: 50"] {
   margin-top: 50px;
   width: 100%;
-  height: 400px; /* Aumentar altura del contenedor */
+  height: 400px;
 }
 
 .section-container div[style*="marginTop: 50"] canvas {
   width: 100% !important;
-  height: 350px !important; /* Altura específica para el gráfico */
+  height: 350px !important; 
   max-width: 1200px !important;
   margin: 0 auto;
   display: block;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .section-container div[style*="marginTop: 50"] {
     height: 300px;
@@ -922,7 +912,6 @@
   overflow: visible;
 }
 
-/* Estilos para el botón flotante */
 .floating-button {
   position: fixed !important;
   bottom: 30px !important;
@@ -948,32 +937,6 @@
   background-color: #45a049 !important;
 }
 
-/* Botón de observación fuera del container */
-/* .floating-button-absolute {
-  position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  z-index: 1000;
-}
-
-.floating-button-absolute:hover {
-  transform: scale(1.1);
-  background-color: #45a049;
-} */
-
-/* Tooltips para todos los botones */
 button[title] {
   position: relative;
 }
@@ -1021,7 +984,6 @@ button[title]:hover::before {
   }
 }
 
-/* Ajuste específico para botones de acción pequeños */
 .btn-small[title]:hover::after,
 .btn-export[title]:hover::after,
 .btn-primary[title]:hover::after,

@@ -11,7 +11,7 @@ function Sidebar({ isOpen, onClose }) {
 
   const handleNavigation = (path) => {
     navigate(path);
-    onClose(); // Cerrar sidebar después de navegar
+    onClose(); // Cerrar sidebar despues de navegar
   };
 
   const handleCloseClick = (e) => {

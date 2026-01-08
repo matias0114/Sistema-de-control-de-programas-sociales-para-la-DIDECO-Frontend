@@ -186,7 +186,6 @@ function ProgramaDashboard() {
           ejecutado: 0
       });
 
-      // Guardamos la lista completa para mostrarla en tabla
       setPresupuestosLista(listaPresupuestos);
       await cargarBeneficiarios();      
     } catch (err) {
@@ -227,7 +226,6 @@ function ProgramaDashboard() {
   };
 
 
-  // BENEFICIARIOS funciones:
   const handleAddOrUpdateBeneficiario = async (data) => {
     if (editarBeneficiario) {
       //await fetch(`http://localhost:8080/beneficiarios-programa/${editarBeneficiario.idBeneficiario}`, {
@@ -265,7 +263,6 @@ function ProgramaDashboard() {
     }
   };
 
-  // Formulario Beneficiario como componente interno:
   function BeneficiarioForm({ beneficiario, onSave, onCancel }) {
     const [form, setForm] = useState({
       nombreCompleto: beneficiario?.nombreCompleto || "",
@@ -282,9 +279,6 @@ function ProgramaDashboard() {
 
     const limiteDireccion = 500;
 
-    // ------------------------
-    // VALIDACIÓN RUT
-    // ------------------------
     const validarRut = (rutCompleto) => {
       const rut = rutCompleto.replace(/\./g, "").replace(/-/g, "");
 
@@ -296,7 +290,6 @@ function ProgramaDashboard() {
       if (!/^[0-9]+$/.test(cuerpo)) return false;
       if (!/^[0-9K]$/.test(dv)) return false;
 
-      // Calcular DV
       let suma = 0;
       let multiplo = 2;
 
@@ -315,7 +308,6 @@ function ProgramaDashboard() {
     const handleChange = (e) => {
       const { name, value } = e.target;
 
-      // Validación del teléfono
       if (name === "telefono") {
         const regex = /^[0-9+ ]*$/;
         if (!regex.test(value)) {
@@ -328,13 +320,11 @@ function ProgramaDashboard() {
         }
       }
 
-      // Validación de dirección con contador
       if (name === "direccion") {
         if (value.length > limiteDireccion) return;
         setErrors((prev) => ({ ...prev, direccion: "" }));
       }
 
-      // Validación de RUT
       if (name === "rut") {
         if (value.trim() === "") {
           setErrors((prev) => ({ ...prev, rut: "" }));
@@ -712,7 +702,7 @@ function ProgramaDashboard() {
     <Layout title={`${programa.nombrePrograma}`}>
       <div className="dashboard-container" style={{ maxWidth: '1400px', margin: '0 auto' }}>
         
-        {/* Header mejorado con gradiente */}
+        {/* Header */}
         <div style={{
           background: 'linear-gradient(135deg, #1664c1 0%, #1e40af 100%)',
           borderRadius: '16px',
@@ -837,7 +827,7 @@ function ProgramaDashboard() {
           <EditarProgramaInfo programa={programa} onSave={handleUpdatePrograma} />
         </div>
 
-        {/* Sección de gráficos mejorada */}
+        {/* Sección de gráficos*/}
         <div style={{
           background: 'white',
           borderRadius: '16px',
@@ -1355,7 +1345,7 @@ function ProgramaDashboard() {
           )}
         </div>
 
-        {/* Sección de beneficiarios del programa */}
+        {/* Beneficiarios del programa */}
         <div style={{
           background: 'white',
           borderRadius: '16px',

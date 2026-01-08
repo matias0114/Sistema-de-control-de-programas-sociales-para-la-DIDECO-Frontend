@@ -44,13 +44,12 @@ function VisualizadorProgramas() {
     navigate(`/visualizador/${id}`);
   };
 
-  // Filtrar por estado desde el select
   const programasFiltradosPorEstado = programas.filter(p => {
     const estado = p.estado?.toLowerCase();
     if (filtro === 'activos') return estado === 'activo';
     if (filtro === 'inactivos') return estado === 'finalizado';
     if (filtro === 'borrador') return estado === 'borrador';
-    return true; // todos
+    return true;
   });
 
   // Filtrar por búsqueda
@@ -105,7 +104,7 @@ function VisualizadorProgramas() {
                   <span className="total-count">{programasFiltrados.length} programas</span>
                 </div>
 
-                {/* BUSCADOR + SELECT FILTRO */}
+                {/* BUSCADOR */}
                 <div className="buscador-container" style={{ display: "flex", gap: 12 }}>
                   <input
                     type="text"

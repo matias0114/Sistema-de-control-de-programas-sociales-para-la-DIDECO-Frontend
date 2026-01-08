@@ -12,7 +12,7 @@ function ActividadDetalle() {
   const [actividad, setActividad] = useState(null);
   const [avances, setAvances] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModalVer, setShowModalVer] = React.useState(null); // guarda idAvance o null
+  const [showModalVer, setShowModalVer] = React.useState(null);
 
 
   useEffect(() => {

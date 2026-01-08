@@ -384,7 +384,7 @@ function Usuarios() {
                   minLength={6}
                   style={{
                     width: '100%',
-                    padding: '12px 46px 12px 16px', /* espacio para el botón */
+                    padding: '12px 46px 12px 16px',
                     border: '2px solid #e5e7eb',
                     borderRadius: '8px',
                     fontSize: '15px',

@@ -37,7 +37,7 @@ function ForgotPassword() {
   return (
     <div className="login-container">
 
-      {/* PANEL IZQUIERDO IGUAL AL LOGIN */}
+      {/* PANEL IZQUIERDO*/}
       <div className="login-left">
         <div className="logo-section">
 
@@ -61,7 +61,7 @@ function ForgotPassword() {
         </div>
       </div>
 
-      {/* LADO DERECHO (CARD DE FORMULARIO) */}
+      {/* LADO DERECHO */}
       <div className="login-right">
         <div className="login-form-container">
 

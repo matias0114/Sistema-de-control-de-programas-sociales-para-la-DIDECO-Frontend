@@ -13,7 +13,7 @@ function GraficoProgreso({ programa }) {
   const parseFechaLocal = (fechaStr) => {
     if (!fechaStr) return null;
     const [a, m, d] = fechaStr.split('-').map(Number);
-    return new Date(a, m - 1, d); // Crea fecha local exacta (sin desfase horario)
+    return new Date(a, m - 1, d);
   };
 
   const calcularPorcentajeAvance = () => {
@@ -25,15 +25,15 @@ function GraficoProgreso({ programa }) {
     const fechaInicio = parseFechaLocal(programa.fechaInicio);
     const fechaTermino = parseFechaLocal(programa.fechaFin);
     const fechaActual = new Date();
-    fechaActual.setHours(0, 0, 0, 0); // normalizar a medianoche
+    fechaActual.setHours(0, 0, 0, 0);
 
     if (isNaN(fechaInicio.getTime()) || isNaN(fechaTermino.getTime())) {
       console.warn('Fechas inválidas:', { fechaInicio, fechaTermino });
       return 0;
     }
-    if (fechaInicio > fechaTermino) return 0; // fechas invertidas
-    if (fechaActual < fechaInicio) return 0;  // aún no comienza
-    if (fechaActual > fechaTermino) return 100; // ya terminó
+    if (fechaInicio > fechaTermino) return 0;
+    if (fechaActual < fechaInicio) return 0; 
+    if (fechaActual > fechaTermino) return 100; 
 
     // cálculo de porcentaje
     const tiempoTotal = fechaTermino.getTime() - fechaInicio.getTime();
@@ -53,13 +53,13 @@ function GraficoProgreso({ programa }) {
   const porcentajeCompletado = calcularPorcentajeAvance();
   const porcentajeRestante = 100 - porcentajeCompletado;
 
-  // 🎨 Datos del gráfico
+  // Datos del gráfico
   const data = {
     labels: ['Tiempo Transcurrido', 'Tiempo Restante'],
     datasets: [
       {
         data: [porcentajeCompletado, porcentajeRestante],
-        backgroundColor: ['#4CAF50', '#E0E0E0'], // Verde + gris
+        backgroundColor: ['#4CAF50', '#E0E0E0'],
         borderColor: ['#388E3C', '#BDBDBD'],
         borderWidth: 2,
         hoverOffset: 12,
@@ -67,7 +67,6 @@ function GraficoProgreso({ programa }) {
     ],
   };
 
-  // Opciones del gráfico
   const options = {
     responsive: true,
     plugins: {
@@ -87,11 +86,10 @@ function GraficoProgreso({ programa }) {
         }
       }
     },
-    cutout: '75%', // estilo "donut"
+    cutout: '75%', 
     animation: { animateRotate: true, duration: 850 }
   };
 
-  // Render del componente
   return (
     <div
       style={{

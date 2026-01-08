@@ -168,7 +168,7 @@ function General() {
           </p>
         </div>
 
-        {/* Grid de tarjetas mejorado */}
+        {/* Grid*/}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',

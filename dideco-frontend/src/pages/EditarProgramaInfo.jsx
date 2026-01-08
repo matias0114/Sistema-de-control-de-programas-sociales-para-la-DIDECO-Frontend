@@ -16,7 +16,6 @@ function EditarProgramaInfo({ programa, onSave }) {
     fechaFin: programa.fechaFin || programa.fechaTermino || '' 
   });
 
-  // Límites de caracteres según la base de datos
   const limites = {
     nombrePrograma: 150,
     tipoPrograma: 100,
@@ -195,7 +194,7 @@ function EditarProgramaInfo({ programa, onSave }) {
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '20px'
         }}>
-          {/* Descripción - Columna completa */}
+          {/* Descripción*/}
           <div style={{ gridColumn: '1 / -1' }}>
             <div style={{
               background: '#f8fafc',
@@ -422,7 +421,7 @@ function EditarProgramaInfo({ programa, onSave }) {
             </p>
           </div>
 
-          {/* Metas del Programa - Columna completa */}
+          {/* Metas del Programa*/}
           <div style={{ gridColumn: '1 / -1' }}>
             <div style={{
               background: '#fff7ed',
@@ -460,7 +459,7 @@ function EditarProgramaInfo({ programa, onSave }) {
             </div>
           </div>
 
-          {/* Requisitos de Ingreso - Columna completa */}
+          {/* Requisitos de Ingreso*/}
           <div style={{ gridColumn: '1 / -1' }}>
             <div style={{
               background: '#eff6ff',
@@ -498,7 +497,7 @@ function EditarProgramaInfo({ programa, onSave }) {
             </div>
           </div>
 
-          {/* Beneficios - Columna completa */}
+          {/* Beneficios*/}
           <div style={{ gridColumn: '1 / -1' }}>
             <div style={{
               background: '#f0fdfa',
@@ -540,7 +539,6 @@ function EditarProgramaInfo({ programa, onSave }) {
     );
   }
 
-  // Modo edición
   return (
     <div style={{
       background: 'white',
@@ -723,7 +721,7 @@ function EditarProgramaInfo({ programa, onSave }) {
             )}
           </div>
 
-          {/* Oficina Responsable - SOLO EN MODO EDICIÓN */}
+          {/* Oficina Responsable*/}
           <div>
             <label style={{
               display: 'block',
@@ -818,7 +816,7 @@ function EditarProgramaInfo({ programa, onSave }) {
             )}
           </div>
 
-          {/* Número de Cupos - CAMPO CORREGIDO */}
+          {/* Número de Cupos*/}
           <div>
             <label style={{
               display: 'block',
@@ -925,7 +923,7 @@ function EditarProgramaInfo({ programa, onSave }) {
             />
           </div>
 
-          {/* Metas del Programa - CAMPO CORREGIDO */}
+          {/* Metas del Programa*/}
           <div style={{ gridColumn: '1 / -1' }}>
             <label style={{
               display: 'block',

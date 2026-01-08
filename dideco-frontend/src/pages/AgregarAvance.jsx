@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import "./programadashboard.css"; // Usa tus estilos globales
+import "./programadashboard.css";
 
 const normalizarFecha = (fecha) =>
 fecha ? fecha.slice(0, 10) : "";
 function AgregarAvance({ avance, idActividad, idUsuario, fechaInicio, fechaTermino, onAdd, onCancel, modoEdicion }) {
 
-  // ⚠️ LIMITES DOBLES
   const limites = {
     estado: 100,
     descripcion: 2000,

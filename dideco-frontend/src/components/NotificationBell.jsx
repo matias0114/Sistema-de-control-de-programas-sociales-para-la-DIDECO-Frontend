@@ -17,7 +17,7 @@ function NotificationBell() {
   // Función para cargar contador
   const cargarContador = async () => {
     try {
-      if (!idUsuario) return; // guardia
+      if (!idUsuario) return;
       //const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/contador`);
       const API_URL = process.env.REACT_APP_API_URL;
       const resp = await fetch(`${API_URL}/notificaciones/usuario/${idUsuario}/contador`);
@@ -34,13 +34,13 @@ function NotificationBell() {
   const cargarNotificaciones = async () => {
     setLoading(true);
     try {
-      if (!idUsuario) return; // guardia
+      if (!idUsuario) return;
       //const resp = await fetch(`http://localhost:8080/notificaciones/usuario/${idUsuario}/no-leidas`);
       const API_URL = process.env.REACT_APP_API_URL;
       const resp = await fetch(`${API_URL}/notificaciones/usuario/${idUsuario}/no-leidas`);
       if (resp.ok) {
         const data = await resp.json();
-        setNotificaciones(data.slice(0, 10)); // Solo las últimas 10
+        setNotificaciones(data.slice(0, 10));
       }
     } catch (error) {
       console.error('Error cargando notificaciones:', error);
@@ -85,7 +85,6 @@ function NotificationBell() {
     }
   };
 
-  // Marca OBSERVACIÓN como leída (PATCH anidado)
   const marcarObservacionComoLeida = async (idObservacion) => {
     if (!idObservacion || !idProgramaAsignado) return false;
     try {
@@ -129,7 +128,6 @@ function NotificationBell() {
     return fecha.toLocaleDateString('es-CL');
   };
 
-  // Polling cada 30 segundos
   useEffect(() => {
     if (!idUsuario) return;
     
@@ -139,14 +137,12 @@ function NotificationBell() {
     return () => clearInterval(interval);
   }, [idUsuario]);
 
-  // Cargar notificaciones al abrir dropdown
   useEffect(() => {
     if (showDropdown && idUsuario) {
       cargarNotificaciones();
     }
   }, [showDropdown, idUsuario]);
 
-  // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -159,7 +155,7 @@ function NotificationBell() {
   }, []);
 
   if (!idUsuario || usuario.idRol !== 3) {
-    return null; // Solo visible para visualizadores
+    return null;
   }
 
   return (

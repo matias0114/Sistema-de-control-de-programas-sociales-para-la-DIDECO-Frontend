@@ -1,5 +1,4 @@
 .visualizador-container {
-  /* Ancho completo sin restricciones */
   width: 100%;
   max-width: none;
   margin-left: calc(-50vw + 50%);
@@ -10,7 +9,6 @@
   position: relative;
 }
 
-/* Fondo con patrón decorativo */
 .visualizador-container::before {
   content: '';
   position: fixed;
@@ -27,7 +25,6 @@
   opacity: 0.6;
 }
 
-/* Overlay adicional para más profundidad */
 .visualizador-container::after {
   content: '';
   position: fixed;
@@ -42,7 +39,6 @@
   pointer-events: none;
 }
 
-/* Contenedor interno con max-width para el contenido */
 .visualizador-content {
   max-width: 1300px;
   margin: 0 auto;
@@ -134,7 +130,6 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Tarjetas de estadísticas horizontales */
 .stats-cards-horizontal {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -269,7 +264,6 @@
   box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
 }
 
-/* Grid de programas */
 .programas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
@@ -278,7 +272,6 @@
   z-index: 1;
 }
 
-/* Tarjetas de programa */
 .programa-card {
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
@@ -418,7 +411,6 @@
   font-weight: 600;
 }
 
-/* Footer del programa */
 .programa-footer {
   display: flex;
   justify-content: flex-end;
@@ -478,18 +470,16 @@
   line-height: 1.6;
 }
 
-/* Contenedor de detalle */
 .detalle-container {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  overflow: visible; /* antes: hidden */
+  overflow: visible; 
   border: 1px solid rgba(255, 255, 255, 0.8);
-  padding-bottom: 100px; /* deja espacio para la FAB en móviles */
+  padding-bottom: 100px; 
 }
 
-/* Responsive Design */
 @media (max-width: 1200px) {
   .visualizador-container {
     padding: 40px 24px;
@@ -568,7 +558,6 @@
   }
 }
 
-/* Mejoras adicionales para transiciones suaves */
 * {
   box-sizing: border-box;
 }
@@ -579,7 +568,6 @@
   will-change: transform;
 }
 
-/* Efectos de hover mejorados */
 .stat-card-h:hover .stat-icon {
   transform: scale(1.1);
   transition: transform 0.3s ease;
@@ -590,7 +578,6 @@
   transition: color 0.3s ease;
 }
 
-/* Animaciones de entrada */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -635,7 +622,6 @@
   border: 2px solid #4CAF50;
   background-color: #eaffea;
 }
-/* 🔍 Contenedor del buscador */
 .buscador-container {
   width: 100%;
   margin-top: 1.5rem;
@@ -643,7 +629,6 @@
   justify-content: center;
 }
 
-/* 🔎 Input del buscador */
 .buscador-input {
   width: 60%;
   max-width: 500px;
@@ -662,12 +647,10 @@
   outline: none;
 }
 
-/* 🕵️‍♀️ Placeholder sutil */
 .buscador-input::placeholder {
   color: #999;
 }
 
-/* 📱 Adaptación móvil */
 @media (max-width: 768px) {
   .buscador-input {
     width: 90%;
@@ -675,7 +658,6 @@
   }
 }
 
-/* 📦 Contenedor general */
 .visualizador-container {
   width: 100%;
   display: flex;
@@ -689,7 +671,6 @@
   max-width: 1200px;
 }
 
-/* 🎯 Header principal */
 .stats-header {
   background: linear-gradient(145deg, #2d3748, #1a202c);
   color: white;
@@ -714,7 +695,6 @@
   font-size: 1.1rem;
 }
 
-/* 📊 Tarjetas de estado (activos, inactivos, todos) */
 .stats-cards-horizontal {
   display: flex;
   justify-content: center;
@@ -768,7 +748,7 @@
   font-weight: 600;
 }
 
-/* 🔍 Buscador */
+/* Buscador */
 .buscador-container {
   margin: 1.5rem auto 2rem auto;
   text-align: center;
@@ -792,7 +772,7 @@
   box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.15);
 }
 
-/* 📋 Sección de programas */
+/* Sección de programas */
 .programas-section {
   background: #fff;
   border-radius: 20px;
@@ -824,7 +804,7 @@
   font-weight: 600;
 }
 
-/* 🧱 Tarjetas de programa */
+/* Tarjetas de programa */
 .programas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -871,7 +851,6 @@
   color: #c53030;
 }
 
-/* Meta info */
 .programa-meta {
   margin-top: 0.8rem;
 }
@@ -903,7 +882,7 @@
   color: #2b6cb0;
 }
 
-/* 📭 Estado vacío */
+/* Estado vacío */
 .empty-state {
   text-align: center;
   padding: 3rem 1rem;

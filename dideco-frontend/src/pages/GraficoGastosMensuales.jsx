@@ -28,7 +28,6 @@ function GraficoGastosMensuales({ datos }) {
     parseFloat(d.totalGasto || d.total_gasto || d.total || d.monto_ejecutado || 0)
   );
 
-  // Guardar las actividades para cada índice
   const actividadesPorIndice = datos.map(d => d.actividades || []);
 
   console.log("📈 Datos procesados para Chart.js:", { labels, valores, actividadesPorIndice });
@@ -49,7 +48,7 @@ function GraficoGastosMensuales({ datos }) {
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false,  // Importante para control de altura
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: false
@@ -63,7 +62,6 @@ function GraficoGastosMensuales({ datos }) {
         displayColors: false,
         callbacks: {
           title: () => {
-            // No mostrar título (mes) ya que está en la etiqueta del eje X
             return '';
           },
           label: (context) => {

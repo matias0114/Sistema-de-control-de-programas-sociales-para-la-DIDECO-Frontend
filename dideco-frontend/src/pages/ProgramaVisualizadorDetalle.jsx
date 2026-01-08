@@ -39,13 +39,12 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
     setShowModalObservacion(true);
   }
 
-  // Función para guardar observación desde modal
   async function guardarObservacion(texto) {
     try {
       const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
       const observacion = {
         texto,
-        usuarioAutor: usuario.nombreUsuario || 'Anónimo'  // Envía el nombre del usuario como texto
+        usuarioAutor: usuario.nombreUsuario || 'Anónimo' 
       };
       //const resp = await fetch(`http://localhost:8080/programas/${idPrograma}/observaciones`, {
       const API_URL = process.env.REACT_APP_API_URL;
@@ -198,7 +197,6 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
 
   const exportarPDF = async () => {
     try {
-      // Agrega el idPrograma como parámetro de consulta
       //const response = await fetch(`http://localhost:8080/actividades/exportar-pdf?idPrograma=${idPrograma}`);
       const API_URL = process.env.REACT_APP_API_URL;
       const response = await fetch(`${API_URL}/actividades/exportar-pdf?idPrograma=${idPrograma}`);
@@ -206,7 +204,6 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
       
       const blob = await response.blob();
 
-      // Extraer el nombre del archivo del header Content-Disposition
       const contentDisposition = response.headers.get('Content-Disposition');
       const filename = contentDisposition
         ? contentDisposition.split('filename=')[1].replace(/"/g, '')
@@ -215,7 +212,7 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = filename; // Usa el nombre del servidor
+      a.download = filename;
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -353,124 +350,123 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
         <div className="section-container">
           <h2 className="section-title"><span className="section-icon">📈</span>Análisis del Programa</h2>
           <div
-  style={{
-    marginTop: "30px",
-    marginBottom: "40px",
-    background: "white",
-    padding: "28px",
-    borderRadius: "16px",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.05)"
-  }}
->
-  <h3
-    style={{
-      fontSize: "22px",
-      fontWeight: "700",
-      color: "#1f2937",
-      marginBottom: "22px",
-      display: "flex",
-      alignItems: "center",
-      gap: "10px"
-    }}
-  >
-    📄 Historial de Ingresos de Presupuesto
-  </h3>
+            style={{
+              marginTop: "30px",
+              marginBottom: "40px",
+              background: "white",
+              padding: "28px",
+              borderRadius: "16px",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.05)"
+            }}
+          >
+            <h3
+              style={{
+                fontSize: "22px",
+                fontWeight: "700",
+                color: "#1f2937",
+                marginBottom: "22px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px"
+              }}
+            >
+              📄 Historial de Ingresos de Presupuesto
+            </h3>
 
-  {presupuestosLista.length === 0 ? (
-    <p
-      style={{
-        color: "#6b7280",
-        textAlign: "center",
-        padding: "28px",
-        fontSize: "15px"
-      }}
-    >
-      Aún no existen ingresos registrados para este programa.
-    </p>
-  ) : (
-    <div style={{ overflowX: "auto" }}>
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "separate",
-          borderSpacing: "0 8px"
-        }}
-      >
-        <thead>
-          <tr style={{ background: "#f3f4f6" }}>
-            <th
-              style={{
-                padding: "14px",
-                textAlign: "left",
-                fontWeight: "600",
-                fontSize: "14px",
-                color: "#374151"
-              }}
-            >
-              Origen
-            </th>
-            <th
-              style={{
-                padding: "14px",
-                textAlign: "center",
-                fontWeight: "600",
-                fontSize: "14px",
-                color: "#374151"
-              }}
-            >
-              Fecha
-            </th>
-            <th
-              style={{
-                padding: "14px",
-                textAlign: "right",
-                fontWeight: "600",
-                fontSize: "14px",
-                color: "#374151"
-              }}
-            >
-              Monto
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {presupuestosLista.map((p, i) => (
-            <tr
-              key={i}
-              style={{
-                background: "white",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-                borderRadius: "12px"
-              }}
-            >
-              <td style={{ padding: "14px", borderRadius: "12px 0 0 12px" }}>
-                {p.fuentePresupuesto}
-              </td>
-              <td style={{ padding: "14px", textAlign: "center" }}>
-                {p.fechaRegistro
-                  ? p.fechaRegistro.slice(0, 10).split("-").reverse().join("-")
-                  : "—"}
-              </td>
-              <td
+            {presupuestosLista.length === 0 ? (
+              <p
                 style={{
-                  padding: "14px",
-                  textAlign: "right",
-                  fontWeight: "700",
-                  borderRadius: "0 12px 12px 0",
-                  color: "#166534"
+                  color: "#6b7280",
+                  textAlign: "center",
+                  padding: "28px",
+                  fontSize: "15px"
                 }}
               >
-                ${Number(p.montoAsignado).toLocaleString("es-CL")}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  )}
-</div>
+                Aún no existen ingresos registrados para este programa.
+              </p>
+            ) : (
+              <div style={{ overflowX: "auto" }}>
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "separate",
+                    borderSpacing: "0 8px"
+                  }}
+                >
+                  <thead>
+                    <tr style={{ background: "#f3f4f6" }}>
+                      <th
+                        style={{
+                          padding: "14px",
+                          textAlign: "left",
+                          fontWeight: "600",
+                          fontSize: "14px",
+                          color: "#374151"
+                        }}
+                      >
+                        Origen
+                      </th>
+                      <th
+                        style={{
+                          padding: "14px",
+                          textAlign: "center",
+                          fontWeight: "600",
+                          fontSize: "14px",
+                          color: "#374151"
+                        }}
+                      >
+                        Fecha
+                      </th>
+                      <th
+                        style={{
+                          padding: "14px",
+                          textAlign: "right",
+                          fontWeight: "600",
+                          fontSize: "14px",
+                          color: "#374151"
+                        }}
+                      >
+                        Monto
+                      </th>
+                    </tr>
+                  </thead>
 
+                  <tbody>
+                    {presupuestosLista.map((p, i) => (
+                      <tr
+                        key={i}
+                        style={{
+                          background: "white",
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+                          borderRadius: "12px"
+                        }}
+                      >
+                        <td style={{ padding: "14px", borderRadius: "12px 0 0 12px" }}>
+                          {p.fuentePresupuesto}
+                        </td>
+                        <td style={{ padding: "14px", textAlign: "center" }}>
+                          {p.fechaRegistro
+                            ? p.fechaRegistro.slice(0, 10).split("-").reverse().join("-")
+                            : "—"}
+                        </td>
+                        <td
+                          style={{
+                            padding: "14px",
+                            textAlign: "right",
+                            fontWeight: "700",
+                            borderRadius: "0 12px 12px 0",
+                            color: "#166534"
+                          }}
+                        >
+                          ${Number(p.montoAsignado).toLocaleString("es-CL")}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
           
           <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'flex-start' }}>  
             
@@ -569,7 +565,7 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
             </div>
           )}
         </div>
-        {/* --- Beneficiarios del Programa (solo vista) --- */}
+        {/* --- Beneficiarios del Programa--- */}
         <div className="section-container" style={{marginTop:32}}>
           <h2 className="section-title"><span className="section-icon">👥</span>Beneficiarios del Programa</h2>
           {beneficiarios.length === 0 ? (
@@ -606,14 +602,14 @@ function ProgramaVisualizadorDetalle({ idPrograma, onBack }) {
         </div>
       </div>
 
-      {/* FAB flotante en portal (siempre sobre todo) */}
+      {/* FAB flotante en portal*/}
       <FloatingAddButton
         onClick={() => setShowModalObservacion(true)}
         title="Agregar Observación Interna"
         icon="📝"
       />
 
-      {/* tu modal */}
+      {/* Modal */}
       <ModalObservacionInterna 
         visible={showModalObservacion}
         onClose={() => setShowModalObservacion(false)}
